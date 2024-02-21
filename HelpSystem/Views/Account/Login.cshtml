@@ -1,0 +1,77 @@
+﻿@model HelpSystem.Domain.ViewModel.Account.LoginViewModel
+
+@{
+    ViewBag.Title = "Вход в аккаунт";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">
+                        <i class="bi bi-person"></i>Вход в аккаунт
+                    </h2>
+                </div>
+                <div class="card-body" id="LoginForm" style="display: none;">
+                    <form asp-action="Login" method="post" id="Logs" >
+                        <div asp-validation-summary="All" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="Login">Логин</label>
+                            <input asp-for="Login" class="form-control" />
+                            <span asp-validation-for="Login" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password">Пароль</label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid gap-2" style="margin-top:10px; ">
+                            <button id="BtnAuthorize" type="submit" class="btn btn-outline-success btn-block">Войти</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#LoginForm").slideDown("fast");
+
+            $('#BtnAuthorize').on('click', function (e) {
+                e.preventDefault(),
+                    e.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: "@Url.Action("Login", "Account")",
+                    data: $('#Logs').serialize(),
+                    success: function (response) {
+                        Swal.fire({
+                            title: 'Успешная авторизация',
+                            text: response.description,
+                            icon: 'success',
+                            confirmButtonText: 'Окей'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/Home/Index";
+                            }
+                        });
+                    },
+                    error: function (response) {
+                        Swal.fire({
+                            title: 'Упс..',
+                            text: response.responseJSON.description,
+                            icon: 'error',
+                            confirmButtonText: 'Окей'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}
