@@ -13,10 +13,28 @@
         filter: blur(0);
         transform: translateX(0);
     }
- .card:hover{
-     transform:scale(1.10);
- }
+    .card:hover {
+        transform: scale(1.10);
+        transition: transform 0.2s  revert-layer;
+    }
  .Hq{
      font-family:monospace;
  }
+.card.user-animation {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateY(-60px);
+    transition: all 2s;
+}
+
+.card.user-animation.show {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+ }
+    .card.user-animation:hover {
+        transform: scale(1.10);
+        transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      
+    }
 

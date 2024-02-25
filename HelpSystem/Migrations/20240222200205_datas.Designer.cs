@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240221154431_Initialize")]
-    partial class Initialize
+    [Migration("20240222200205_datas")]
+    partial class datas
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,7 +31,19 @@ namespace HelpSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<byte?>("Age")
+                        .HasColumnType("tinyint");
+
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UserId")
@@ -47,8 +59,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a562e73a-8ffc-4058-8c2f-8c899b4305d8"),
-                            UserId = new Guid("65715b9c-b028-402d-9fd3-e73ab37abecc")
+                            Id = new Guid("54adf5b6-c5a4-45ea-b1d6-bca50400c9ea"),
+                            UserId = new Guid("e63f5f08-c24e-417e-9aaf-ddfd0132c9df")
                         });
                 });
 
@@ -117,7 +129,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("65715b9c-b028-402d-9fd3-e73ab37abecc"),
+                            Id = new Guid("e63f5f08-c24e-417e-9aaf-ddfd0132c9df"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

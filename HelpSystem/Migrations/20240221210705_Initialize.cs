@@ -53,7 +53,8 @@ namespace HelpSystem.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Age = table.Column<byte>(type: "tinyint", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -79,12 +80,12 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("65715b9c-b028-402d-9fd3-e73ab37abecc"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("6aac60a2-25c8-4827-9527-5816ef7d28d1"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
-                columns: new[] { "Id", "Description", "UserId" },
-                values: new object[] { new Guid("a562e73a-8ffc-4058-8c2f-8c899b4305d8"), null, new Guid("65715b9c-b028-402d-9fd3-e73ab37abecc") });
+                columns: new[] { "Id", "Age", "Description", "UserId" },
+                values: new object[] { new Guid("21421014-8e4d-4423-aa90-0271fd0f300f"), null, null, new Guid("6aac60a2-25c8-4827-9527-5816ef7d28d1") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserId",

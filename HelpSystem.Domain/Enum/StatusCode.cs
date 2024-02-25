@@ -5,6 +5,7 @@
         Ok = 200,
         InternalServerError = 500,
         UserIsRegistered = 5,
-        NotFind = 11
+        NotFind = 11,
+        UnChanched = 12
     }
 }

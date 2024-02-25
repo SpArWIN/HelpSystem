@@ -4,6 +4,9 @@
     ViewBag.Title = "Вход в аккаунт";
     Layout = "_Layout";
 }
+<head>
+    <link rel="icon" href="@Url.Content("~/favicon.ico")" />
+</head>
 
 <div class="container">
     <div class="row justify-content-center mt-5">
@@ -45,30 +48,52 @@
 
             $('#BtnAuthorize').on('click', function (e) {
                 e.preventDefault(),
-                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Обработка запроса',
+                        html: 'Пожалуйста, подождите...',
+                        timerProgressBar: true,
+                        showConfirmButton: false,
+                        allowOutsideClick: false, // Запрещаем закрытие сообщения при клике вне него
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
                 $.ajax({
                     type: 'POST',
                     url: "@Url.Action("Login", "Account")",
                     data: $('#Logs').serialize(),
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Успешная авторизация',
-                            text: response.description,
-                            icon: 'success',
-                            confirmButtonText: 'Окей'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "/Home/Index";
-                            }
-                        });
+                        // Закрываем загрузочное сообщение с небольшой задержкой
+                        setTimeout(function () {
+                            Swal.close();
+
+                            // Показываем сообщение об успешной авторизации
+                            Swal.fire({
+                                title: 'Успешная авторизация',
+                                text: response.description,
+                                icon: 'success',
+                                confirmButtonText: 'Окей'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index";
+                                }
+                            });
+                        }, 1000);
                     },
                     error: function (response) {
-                        Swal.fire({
-                            title: 'Упс..',
-                            text: response.responseJSON.description,
-                            icon: 'error',
-                            confirmButtonText: 'Окей'
-                        });
+                       
+                        setTimeout(function () {
+                            Swal.close();
+
+         
+                            Swal.fire({
+                                title: 'Упс..',
+                                text: response.responseJSON.description,
+                                icon: 'error',
+                                confirmButtonText: 'Окей'
+                            });
+                        }, 2000);
                     }
                 });
             });

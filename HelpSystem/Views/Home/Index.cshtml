@@ -1,11 +1,17 @@
 ﻿@using HelpSystem.Domain.Extension
+@using System.Security.Claims
+@using HelpSystem.Domain.Enum
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Главная";
 }
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-<link href="~/css/myanimate.css" rel="stylesheet" />
-<div style="padding 10px;">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="~/css/myanimate.css" rel="stylesheet" />
+    <link rel="icon" href="@Url.Content("~/favicon.ico")" />
+</head>
+
+<div style="padding: 10px;">
     @if (User.Identity.IsAuthenticated)
     {
         <h5 id="Help" class="Hq" >Help Desk, всегда придёт на помощь</h5>
@@ -20,10 +26,11 @@
                     <h5 class="card-text">Профиль</h5>
                     <p class="card-text">@User.Identity.Name</p>
                     <p class="card-text">Информация о профиле</p>
+                    <p>Роль: @ViewData["UserRole"]</p>
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-success">Перейти</button>
+                        <a asp-controller="Profile" asp-action="Detail" class="btn btn-outline-success">Перейти</a>
                     </div>
                   
                 </div>

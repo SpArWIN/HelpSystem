@@ -1,9 +1,12 @@
 ﻿@model HelpSystem.Domain.ViewModel.Account.RegisterVIewModel
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Регистрация";
     Layout = "_Layout";
 }
+<head>
+    <link rel="icon" href="@Url.Content("~/favicon.ico")" />
+</head>
 
 <div class="container">
     <div class="row justify-content-center mt-5">
@@ -55,29 +58,51 @@
 
             $("#BtnAuthorize").on('click', function (e) {
                 e.preventDefault();
+                Swal.fire({
+                    title: 'Обработка запроса',
+                    html: 'Пожалуйста, подождите...',
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false, 
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
                 $.ajax({
                     type: 'POST',
                     url: "@Url.Action("Register", "Account")",
                     data: $('#registrationForm').serialize(),
                     success: function (response) {
-                        Swal.fire({
-                            title: 'Регистрация аккаунта прошла успешно',
-                            text: response.description,
-                            icon: 'success',
-                            confirmButtonText: 'Окей'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                 window.location.href = "/Home/Index";
-                            }
-                        });
+                      
+                        setTimeout(function () {
+                            Swal.close();
+
+      
+                            Swal.fire({
+                                title: 'Регистрация аккаунта прошла успешно',
+                                text: response.description,
+                                icon: 'success',
+                                confirmButtonText: 'Окей'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = "/Home/Index";
+                                }
+                            });
+                        }, 1000); 
                     },
                     error: function (response) {
-                        Swal.fire({
-                            title: 'Аккаунт не зарегистрирован',
-                            text: response.responseJSON.description,
-                            icon: 'error',
-                            confirmButtonText: 'Окей'
-                        });
+                       
+                        setTimeout(function () {
+                            Swal.close();
+
+                            Swal.fire({
+                                title: 'Аккаунт не зарегистрирован',
+                                text: response.responseJSON.description,
+                                icon: 'error',
+                                confirmButtonText: 'Окей'
+                            });
+                        }, 1000); 
                     }
                 });
             });

@@ -1,0 +1,33 @@
+﻿
+
+@{
+    ViewBag.Title = "Админ панель";
+    Layout = "_Layout";
+}
+<link href="~/css/myanimate.css" rel="stylesheet" />
+<h2  class="Hq">Админ панель</h2>
+<div class="container" style="display:flex;">
+    <div class="card" style="width:20rem;  margin-top:10px; margin-right:15px;">
+        <img class="card-img-top" src="/myIcon/ListsUsers.png" alt="Список пользователей" width="200" height="250" style="padding-left:10px;" />
+        <h5 class="card-header">Список пользователей</h5>
+        <div class="card-body">
+            <p class="card-text"> Тут можно найти кого угодно</p>
+        </div>
+        <div class="card-footer">
+            <div class="d-grid gap-2">
+                <a asp-controller="Profile" asp-action="GetUsers"  class="btn btn-outline-success w-100">
+                    Посмотреть
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+{
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.card').addClass('show');
+        });
+    </script>
+}

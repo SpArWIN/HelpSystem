@@ -4,6 +4,7 @@ using HelpSystem.DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240222140825_UpdateProfile")]
+    partial class UpdateProfile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +40,6 @@ namespace HelpSystem.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Surname")
                         .HasColumnType("nvarchar(max)");
 
@@ -56,8 +56,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("129dccda-c54d-4aa1-bdc0-82c0b5dd8746"),
-                            UserId = new Guid("cb6239d6-3559-4975-9bff-fd414520001d")
+                            Id = new Guid("54bbbc0c-7762-48b2-a282-b45814497977"),
+                            UserId = new Guid("f8fbb12b-aca6-43f9-b31c-1b7f0fb53da8")
                         });
                 });
 
@@ -94,41 +94,6 @@ namespace HelpSystem.Migrations
                         });
                 });
 
-            modelBuilder.Entity("HelpSystem.Domain.Entity.Statement", b =>
-                {
-                    b.Property<long>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
-
-                    b.Property<string>("Comments")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("DataCreated")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DateCompleted")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Reason")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<Guid?>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Statements");
-                });
-
             modelBuilder.Entity("HelpSystem.Domain.Entity.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -161,7 +126,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cb6239d6-3559-4975-9bff-fd414520001d"),
+                            Id = new Guid("f8fbb12b-aca6-43f9-b31c-1b7f0fb53da8"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -176,16 +141,6 @@ namespace HelpSystem.Migrations
                         .HasForeignKey("HelpSystem.Domain.Entity.Profile", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("HelpSystem.Domain.Entity.Statement", b =>
-                {
-                    b.HasOne("HelpSystem.Domain.Entity.User", "User")
-                        .WithMany("Statement")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("User");
                 });
@@ -210,8 +165,6 @@ namespace HelpSystem.Migrations
                 {
                     b.Navigation("Profile")
                         .IsRequired();
-
-                    b.Navigation("Statement");
                 });
 #pragma warning restore 612, 618
         }

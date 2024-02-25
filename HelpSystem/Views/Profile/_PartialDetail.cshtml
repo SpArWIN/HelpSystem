@@ -1,0 +1,28 @@
+﻿@model HelpSystem.Domain.ViewModel.Profile.ProfileViewModel
+@{
+    ViewBag.Title = "Детали профиля";
+    //Layout = "_Layout";
+}
+<meta charset="utf-8" />
+<div class="form-group">
+    <div class="form-group" style="display: none;">
+        <label for="hiddenId">ID:</label>
+        <input type="text" class="form-control" id="hiddenId" value="@Model.Id">
+    </div>
+    <label for="lastName">Фамилия:</label>
+    <input type="text" class="form-control" id="lastName" value="@Model.LastName">
+</div>
+<div class="form-group">
+    <label for="firstName">Имя:</label>
+    <input type="text" class="form-control" id="firstName" value="@Model?.Name">
+</div>
+<div class="form-group">
+    <label for="patronymic">Отчество:</label>
+    <input type="text" class="form-control" id="patronymic" value="@Model.Surname">
+</div>
+<div class="form-group">
+    <label for="age">Возраст:</label>
+    <input type="number" class="form-control" id="age" value="@Model.Age">
+</div>
+
+

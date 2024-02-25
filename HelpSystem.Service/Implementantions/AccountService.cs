@@ -61,7 +61,8 @@ namespace HelpSystem.Service.Implementantions
 
                     var profile = new Profile()
                     {
-                        UserId = User.Id
+                        UserId = User.Id,
+                        Name = User.Name
                     };
                     await _profileRepository.Create(profile);
 
@@ -132,11 +133,11 @@ namespace HelpSystem.Service.Implementantions
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
-                new Claim(ClaimsIdentity.DefaultRoleClaimType, user.RoleId.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Изменили на ClaimTypes.NameIdentifier
+                new Claim(ClaimTypes.Name, user.Name),
+                new Claim(ClaimTypes.Role, user.RoleId.ToString())
             };
-            return new ClaimsIdentity(claims, "ApplicationCookie",
-                ClaimsIdentity.DefaultNameClaimType, ClaimsIdentity.DefaultRoleClaimType);
+            return new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role); 
         }
     }
 }

@@ -19,7 +19,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
-        options.AccessDeniedPath = new Microsoft.AspNetCore.Http.PathString("/Account/Login");
+        options.AccessDeniedPath = new PathString("/Admin/AccessDenied");
+        options.ExpireTimeSpan = TimeSpan.FromHours(1);
+
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 builder.Services.InitializeRepositories();
 builder.Services.InitializeServices();
@@ -39,10 +43,16 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+//app.MapControllerRoute(
+//    name:"admin",
+//    pattern: "Admin/{*catchall}",
+//    defaults: new { controller = "Admin", action = "AccessDenied" });
 
 app.Run();

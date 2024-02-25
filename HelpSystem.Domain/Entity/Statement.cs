@@ -11,6 +11,7 @@ namespace HelpSystem.Domain.Entity
         public DateTime DateCompleted { get; set; }
         public StatusStatement Status { get; set; }
         public string Comments { get; set; }
+        public virtual User? User { get; set; }
 
     }
 }

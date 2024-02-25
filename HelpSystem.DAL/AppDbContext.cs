@@ -11,7 +11,7 @@ namespace HelpSystem.DAL
         {
             
         }
-
+        public DbSet<Statement> Statements { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
@@ -38,6 +38,10 @@ namespace HelpSystem.DAL
                 .Property(r => r.Id)
                 .ValueGeneratedOnAdd();
 
+            modelBuilder.Entity<Statement>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Statement)
+                .OnDelete(DeleteBehavior.SetNull);
 
 
 

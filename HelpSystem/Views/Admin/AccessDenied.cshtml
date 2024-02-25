@@ -1,0 +1,30 @@
+﻿
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+<link href="~/css/myanimate.css" rel="stylesheet" />
+<head>
+    <title>Доступ запрещён</title>
+</head>
+<body>
+<div class="card">
+    <div class="card-header">
+        <h1>Доступ запрещён</h1>
+    </div>
+    <div class="card-body">
+        <p>Необходимо обладать правами администратора для доступа к админ панели:)</p>
+    </div>
+</div>
+</body>
+
+@section Scripts
+{
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('.card').addClass('show');
+        });
+    </script>
+}

@@ -17,5 +17,7 @@ namespace HelpSystem.Domain.Entity
         public int RoleId { get; set; }
         public virtual Role Roles { get; set; }
         public virtual Profile Profile { get; set; }
+        public virtual List<Statement>? Statement { get; set; }
+
     }
 }
