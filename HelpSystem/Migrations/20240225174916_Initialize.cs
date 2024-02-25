@@ -53,7 +53,10 @@ namespace HelpSystem.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Surname = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Age = table.Column<byte>(type: "tinyint", nullable: true)
                 },
                 constraints: table =>
@@ -65,6 +68,29 @@ namespace HelpSystem.Migrations
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Statements",
+                columns: table => new
+                {
+                    ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DataCreated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Reason = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateCompleted = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Comments = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Statements", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Statements_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.InsertData(
@@ -80,18 +106,23 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("6aac60a2-25c8-4827-9527-5816ef7d28d1"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("add0b6d6-bcff-45a9-a05e-a8668efe6572"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
-                columns: new[] { "Id", "Age", "Description", "UserId" },
-                values: new object[] { new Guid("21421014-8e4d-4423-aa90-0271fd0f300f"), null, null, new Guid("6aac60a2-25c8-4827-9527-5816ef7d28d1") });
+                columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
+                values: new object[] { new Guid("5ae2705a-6dc1-4197-9601-3952e2da0255"), null, null, null, null, null, new Guid("add0b6d6-bcff-45a9-a05e-a8668efe6572") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profiles_UserId",
                 table: "Profiles",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Statements_UserId",
+                table: "Statements",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
@@ -104,6 +135,9 @@ namespace HelpSystem.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Profiles");
+
+            migrationBuilder.DropTable(
+                name: "Statements");
 
             migrationBuilder.DropTable(
                 name: "Users");

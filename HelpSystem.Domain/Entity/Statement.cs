@@ -5,7 +5,7 @@ namespace HelpSystem.Domain.Entity
     //Заявка пользователя
     public class Statement
     {
-        public long ID { get; set; }
+        public Guid ID { get; set; }
         public DateTime DataCreated { get; set; }
         public string Reason { get; set; }
         public DateTime DateCompleted { get; set; }

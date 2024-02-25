@@ -56,8 +56,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("129dccda-c54d-4aa1-bdc0-82c0b5dd8746"),
-                            UserId = new Guid("cb6239d6-3559-4975-9bff-fd414520001d")
+                            Id = new Guid("5ae2705a-6dc1-4197-9601-3952e2da0255"),
+                            UserId = new Guid("add0b6d6-bcff-45a9-a05e-a8668efe6572")
                         });
                 });
 
@@ -96,11 +96,9 @@ namespace HelpSystem.Migrations
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Statement", b =>
                 {
-                    b.Property<long>("ID")
+                    b.Property<Guid>("ID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("ID"));
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comments")
                         .IsRequired()
@@ -161,7 +159,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("cb6239d6-3559-4975-9bff-fd414520001d"),
+                            Id = new Guid("add0b6d6-bcff-45a9-a05e-a8668efe6572"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

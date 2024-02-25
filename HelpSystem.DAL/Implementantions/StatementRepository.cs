@@ -34,9 +34,11 @@ namespace HelpSystem.DAL.Implementantions
             return entity;
         }
 
-        public Task Delete(Statement entity)
+        public async Task Delete(Statement entity)
         {
-            
+            _appDbContext.Statements.Remove(entity);
+            await _appDbContext.SaveChangesAsync();
+
         }
     }
 }

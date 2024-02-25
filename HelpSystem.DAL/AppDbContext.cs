@@ -42,7 +42,9 @@ namespace HelpSystem.DAL
                 .HasOne(s => s.User)
                 .WithMany(u => u.Statement)
                 .OnDelete(DeleteBehavior.SetNull);
-
+            modelBuilder.Entity<Statement>()
+                .Property(u => u.ID)
+                .ValueGeneratedOnAdd();
 
 
             modelBuilder.Entity<Role>().HasData(
