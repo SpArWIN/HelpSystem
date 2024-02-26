@@ -26,7 +26,7 @@ namespace HelpSystem.Controllers
             var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
             {
-                // Вызов метода GetProfileByUserId с идентификатором пользователя
+                // Вызов метода с идентификатором пользователя
                 var response = await _profileService.GetProfile(userId);
                 if (response.StatusCode == Domain.Enum.StatusCode.Ok)
                 {

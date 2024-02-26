@@ -13,6 +13,8 @@ namespace HelpSystem
             services.AddScoped<IBaseRepository<User>, AccountRepository>();
             services.AddScoped<IBaseRepository<Profile>, ProfileRepository>();
             services.AddScoped<IBaseRepository<Role>, RoleRepository>();
+            services.AddScoped<IBaseRepository<Statement>, StatementRepository>();
+
 
         }
 
@@ -21,6 +23,8 @@ namespace HelpSystem
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IStatmentIService, StatmentService>();
+
 
         }
     }

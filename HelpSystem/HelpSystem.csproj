@@ -34,6 +34,7 @@
     <_ContentIncludedByDefault Remove="Views\Admin\AdminPanel.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\Detail.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\GetUsers.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Statment\CreateStatment.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +43,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Profile\GetUsers.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Statment\CreateStatment.cshtml" />
   </ItemGroup>
 
 </Project>

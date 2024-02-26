@@ -72,7 +72,7 @@ namespace HelpSystem.DAL
                 {
                     Id = ProfileId,
                     UserId = adminUserId,
-
+                    
                 }
             );
 
