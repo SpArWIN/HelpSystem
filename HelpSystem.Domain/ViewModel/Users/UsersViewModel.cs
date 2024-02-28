@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HelpSystem.Domain.ViewModel.Users
+﻿namespace HelpSystem.Domain.ViewModel.Users
 {
-    public class UsersViewModel 
+    public class UsersViewModel
     {
         public string Login { get; set; }
         public string? Surname { get; set; } //Фамилия
@@ -18,6 +11,6 @@ namespace HelpSystem.Domain.ViewModel.Users
         public string Roles { get; set; }
 
         public byte? Age { get; set; }
-       
+
     }
 }

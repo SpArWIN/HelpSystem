@@ -9,7 +9,7 @@ namespace HelpSystem.DAL
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            
+
         }
         public DbSet<Statement> Statements { get; set; }
         public DbSet<Profile> Profiles { get; set; }
@@ -53,7 +53,7 @@ namespace HelpSystem.DAL
                 new Role { Id = 3, RoleType = UserRoleType.Admin }
             );
             var adminUserId = Guid.NewGuid();
-            
+
             var ProfileId = Guid.NewGuid();
             modelBuilder.Entity<User>().HasData(
                 new User
@@ -72,7 +72,7 @@ namespace HelpSystem.DAL
                 {
                     Id = ProfileId,
                     UserId = adminUserId,
-                    
+
                 }
             );
 

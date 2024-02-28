@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+﻿using HelpSystem.Domain.ViewModel.Profile;
 using HelpSystem.Service.Interfaces;
-using Azure;
-using HelpSystem.Domain.ViewModel.Profile;
 using Microsoft.AspNetCore.Authorization;
-using HelpSystem.Domain.Enum;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace HelpSystem.Controllers
 {
@@ -19,7 +17,7 @@ namespace HelpSystem.Controllers
             _userService = userService;
         }
 
-     
+
         public async Task<IActionResult> Detail()
         {
             var currentUser = HttpContext.User;
@@ -37,7 +35,7 @@ namespace HelpSystem.Controllers
             return View();
         }
         [HttpGet]
-        public async Task<IActionResult> GetProfile(Guid id,bool isJson)
+        public async Task<IActionResult> GetProfile(Guid id, bool isJson)
         {
             var Response = await _profileService.GetProfile(id);
             if (isJson)
@@ -45,11 +43,11 @@ namespace HelpSystem.Controllers
                 return Json(Response.Data);
             }
             return PartialView("_PartialDetail", Response.Data);
-            
+
 
         }
         [Authorize(Roles = "3")]
-        public async Task< IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
             var Response = await _userService.GetAllUsers();
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -59,7 +57,7 @@ namespace HelpSystem.Controllers
 
             return View();
         }
-    
+
         [HttpPost]
         public async Task<IActionResult> Save(ProfileViewModel model)
         {
@@ -74,7 +72,7 @@ namespace HelpSystem.Controllers
 
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                 return Ok( new { Response.Data, message = Response.Description });
+                return Ok(new { Response.Data, message = Response.Description });
             }
 
             //  return Json(new { message = Response.Description });

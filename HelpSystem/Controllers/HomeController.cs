@@ -1,21 +1,20 @@
+using HelpSystem.Domain.Enum;
+using HelpSystem.Domain.Extension;
 using HelpSystem.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using System.Security.Claims;
-using HelpSystem.Domain.Enum;
-using HelpSystem.Domain.Extension;
-using HelpSystem.Service.Interfaces;
 
 namespace HelpSystem.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-   
+
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-           
+
         }
 
         public IActionResult Index()
@@ -25,17 +24,17 @@ namespace HelpSystem.Controllers
             // Проверяем, удалось ли получить ID роли и преобразовать его в целое число
             if (int.TryParse(roleIdCookie, out int roleId))
             {
-               
-                var role = ((UserRoleType)roleId).GetDisplayName(); 
 
-              
+                var role = ((UserRoleType)roleId).GetDisplayName();
+
+
                 ViewData["UserRole"] = role;
             }
 
             return View();
 
 
-         
+
         }
 
         public IActionResult Privacy()

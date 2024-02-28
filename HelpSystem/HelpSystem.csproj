@@ -35,6 +35,7 @@
     <_ContentIncludedByDefault Remove="Views\Profile\Detail.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\GetUsers.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Statment\CreateStatment.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Statment\GetStatment.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,6 +48,25 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Statment\CreateStatment.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Statment\GetStatment.cshtml" />
   </ItemGroup>
 
 </Project>

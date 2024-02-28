@@ -1,5 +1,4 @@
-﻿using HelpSystem.Domain.Enum;
-using HelpSystem.Service.Interfaces;
+﻿using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +7,11 @@ namespace HelpSystem.Controllers
     public class AdminController : Controller
     {
         private readonly IAccountService _accountService;
-     //  private readonly IUserService _userService;
+        //  private readonly IUserService _userService;
         public AdminController(IAccountService service, IUserService userService)
         {
             _accountService = service;
-           // _userService = userService;
+            // _userService = userService;
         }
         public IActionResult AccessDenied()
         {

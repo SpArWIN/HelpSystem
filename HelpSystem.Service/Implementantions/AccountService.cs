@@ -137,7 +137,7 @@ namespace HelpSystem.Service.Implementantions
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, user.RoleId.ToString())
             };
-            return new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role); 
+            return new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role);
         }
     }
 }

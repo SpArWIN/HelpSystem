@@ -1,0 +1,74 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+<style>
+    .table-container {
+        margin-bottom: 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 10px;
+    }
+
+    </style>
+<div class="table-container">
+    <table class="display" id="GetAllSstatTable">
+        <thead>
+        <tr>
+            <th>Дата создания</th>
+            <th>Тема</th>
+            <th>От кого</th>
+            <th>Статус выполнения</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+    </table>
+</div>
+
+
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+
+
+
+
+            let Data = $("#GetAllSstatTable").DataTable({
+               
+                ajax: {
+                    url: "@Url.Action("GetStatmentsData")",
+                    type: "POST",
+                    dataSrc: "data"
+                },
+                language: {
+                    url:'//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
+                    emptyTable: "Нет заявок для отображения"
+                },
+                columns: [
+                    { data: "dataCreated", name: "DataCreated" },
+                    { data: "reason", name: "Reason" },
+                    { data: "fullName", name: "FullName" },
+                    { data: "status", name: "Status" },
+                    {
+                        data: null,
+                        sortable: false,
+                        render: function (data, type) {
+                            return '<button class="btn btn-success  btn-block">Ответить</button>'
+                        }
+                    }
+                
+                ]
+            });
+        });
+    </script>
+}

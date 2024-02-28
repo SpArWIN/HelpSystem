@@ -19,7 +19,7 @@ namespace HelpSystem.Domain.ViewModel.Account
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         public string PasswordConfirm { get; set; }
 
-       
+
 
     }
 }

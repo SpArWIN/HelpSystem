@@ -2,7 +2,6 @@
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -17,7 +16,7 @@ namespace HelpSystem.Controllers
             _accountService = accountService;
         }
 
-     
+
 
 
         [HttpGet]
@@ -40,11 +39,11 @@ namespace HelpSystem.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(Response.Data));
 
-                return RedirectToAction("Index", "Home", new {Description = Response.Description} );
+                return RedirectToAction("Index", "Home", new { Description = Response.Description });
             }
-            
-            return BadRequest(new {Description = Response.Description} );
-            
+
+            return BadRequest(new { Description = Response.Description });
+
 
         }
         [HttpGet]
@@ -62,16 +61,16 @@ namespace HelpSystem.Controllers
             }
 
             var Response = await _accountService.Login(model);
-                if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
-                {
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(Response.Data));
-                    
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(Response.Data));
 
-                    return RedirectToAction("Index", "Home", new { Description = Response.Description});
-                }
 
-                return BadRequest(new { Description = Response.Description });
+                return RedirectToAction("Index", "Home", new { Description = Response.Description });
+            }
+
+            return BadRequest(new { Description = Response.Description });
 
         }
 

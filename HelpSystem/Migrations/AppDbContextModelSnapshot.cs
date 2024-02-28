@@ -56,8 +56,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8dc13fdf-7cff-4b0f-9fd8-093bc3520bda"),
-                            UserId = new Guid("41c2bf51-05b1-417c-85b4-a33f57158167")
+                            Id = new Guid("6dce870c-f3a5-4491-aef9-56e6ccfbbec2"),
+                            UserId = new Guid("1296926a-6485-4a67-b841-85ca33530870")
                         });
                 });
 
@@ -110,6 +110,9 @@ namespace HelpSystem.Migrations
                     b.Property<DateTime?>("DateCompleted")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Photos")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Reason")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -159,7 +162,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("41c2bf51-05b1-417c-85b4-a33f57158167"),
+                            Id = new Guid("1296926a-6485-4a67-b841-85ca33530870"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

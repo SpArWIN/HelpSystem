@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 
 namespace HelpSystem.DAL.Implementantions
 {
-    public class StatementRepository :IBaseRepository<Statement>
+    public class StatementRepository : IBaseRepository<Statement>
     {
         private readonly AppDbContext _appDbContext;
 
@@ -18,8 +13,8 @@ namespace HelpSystem.DAL.Implementantions
         }
         public async Task Create(Statement entity)
         {
-           await _appDbContext.Statements.AddAsync(entity);
-           await _appDbContext.SaveChangesAsync();
+            await _appDbContext.Statements.AddAsync(entity);
+            await _appDbContext.SaveChangesAsync();
         }
 
         public IQueryable<Statement> GetAll()

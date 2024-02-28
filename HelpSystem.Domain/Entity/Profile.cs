@@ -9,12 +9,12 @@ namespace HelpSystem.Domain.Entity
         public Guid UserId { get; set; }
         [ForeignKey("UserId")]
         public User User { get; set; }
-        public string ? Name { get; set; }
+        public string? Name { get; set; }
         public string? Description { get; set; }
         public string? Surname { get; set; }
         //Отчество
         public string? LastName { get; set; }
-        public byte ?Age { get; set; }
-        
+        public byte? Age { get; set; }
+
     }
 }

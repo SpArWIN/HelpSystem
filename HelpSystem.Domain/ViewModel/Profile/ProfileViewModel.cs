@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HelpSystem.Domain.ViewModel.Profile
 {
@@ -12,8 +7,8 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public Guid Id { get; set; }
         [Required(ErrorMessage = "Укажите возраст")]
         [Range(0, 150, ErrorMessage = "Диапазон возраста должен быть от 0 до 150")]
-        public byte ? Age { get; set; }
-        public string?  Surname { get; set; }
+        public byte? Age { get; set; }
+        public string? Surname { get; set; }
         //Отчество
         public string? LastName { get; set; }
         public string? Description { get; set; }
