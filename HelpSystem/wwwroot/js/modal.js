@@ -90,7 +90,7 @@ function UpdateStatus(data) {
     $.ajax({
         type:'POST',
         url: 'UpdateStatusStat',
-        data: data,
+        data: { id: data.data, NewStatus: data.newStatus },
         success: function (response) { 
             console.log('Запрос успешно выполнен');
             console.log('Ответ сервера:', response);

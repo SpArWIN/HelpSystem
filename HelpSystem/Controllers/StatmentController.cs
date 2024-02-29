@@ -100,6 +100,7 @@ namespace HelpSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateStatusStat(Guid id, int NewStatus)
         {
+      
             var ResUpdate = await _statmentIService.UpdateStatusStat(id, NewStatus);
             if (ResUpdate.StatusCode == Domain.Enum.StatusCode.Ok)
             {

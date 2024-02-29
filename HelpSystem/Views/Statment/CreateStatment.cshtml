@@ -163,7 +163,7 @@
                         data:"result",
                         name:"Result",
                         render: function(data,type,row) {
-                            if (row.status === "На рассмотрении" && row.status !== "Завершена") {
+                            if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
                                 return "Нет ответа";
 
                             } else {
@@ -171,7 +171,7 @@
                             }
                         }
                     },
-                    { data: "id", name: "Id",visible: true }
+                    { data: "id", name: "Id",visible: false }
                 
                 ]
             });

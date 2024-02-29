@@ -13,7 +13,7 @@ namespace HelpSystem.Domain.Entity
         public string Comments { get; set; }
         public virtual User? User { get; set; }
 
-
+        public string? ResponseAnswer { get; set; }
 
     }
 }
