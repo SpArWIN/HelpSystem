@@ -3,6 +3,8 @@ using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 
 namespace HelpSystem.Controllers
 {
@@ -46,7 +48,9 @@ namespace HelpSystem.Controllers
             return View();
 
         }
-        //Получение списка заявок конкретного пользователя
+        //Получение списка заявок конкретного пользователя - именно заявок. 
+        //Метод возвращает Json В таблицу, нужен отдельный метод, который бы возвращал данные в частичное предсставление
+
 
         public async Task<IActionResult> GetUserStatment()
         {
@@ -70,11 +74,11 @@ namespace HelpSystem.Controllers
             if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
             {
                 var Response = await _statmentIService.GetStatment(userId);
+               
+                    //доделать заявки и тут разобраться
 
-                return Json(new { data = Response.Data });
-
-
-
+                    return Json(new { data = Response.Data });
+                
             }
 
             return Json(new { /*recordsFiltered = Response.Total, recordsTotal = Response.Total,*/ data = "Нет заявок" });
@@ -91,6 +95,29 @@ namespace HelpSystem.Controllers
 
             return Json(new { data = response.Data });
 
+        }
+        //Метод обновления статуса заявки при её просмотре администратором
+        [HttpPost]
+        public async Task<IActionResult> UpdateStatusStat(Guid id, int NewStatus)
+        {
+            var ResUpdate = await _statmentIService.UpdateStatusStat(id, NewStatus);
+            if (ResUpdate.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(new { data = ResUpdate.Data });
+            }
+
+            return Json(new {data = ResUpdate.Description});
+        }
+        //Этот метод действия отвечает за получения именно заявки 
+        public async Task<IActionResult> GetStatUser(Guid id)
+        {
+            var Res = await _statmentIService.GetStat(id);
+            if (Res.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView("_PartialStatment", Res.Data);
+            }
+
+            return PartialView("_PartialStatment");
         }
 
         //public IActionResult Index()

@@ -1,7 +1,8 @@
-﻿@model dynamic
+﻿@using HelpSystem.Domain.Enum
+@model dynamic
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Список заявок";
     Layout = "_Layout";
 }
 
@@ -25,6 +26,7 @@
             <th>Тема</th>
             <th>От кого</th>
             <th>Статус выполнения</th>
+            <th style="display: none;">ID</th>
             <th>Действия</th>
         </tr>
         </thead>
@@ -37,6 +39,7 @@
 {
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/modal.js?v=1"></script>
     <script>
         $(document).ready(function() {
 
@@ -59,16 +62,26 @@
                     { data: "reason", name: "Reason" },
                     { data: "fullName", name: "FullName" },
                     { data: "status", name: "Status" },
+                    { data: "id", name: "Id", visible: false },
                     {
                         data: null,
                         sortable: false,
-                        render: function (data, type) {
-                            return '<button class="btn btn-success  btn-block">Ответить</button>'
+                        render: function (data, type,row) {
+                            return '<button class="btn btn-success btn-block btn-op" ">Ответить</button>';
                         }
                     }
                 
                 ]
             });
+            // Делегирование события клика
+
+            $('#GetAllSstatTable').on('click', '.btn-op', function() {
+                var rowData = Data.row($(this).parents('tr')).data();
+                openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
+                var newStatus = '@((int)StatusStatement.Reviewed)';
+                UpdateStatus({ data: rowData.id, newStatus: newStatus });
+            });
+
         });
     </script>
 }

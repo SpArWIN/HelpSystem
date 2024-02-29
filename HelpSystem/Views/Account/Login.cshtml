@@ -48,6 +48,7 @@
 
             $('#BtnAuthorize').on('click', function (e) {
                 e.preventDefault(),
+
                     Swal.fire({
                         title: 'Обработка запроса',
                         html: 'Пожалуйста, подождите...',
@@ -56,6 +57,7 @@
                         allowOutsideClick: false, // Запрещаем закрытие сообщения при клике вне него
                         didOpen: () => {
                             Swal.showLoading();
+
                         }
                     });
 

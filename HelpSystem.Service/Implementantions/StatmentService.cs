@@ -6,6 +6,7 @@ using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Statment;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 
 namespace HelpSystem.Service.Implementantions
@@ -82,6 +83,7 @@ namespace HelpSystem.Service.Implementantions
                     //.Where(x => x.DataCreated == DateTime.Today)
                     .Select(x => new GetAllStatments
                     {
+                        Id = x.ID,
                         DataCreated = x.DataCreated.ToString("dd.MM.yyyy HH:mm"),
                         Status = x.Status.GetDisplayName(),
                         Reason = x.Reason,
@@ -121,12 +123,14 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.User.Id == id)
                     .Select(x => new StatmentViewModel
                     {
+
                         DataCreated = x.DataCreated.ToString("dd.MM.yyyy HH:mm"),
                         Reason = x.Reason,
                         Description = x.Comments,
                         Status = x.Status.GetDisplayName(),
                     })
                     .ToListAsync();
+
                 var Count = Statment.Count();
                 return new DataTableResponse()
                 {
@@ -141,6 +145,82 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Data = null,
                     Total = 0
+                };
+            }
+        }
+
+        public async Task<BaseResponse<AnswerStatmentViewModel>> GetStat(Guid id)
+        {
+            try
+            {
+                var Response = await _statmentService.GetAll()
+                    .Include(p=>p.User.Profile)
+                    .FirstOrDefaultAsync(x => x.ID == id);
+                if (Response == null)
+                {
+                    return new BaseResponse<AnswerStatmentViewModel>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Внутренняя ошибка, не найдено"
+                    };
+                }
+
+                var Statment = new AnswerStatmentViewModel()
+                {
+                    Id = Response.ID,
+                    Description = Response.Comments,
+                    Reason = Response.Reason,
+                    FullName =$" {Response.User.Profile.LastName }  {Response.User.Profile.Name } {Response.User.Profile.Surname} "
+                };
+                    
+                return new BaseResponse<AnswerStatmentViewModel>()
+                { 
+                    Data = Statment,
+                    StatusCode = StatusCode.Ok
+                };
+            }
+            catch (Exception e)
+            {
+                return new BaseResponse<AnswerStatmentViewModel>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{e.Message}"
+                };
+            }
+        }
+
+        public async Task<BaseResponse<Statement>> UpdateStatusStat(Guid id, int newStat)
+        {
+            try
+            {
+                var res = await _statmentService.GetAll()
+                    .FirstOrDefaultAsync(x => x.ID == id);
+                if (res.Status == (StatusStatement)newStat)
+                {
+                    return new BaseResponse<Statement>()
+                    {
+                        StatusCode = StatusCode.UnChanched,
+                        
+                    };
+                }
+               
+                res.Status = (StatusStatement)newStat;
+
+                await _statmentService.Update(res);
+                return new BaseResponse<Statement>()
+                {
+                    Data = res,
+                    StatusCode = StatusCode.Ok
+                };
+
+            }
+            catch (Exception e)
+            {
+                return new BaseResponse<Statement>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Data = null,
+                    Description = $"{e.Message}"
                 };
             }
         }

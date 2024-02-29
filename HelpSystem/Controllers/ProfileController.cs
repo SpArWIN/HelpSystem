@@ -37,12 +37,13 @@ namespace HelpSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProfile(Guid id, bool isJson)
         {
-            var Response = await _profileService.GetProfile(id);
+            var response = await _profileService.GetProfile(id);
+            
             if (isJson)
             {
-                return Json(Response.Data);
+                return Json(response.Data);
             }
-            return PartialView("_PartialDetail", Response.Data);
+            return PartialView("_PartialDetail", response.Data);
 
 
         }

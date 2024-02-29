@@ -1,0 +1,19 @@
+﻿@model HelpSystem.Domain.ViewModel.Statment.AnswerStatmentViewModel
+@{
+    ViewBag.Title = "Детали заявки";
+}
+<div class="form-group">
+    <div class="form-group" style="display: none;">
+        <label for="hiddenID">ID</label>
+        <input type="text" class="form-control" id="hiddenId" value="@Model.Id" readonly />
+    </div>
+    <label for="FullName">ФИО</label>
+    <input type="text" class="form-control" id="FIO" value="@Model.FullName" readonly />
+    <label for="Reason">Тема</label>
+    <input type="text" class="form-control" id="Reason" value="@Model.Reason" readonly />
+    <label for="Description">Описание</label>
+    <textarea type="text" class="form-control" id="Description" readonly>@Model.Description </textarea>
+
+    <label for="Answered">Ответ на заявку</label>
+    <textarea id="AnswerIdB" name="Answer" class="form-control" required minlength="10"></textarea>
+</div>

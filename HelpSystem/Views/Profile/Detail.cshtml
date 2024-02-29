@@ -35,7 +35,7 @@
         </div>
             <div class="card-footer">
                 <div class="d-grid gap-2">
-                    <a class="btn btn-outline-warning" onclick="openModal({url:'/Profile/GetProfile',data: '@Model.Id'})" data-toggle="ajax-modal" data-target="modal">Изменить</a>
+                 <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id'})">Изменить</a>
                 </div>
             </div>
     </div>
@@ -56,7 +56,6 @@
         $(document).ready(function () { 
             $('.card').addClass('show');
         });
-
     </script>
   
 }

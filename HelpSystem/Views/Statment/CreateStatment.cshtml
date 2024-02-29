@@ -1,4 +1,6 @@
-﻿@model HelpSystem.Domain.ViewModel.Statment.StatmentViewModel
+﻿@using HelpSystem.Domain.Enum
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model HelpSystem.Domain.ViewModel.Statment.StatmentViewModel
 
 @{
     ViewBag.Title = "Формирование заявки";
@@ -77,7 +79,8 @@
             <th>Тема </th>
             <th>Описание</th>
             <th>Статус выполнения</th>
-            @*       <th>Действие</th> *@
+            <th>Результат</th> 
+            <th style="display:none">Id</th>
         </tr>
         </thead>
         <tbody></tbody>
@@ -141,6 +144,7 @@
             });
 
             let data = $('#TaskTableId').DataTable({
+               
                 ajax: {
                     url: "@Url.Action("GetUserStatment")",
                     type: "POST",
@@ -154,8 +158,28 @@
                     { data: "dataCreated", name: "DataCreated" }, // Дата создания
                     { data: "reason", name: "Reason" }, // Причина
                     { data: "description", name: "Description" }, // Описание
-                    { data: "status", name: "Status" }
+                    { data: "status", name: "Status" },
+                    {
+                        data:"result",
+                        name:"Result",
+                        render: function(data,type,row) {
+                            if (row.status === "На рассмотрении" && row.status !== "Завершена") {
+                                return "Нет ответа";
+
+                            } else {
+                                return '<button class="btn btn-success btn-block btn-view" >Посмотреть ответ</button>';
+                            }
+                        }
+                    },
+                    { data: "id", name: "Id",visible: true }
+                
                 ]
+            });
+            //Это для функционала после того, как заявка завершилась
+            $('#TaskTableId').on('click', '.btn-view', function() {
+                var rowData = Data.row($(this).parents('tr')).data();
+               
+
             });
         });
       
