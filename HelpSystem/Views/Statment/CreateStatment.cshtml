@@ -162,6 +162,7 @@
                     {
                         data:"result",
                         name:"Result",
+                        sortable:false,
                         render: function(data,type,row) {
                             if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
                                 return "Нет ответа";
@@ -177,9 +178,8 @@
             });
             //Это для функционала после того, как заявка завершилась
             $('#TaskTableId').on('click', '.btn-view', function() {
-                var rowData = Data.row($(this).parents('tr')).data();
-               
-
+                var rowData = data.row($(this).parents('tr')).data();
+                openModal({ modalId: 'StateModdal', url: '/Statment/ShowAnswer', data: rowData.id });
             });
         });
       

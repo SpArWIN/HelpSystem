@@ -66,11 +66,48 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-        //Обновление заявки
-        public Task<BaseResponse<Statement>> UpdateStatment(Guid id)
+
+        //Метод на завершение заявки, то есть ее полное закрытие.
+        public async Task<BaseResponse<Statement>> UpdateStatment(AnswerStatmentViewModel asnw)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var ResUp = await _statmentService.GetAll()
+                    .FirstOrDefaultAsync(x => x.ID == asnw.Id);
+                /*
+                 * Если завершенные заявки так и будут висеть, то нужно прописать логику..
+                 * чтобы не обновлялись и отправки повтонрой не было, но я планирую их кидать в архив.
+                 */
+                if (asnw.Response == null || asnw.Response.Length < 10)
+                {
+                    return new BaseResponse<Statement>()
+                    {
+                        StatusCode = StatusCode.UnChanched,
+                        Description = "Ответ является пустым или слишком коротким."
+                    };
+                }
+                ResUp.ResponseAnswer = asnw.Response;
+                ResUp.Status = StatusStatement.Completed;
+                ResUp.DateCompleted = DateTime.Now;
+                await _statmentService.Update(ResUp);
+                return new BaseResponse<Statement>()
+                {
+                    StatusCode = StatusCode.Ok,
+                    Description = "Заявка закрыта",
+                    Data = ResUp
+
+                };
+            }
+            catch (Exception e)
+            {
+                return new BaseResponse<Statement>()
+                {
+                    Description = $"{e.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
         }
+
         //Получение списка всех заявок в таблицу
         public async Task<DataTableResponse> GetAllStatments()
         {
@@ -79,8 +116,7 @@ namespace HelpSystem.Service.Implementantions
                 var QueryAll = await _statmentService.GetAll()
                     .Include(p => p.User)
                     .Include(p => p.User.Profile)
-
-                    //.Where(x => x.DataCreated == DateTime.Today)
+                    .Where(x => x.Status != StatusStatement.Completed )
                     .Select(x => new GetAllStatments
                     {
                         Id = x.ID,
@@ -123,7 +159,7 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.User.Id == id)
                     .Select(x => new StatmentViewModel
                     {
-
+                        Id = x.ID,
                         DataCreated = x.DataCreated.ToString("dd.MM.yyyy HH:mm"),
                         Reason = x.Reason,
                         Description = x.Comments,
@@ -154,7 +190,7 @@ namespace HelpSystem.Service.Implementantions
             try
             {
                 var Response = await _statmentService.GetAll()
-                    .Include(p=>p.User.Profile)
+                    .Include(p => p.User.Profile)
                     .FirstOrDefaultAsync(x => x.ID == id);
                 if (Response == null)
                 {
@@ -170,11 +206,12 @@ namespace HelpSystem.Service.Implementantions
                     Id = Response.ID,
                     Description = Response.Comments,
                     Reason = Response.Reason,
-                    FullName =$" {Response.User.Profile.LastName }  {Response.User.Profile.Name } {Response.User.Profile.Surname} "
+                    FullName =
+                        $" {Response.User.Profile.LastName}  {Response.User.Profile.Name} {Response.User.Profile.Surname} "
                 };
-                    
+
                 return new BaseResponse<AnswerStatmentViewModel>()
-                { 
+                {
                     Data = Statment,
                     StatusCode = StatusCode.Ok
                 };
@@ -200,10 +237,10 @@ namespace HelpSystem.Service.Implementantions
                     return new BaseResponse<Statement>()
                     {
                         StatusCode = StatusCode.UnChanched,
-                        
+
                     };
                 }
-               
+
                 res.Status = (StatusStatement)newStat;
 
                 await _statmentService.Update(res);
@@ -224,5 +261,37 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+        //Метод для отображения результат заявки от пользователя
+        public async Task<BaseResponse<StatmentResultViewModel>> ShowAnswerStatment(Guid id)
+        {
+            try
+            {
+                var Answer = await _statmentService.GetAll()
+                    .FirstOrDefaultAsync(x => x.ID == id);
+                var ShowAnswer = new StatmentResultViewModel()
+                {
+                    Reason = Answer.Reason,
+                    DateCreated = Answer.DataCreated.ToString("dd.MM.yyyy HH:mm"),
+                    DateCompleted = Answer.DateCompleted?.ToString("dd.MM.yyyy HH:mm"),
+                    Answer = Answer.ResponseAnswer,
+                    
+                };
+                return new BaseResponse<StatmentResultViewModel>()
+                {
+                    Data = ShowAnswer,
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<StatmentResultViewModel>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
     }
 }

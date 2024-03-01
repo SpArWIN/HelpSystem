@@ -14,11 +14,11 @@ namespace HelpSystem.Service.Interfaces
         /// <returns>Возвращает BaseResponse </returns>
         Task<BaseResponse<Statement>> CreateStatment(StatmentViewModel model, Guid id);
             /// <summary>
-            /// Метод обновление заявки, скорее всего будет обновлён именно статус
+            /// Метод завершение заявки
             /// </summary>
-            /// <param name="id"></param>
+            /// <param name="answ"></param>
             /// <returns></returns>
-        Task<BaseResponse<Statement>> UpdateStatment(Guid id);
+        Task<BaseResponse<Statement>> UpdateStatment(AnswerStatmentViewModel answ);
             /// <summary>
             /// Метод получения списка всех заявок
             /// </summary>
@@ -37,7 +37,19 @@ namespace HelpSystem.Service.Interfaces
             /// <returns></returns>
             
             Task<BaseResponse<AnswerStatmentViewModel>>GetStat(Guid id);
-
+                /// <summary>
+                /// Метод обновления статуса заявки после её рассмотрения
+                /// </summary>
+                /// <param name="id"></param>
+                /// <param name="newStat"></param>
+                /// <returns></returns>
             Task<BaseResponse<Statement>> UpdateStatusStat(Guid id, int newStat);
+        /// <summary>
+        /// Метод получения ответа заявки (пользователь увидит детали)
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+            Task<BaseResponse<StatmentResultViewModel>> ShowAnswerStatment(Guid id);
+
     }
 }

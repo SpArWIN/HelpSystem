@@ -4,8 +4,8 @@ function openModal(parameters) {
     const url = parameters.url + '?random=' + Math.random();;
     const modal = $("#"+ parameters.modalId); 
   
-    if (id === undefined || url === undefined) {
-        alert('Упссс.... что-то пошло не так')
+    if (!id || !url) {
+        alert('Упссс.... что-то пошло не так');
         return;
     }
     $.ajax({
@@ -106,7 +106,7 @@ function UpdateStatment() {
     //Загрузка
     Swal.fire({
         title: 'Отправка ответа',
-        html: 'Пожалуйста..подождите',
+        html: 'Пожалуйста подождите...',
         timerProgressBar: true,
         showConfirmButton: false,
         allowOutsideClick: false,
@@ -115,8 +115,47 @@ function UpdateStatment() {
         }
     });
 
+    var Data = {
+        id: $('#hiddenId').val(),
+        Response: $('#AnID').val(),
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: 'EndStatment',
+        data: Data,
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Успешный ответ на заявку',
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей'
+                }).then((result) => {
+                    $('#StateModdal').modal('hide');
+                });
+            }, 1000);
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close(); 
+                Swal.fire({
+                    title: 'Что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Окей'
+                }).then((result) => {
+                    $('#StateModdal').modal('hide');
+                });
+            }, 1000);
+        }
+    });
 }
 
     $('#SaveChanBtn').click(function () {
         SaveProfile();
     });
+$('#AnswerIdB').click(function() {
+    UpdateStatment();
+});

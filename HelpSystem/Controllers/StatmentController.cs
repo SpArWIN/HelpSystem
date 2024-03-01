@@ -48,6 +48,7 @@ namespace HelpSystem.Controllers
             return View();
 
         }
+
         //Получение списка заявок конкретного пользователя - именно заявок. 
         //Метод возвращает Json В таблицу, нужен отдельный метод, который бы возвращал данные в частичное предсставление
 
@@ -75,7 +76,7 @@ namespace HelpSystem.Controllers
             {
                 var Response = await _statmentIService.GetStatment(userId);
                
-                    //доделать заявки и тут разобраться
+                 
 
                     return Json(new { data = Response.Data });
                 
@@ -120,7 +121,29 @@ namespace HelpSystem.Controllers
 
             return PartialView("_PartialStatment");
         }
+        [HttpPost]
+        public async Task<IActionResult> EndStatment(AnswerStatmentViewModel asn)
+        {
+            var Response = await _statmentIService.UpdateStatment(asn);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { Response.Data, description = Response.Description });
+            }
 
+            return BadRequest(new { description = Response.Description });
+        }
+        //Получение результатов заявки для пользователя
+        [HttpGet]
+        public async Task<IActionResult> ShowAnswer(Guid id )
+        {
+            var Response = await _statmentIService.ShowAnswerStatment(id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView("_PartialAnswer", Response.Data);
+            }
+
+            return BadRequest(Response.Description);
+        }
         //public IActionResult Index()
         //{
         //    return View();
