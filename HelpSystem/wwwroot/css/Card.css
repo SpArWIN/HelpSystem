@@ -18,11 +18,26 @@
     padding: 10px;
 }
 
-.card-image {
+.card-img {
     filter: grayscale(1);
     transition: 1s;
 }
 
-    .card-image:hover {
+    .card-img:hover {
         filter: grayscale(0);
     }
+
+/*Для карточки со складом*/
+.card-img-static {
+    position: center;
+  
+  
+}
+.card-img-gif {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+.card:hover .card-img-gif {
+    opacity: 1;
+}

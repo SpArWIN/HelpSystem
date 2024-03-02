@@ -93,12 +93,13 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <link href="~/css/status.css" rel="stylesheet" />
 
     <script>
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('.form-container').addClass('show');
 
-            $('#StatForm').submit(function (e) {
+            $('#StatForm').submit(function(e) {
                 e.preventDefault();
                 const formData = $(this).serialize();
 
@@ -117,7 +118,7 @@
                     url: $(this).attr('action'),
                     type: 'POST',
                     data: formData,
-                    success: function (response) {
+                    success: function(response) {
                         Swal.close();
                         Swal.fire({
                             title: 'Формирование заявки',
@@ -131,7 +132,7 @@
                         });
                         data.ajax.reload(); // Обновление данных в таблице
                     },
-                    error: function (response) {
+                    error: function(response) {
                         Swal.close();
                         Swal.fire({
                             title: 'Ошибка формирования заявки',
@@ -144,45 +145,49 @@
             });
 
             let data = $('#TaskTableId').DataTable({
-               
-                ajax: {
-                    url: "@Url.Action("GetUserStatment")",
-                    type: "POST",
-                    dataSrc: "data"
-                },
-                language: {
-                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
-                    emptyTable: "Нет заявок для отображения"
-                },
-                columns: [
-                    { data: "dataCreated", name: "DataCreated" }, // Дата создания
-                    { data: "reason", name: "Reason" }, // Причина
-                    { data: "description", name: "Description" }, // Описание
-                    { data: "status", name: "Status" },
-                    {
-                        data:"result",
-                        name:"Result",
-                        sortable:false,
-                        render: function(data,type,row) {
-                            if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
-                                return "Нет ответа";
-
-                            } else {
-                                return '<button class="btn btn-success btn-block btn-view" >Посмотреть ответ</button>';
-                            }
-                        }
+                    ajax: {
+                        url: "@Url.Action("GetUserStatment")",
+                        type: "POST",
+                        dataSrc: "data"
                     },
-                    { data: "id", name: "Id",visible: false }
-                
-                ]
-            });
-            //Это для функционала после того, как заявка завершилась
-            $('#TaskTableId').on('click', '.btn-view', function() {
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
+                        emptyTable: "Нет заявок для отображения"
+                    },
+                    columns: [
+                        { data: "dataCreated", name: "DataCreated" }, // Дата создания
+                        { data: "reason", name: "Reason" }, // Причина
+                        { data: "description", name: "Description" }, // Описание
+                        {
+                            data: "status",
+                            name: "Status",
+                            render: function(data, type, row) {
+                                return '<span class="status-' + row.status.toLowerCase().replace(/\s+/g, '-') + '">' + row.status + '</span>';
+                            }
+                        },
+                    {
+                    data: "result",
+                    name: "Result",
+                    sortable: false,
+                    render: function(data, type, row) {
+                        if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
+                            return "Нет ответа";
+
+                        } else {
+                            return '<button class="btn btn-success btn-block btn-view" >Посмотреть ответ</button>';
+                        }
+                    }
+                },
+                { data: "id", name: "Id", visible: false }
+            ]
+        });
+//Это для функционала после того, как заявка завершилась
+        $('#TaskTableId').on('click', '.btn-view', function() {
                 var rowData = data.row($(this).parents('tr')).data();
                 openModal({ modalId: 'StateModdal', url: '/Statment/ShowAnswer', data: rowData.id });
             });
         });
-      
-</script>
+
+    </script>
 
 }

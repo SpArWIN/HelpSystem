@@ -1,0 +1,20 @@
+﻿.status-на-рассмотрении,
+.status-рассмотрена,
+.status-завершена {
+    border: 2px dashed transparent;
+    padding: 5px;
+    border-radius: 5px;
+    text-align: center; 
+}
+
+.status-на-рассмотрении {
+    background-color: #f0f0f0; /* серый цвет */
+}
+
+.status-рассмотрена {
+    background-color: yellow; /* желтый цвет */
+}
+
+.status-завершена {
+    background-color: lightgreen; /* зеленый цвет */
+}
