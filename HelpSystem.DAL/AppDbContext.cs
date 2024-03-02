@@ -11,6 +11,9 @@ namespace HelpSystem.DAL
         {
 
         }
+        public DbSet<Buyer>Buyers { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Provider> Providers { get; set; }
         public DbSet<Statement> Statements { get; set; }
         public DbSet<Profile> Profiles { get; set; }
         public DbSet<User> Users { get; set; }

@@ -14,8 +14,11 @@ namespace HelpSystem
             services.AddScoped<IBaseRepository<Profile>, ProfileRepository>();
             services.AddScoped<IBaseRepository<Role>, RoleRepository>();
             services.AddScoped<IBaseRepository<Statement>, StatementRepository>();
+            services.AddScoped<IBaseRepository<Provider>, ProviderRepository>();
+            services.AddScoped<IBaseRepository<Warehouse>, WarehouseRepository>();
+            services.AddScoped<IBaseRepository<Buyer>, BuyerRepository>();
 
-
+            //TODO Незабудь добавить сервисы
         }
 
         public static void InitializeServices(this IServiceCollection services)

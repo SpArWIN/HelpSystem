@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace HelpSystem.Domain.Entity
+{
+    public class Provider
+    {
+        //TODO Добавишь поля,Поставщик, остальные данные добавишь по необходимости
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+    }
+}
