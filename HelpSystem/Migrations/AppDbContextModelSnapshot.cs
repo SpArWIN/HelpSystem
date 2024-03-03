@@ -22,6 +22,61 @@ namespace HelpSystem.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Buyer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Buyers");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Mass")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProviderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("WarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProviderId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("WarehouseId");
+
+                    b.ToTable("Products");
+                });
+
             modelBuilder.Entity("HelpSystem.Domain.Entity.Profile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -56,9 +111,24 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1f4bf4b7-cefc-4ddc-a220-d3714bb8ef18"),
-                            UserId = new Guid("8b7576b1-cd69-449c-a099-4026c96f9843")
+                            Id = new Guid("84ad5e96-cc27-4c3a-b4b2-6939d6a420c7"),
+                            UserId = new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1")
                         });
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Provider", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Providers");
                 });
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Role", b =>
@@ -162,12 +232,53 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8b7576b1-cd69-449c-a099-4026c96f9843"),
+                            Id = new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
                             RoleId = 3
                         });
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Warehouse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Warehouses");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>
+                {
+                    b.HasOne("HelpSystem.Domain.Entity.Provider", "Provider")
+                        .WithMany("Products")
+                        .HasForeignKey("ProviderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HelpSystem.Domain.Entity.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("HelpSystem.Domain.Entity.Warehouse", "Warehouse")
+                        .WithMany("Products")
+                        .HasForeignKey("WarehouseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Provider");
+
+                    b.Navigation("User");
+
+                    b.Navigation("Warehouse");
                 });
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Profile", b =>
@@ -202,6 +313,11 @@ namespace HelpSystem.Migrations
                     b.Navigation("Roles");
                 });
 
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Provider", b =>
+                {
+                    b.Navigation("Products");
+                });
+
             modelBuilder.Entity("HelpSystem.Domain.Entity.Role", b =>
                 {
                     b.Navigation("Users");
@@ -213,6 +329,11 @@ namespace HelpSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Statement");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Warehouse", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

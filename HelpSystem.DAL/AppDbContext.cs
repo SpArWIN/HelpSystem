@@ -11,6 +11,7 @@ namespace HelpSystem.DAL
         {
 
         }
+        public DbSet<Products> Products { get; set; }
         public DbSet<Buyer>Buyers { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Provider> Providers { get; set; }
@@ -33,11 +34,41 @@ namespace HelpSystem.DAL
                 .HasOne(u => u.Roles)
                 .WithMany(r => r.Users);
 
+            modelBuilder.Entity<Products>()
+                .HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(k => k.UserId)
+                .OnDelete(DeleteBehavior.SetNull);
 
+               
+            //modelBuilder.Entity<Products>()
+            //    .HasOne(u => u.Provider)
+            //    .WithMany(p=>p.Products)
+            //    .HasForeignKey(p => p.ProviderId);
+            //modelBuilder.Entity<Products>()
+            //    .HasOne(u => u.Warehouse)
+            //    .WithMany(W => W.Products)
+            //    .HasForeignKey(k => k.WarehouseID);
+
+
+
+            //Автоинкремент
             modelBuilder.Entity<User>()
                 .Property(u => u.Id)
                 .ValueGeneratedOnAdd();
             modelBuilder.Entity<Role>()
+                .Property(r => r.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Provider>()
+                .Property(r => r.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Buyer>()
+                .Property(r => r.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Warehouse>()
+                .Property(r => r.Id)
+                .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Products>()
                 .Property(r => r.Id)
                 .ValueGeneratedOnAdd();
 

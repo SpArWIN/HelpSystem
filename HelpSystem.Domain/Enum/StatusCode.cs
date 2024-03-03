@@ -2,6 +2,8 @@
 {
     public enum StatusCode
     {
+        //Не создано
+        UnCreated = 8,
         //Отлично
         Ok = 200,
         //Внутренняя ошибка
