@@ -34,6 +34,7 @@
     <_ContentIncludedByDefault Remove="Views\Admin\AdminPanel.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\Detail.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\GetUsers.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Provider\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Statment\CreateStatment.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Statment\GetStatment.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Statment\_PartialAnswer.cshtml" />
@@ -77,6 +78,10 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Warehouse\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Provider\Index.cshtml" />
   </ItemGroup>
 
 </Project>

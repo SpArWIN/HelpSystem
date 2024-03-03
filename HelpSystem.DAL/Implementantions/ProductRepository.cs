@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 
 namespace HelpSystem.DAL.Implementantions
 {
-    public class ProductRepository :IBaseRepository<Products>
+    public class ProductRepository : IBaseRepository<Products>
     {
         private readonly AppDbContext _appDbContext;
         public ProductRepository(AppDbContext appDbContext)
@@ -16,10 +11,10 @@ namespace HelpSystem.DAL.Implementantions
             _appDbContext = appDbContext;
         }
 
-        public  async Task Create(Products entity)
+        public async Task Create(Products entity)
         {
-          await  _appDbContext.Products.AddAsync(entity);
-          await _appDbContext.SaveChangesAsync();
+            await _appDbContext.Products.AddAsync(entity);
+            await _appDbContext.SaveChangesAsync();
         }
 
         public IQueryable<Products> GetAll()

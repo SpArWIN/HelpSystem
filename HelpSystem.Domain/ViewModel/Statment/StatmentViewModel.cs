@@ -3,7 +3,7 @@
 namespace HelpSystem.Domain.ViewModel.Statment
 {
     public class StatmentViewModel
-    { 
+    {
         public Guid Id { get; set; }
         public string? DataCreated { get; set; }
 

@@ -12,7 +12,7 @@ namespace HelpSystem.DAL
 
         }
         public DbSet<Products> Products { get; set; }
-        public DbSet<Buyer>Buyers { get; set; }
+        public DbSet<Buyer> Buyers { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Provider> Providers { get; set; }
         public DbSet<Statement> Statements { get; set; }
@@ -40,7 +40,7 @@ namespace HelpSystem.DAL
                 .HasForeignKey(k => k.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-               
+
             //modelBuilder.Entity<Products>()
             //    .HasOne(u => u.Provider)
             //    .WithMany(p=>p.Products)

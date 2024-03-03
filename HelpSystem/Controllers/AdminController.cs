@@ -8,7 +8,7 @@ namespace HelpSystem.Controllers
     {
         private readonly IAccountService _accountService;
         //  private readonly IUserService _userService;
-        public AdminController(IAccountService service, IUserService userService)
+        public AdminController(IAccountService service)
         {
             _accountService = service;
             // _userService = userService;

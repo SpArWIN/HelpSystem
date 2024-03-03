@@ -1,0 +1,61 @@
+﻿@model HelpSystem.Domain.ViewModel.Provider.ProviderViewModel
+
+@{
+    ViewBag.Title = "Поставщики";
+    Layout = "_Layout";
+}
+<style>
+    /* Добавляем границу вокруг элемента <ul> с классом nav и nav-pills */
+    ul.nav.nav-pills {
+        border: 1px solid #ccc;
+        border-radius: 6px; /* Для скругления углов */
+        padding: 5px; /* Добавляем немного отступа внутри границы */
+    }
+</style>
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <!--Вот тут будет ссылка на OpenModel-->
+        <a class="nav-link"  id="ProviderAdd">Добавить поставщика</a>
+    </li>
+</ul>
+
+<div class="table-container">
+    <table class="display" id="ProviderId">
+        <thead>
+        <tr>
+            <th>Наименование поставщика</th>
+            <th style="display:none">Id</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts
+{
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js">
+    </script><script src="~/js/modal.js?v=2"></script>
+    <script>
+        $(document).ready(function() {
+            $(document).getElementById('ProviderAdd').on('click',
+                function() {
+                    const { value:providerName } = await Swal.fire({
+                        title: 'Укажите наименование поставщика',
+                        input: 'text',
+                        inputLabel: 'Наименование',
+                        inputPlaceholder: 'Введите наименование поставщика (минимальная длина 5 символов)',
+                        inputValidator: (value) => {
+                            if (!value || value.length < 5) {
+                                return 'Минимальная длина наименования - 5 символов!';
+                            }
+                        }
+                    });
+                });
+            if (providerName) {
+                CreateProvider(providerName);
+            }
+        });
+    </script>
+}

@@ -6,7 +6,6 @@ using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Statment;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 
 namespace HelpSystem.Service.Implementantions
@@ -116,7 +115,7 @@ namespace HelpSystem.Service.Implementantions
                 var QueryAll = await _statmentService.GetAll()
                     .Include(p => p.User)
                     .Include(p => p.User.Profile)
-                    .Where(x => x.Status != StatusStatement.Completed )
+                    .Where(x => x.Status != StatusStatement.Completed)
                     .Select(x => new GetAllStatments
                     {
                         Id = x.ID,
@@ -275,7 +274,7 @@ namespace HelpSystem.Service.Implementantions
                     DateCreated = Answer.DataCreated.ToString("dd.MM.yyyy HH:mm"),
                     DateCompleted = Answer.DateCompleted?.ToString("dd.MM.yyyy HH:mm"),
                     Answer = Answer.ResponseAnswer,
-                    
+
                 };
                 return new BaseResponse<StatmentResultViewModel>()
                 {

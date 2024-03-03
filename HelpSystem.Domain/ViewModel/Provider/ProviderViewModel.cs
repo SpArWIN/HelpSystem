@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace HelpSystem.Domain.ViewModel.Provider
 {
     public class ProviderViewModel
     {
+        public Guid? ProviderId { get; set; }
         [Required(ErrorMessage = "Укажите наименование поставщика")]
         public string ProviderName { get; set; }
     }

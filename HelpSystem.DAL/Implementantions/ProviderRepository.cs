@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 
 namespace HelpSystem.DAL.Implementantions
 {
-    public class ProviderRepository:IBaseRepository<Provider>
+    public class ProviderRepository : IBaseRepository<Provider>
     {
         private readonly AppDbContext _appDbContext;
 
@@ -29,9 +24,9 @@ namespace HelpSystem.DAL.Implementantions
 
         public async Task<Provider> Update(Provider entity)
         {
-             _appDbContext.Providers.Update(entity);
-             await _appDbContext.SaveChangesAsync();
-             return entity;
+            _appDbContext.Providers.Update(entity);
+            await _appDbContext.SaveChangesAsync();
+            return entity;
         }
 
         public async Task Delete(Provider entity)

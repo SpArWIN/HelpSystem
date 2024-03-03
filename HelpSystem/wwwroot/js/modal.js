@@ -101,6 +101,7 @@ function UpdateStatus(data) {
     });
 
 }
+
 //Глобальное обновление заявки
 function UpdateStatment() {
     //Загрузка
@@ -152,7 +153,51 @@ function UpdateStatment() {
         }
     });
 }
+//Отправка на создание поставщика
+function CreateProvider(parameters) {
+    const ProviderName = parameters.data;
+    //Загрузка
+    Swal.fire({
+        title: 'Создание поставщика',
+        html: 'Пожалуйста подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: 'CreateProv',
+        data: ProviderName,
+        success: function(response) {
+            setTimeout(function() {
+                    Swal.fire({
+                        title: 'Создание поставщика',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Окей'
 
+                    });
+                },
+                1000);
+
+        },
+        error:function(response) {
+            setTimeout(function() {
+                Swal.fire({
+                    title: 'Что-то пошло не так..',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText :'Окей'
+                });
+            },1000);
+        }
+
+    });
+
+}
     $('#SaveChanBtn').click(function () {
         SaveProfile();
     });

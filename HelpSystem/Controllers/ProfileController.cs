@@ -38,7 +38,7 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> GetProfile(Guid id, bool isJson)
         {
             var response = await _profileService.GetProfile(id);
-            
+
             if (isJson)
             {
                 return Json(response.Data);

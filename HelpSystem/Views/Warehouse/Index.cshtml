@@ -19,8 +19,8 @@
         <a class="nav-link active" aria-current="page" href="#">Текущая</a>
     </li>
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
             <li><a class="dropdown-item" href="#">Поступление</a></li>
             <li><a class="dropdown-item" href="#">Остатки</a></li>
             <li><a class="dropdown-item" href="#">Прикрепленный товар</a></li>
@@ -28,6 +28,14 @@
             <li><a class="dropdown-item" href="#">Может быть что-то ещё?</a></li>
         </ul>
     </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navBarReferences" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочники</a>
+        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
+            <li><a class="dropdown-item" asp-controller="Provider" asp-action="Index" >Поставщики</a></li>
+            <li><a class="dropdown-item" href="#">Покупатели</a></li>
+        </ul>
+    </li>
+
     <li class="nav-item">
         <a  class="nav-link" href="#">Добавить товар</a>
     </li>

@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 
 namespace HelpSystem.DAL.Implementantions
 {
-    public class BuyerRepository :IBaseRepository<Buyer>
+    public class BuyerRepository : IBaseRepository<Buyer>
     {
         private readonly AppDbContext _appDbContext;
         public BuyerRepository(AppDbContext appDbContext)
