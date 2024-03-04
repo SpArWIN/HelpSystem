@@ -5,7 +5,7 @@ namespace HelpSystem.DAL.Implementantions
 {
     public class WarehouseRepository : IBaseRepository<Warehouse>
     {
-        private readonly AppDbContext _appDbContext;
+       private readonly AppDbContext _appDbContext;
         public WarehouseRepository(AppDbContext appDbContext)
         {
             _appDbContext = appDbContext;

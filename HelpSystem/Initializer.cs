@@ -28,6 +28,10 @@ namespace HelpSystem
             services.AddScoped<IProfileService, ProfileService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IStatmentIService, StatmentService>();
+            services.AddScoped<IProviderService, ProviderService>();
+            services.AddScoped<IWarehouseService, WarehouseService>();
+            services.AddScoped<IProviderService, ProviderService>();
+            services.AddScoped<IBuyerService, BuyerService>();
 
 
         }

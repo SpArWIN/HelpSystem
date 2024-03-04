@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace HelpSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialise : Migration
+    public partial class Inittialise : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -93,11 +94,18 @@ namespace HelpSystem.Migrations
                     DeliveryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    BuyerId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_Buyers_BuyerId",
+                        column: x => x.BuyerId,
+                        principalTable: "Buyers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Products_Providers_ProviderId",
                         column: x => x.ProviderId,
@@ -178,12 +186,17 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("36637315-84c6-419b-b57f-c290bf0f2f9d"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("84ad5e96-cc27-4c3a-b4b2-6939d6a420c7"), null, null, null, null, null, new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1") });
+                values: new object[] { new Guid("0d677722-ce53-4c59-8e0f-44e58a711a9c"), null, null, null, null, null, new Guid("36637315-84c6-419b-b57f-c290bf0f2f9d") });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Products_BuyerId",
+                table: "Products",
+                column: "BuyerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ProviderId",
@@ -221,9 +234,6 @@ namespace HelpSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Buyers");
-
-            migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
@@ -231,6 +241,9 @@ namespace HelpSystem.Migrations
 
             migrationBuilder.DropTable(
                 name: "Statements");
+
+            migrationBuilder.DropTable(
+                name: "Buyers");
 
             migrationBuilder.DropTable(
                 name: "Providers");

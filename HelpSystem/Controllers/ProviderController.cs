@@ -12,8 +12,16 @@ namespace HelpSystem.Controllers
         {
             _providerService = service;
         }
-        public IActionResult Index()
+        //В index сразу передаем всех поставщиков
+        [HttpGet]
+        public async Task< IActionResult >Index()
         {
+            var Response = await _providerService.GetAllProvider();
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return View(Response.Data);
+            }
+
             return View();
         }
         [HttpPost]

@@ -1,9 +1,10 @@
-﻿@model IEnumerable<HelpSystem.Domain.ViewModel.Provider.ProviderViewModel>?
+﻿@model IEnumerable<HelpSystem.Domain.ViewModel.Buyer.BuyerViewModel>
 
 @{
-    ViewBag.Title = "Поставщики";
+    ViewBag.Title = "Покупатель";
     Layout = "_Layout";
 }
+
 <style>
     /* Добавляем границу вокруг элемента <ul> с классом nav и nav-pills */
     ul.nav.nav-pills {
@@ -12,34 +13,33 @@
         padding: 5px; /* Добавляем немного отступа внутри границы */
     }
 </style>
-<link href="~/css/myanimate.css" rel="stylesheet" />
 <ul class="nav nav-pills">
     <li class="nav-item">
         <!--Вот тут будет ссылка на OpenModel-->
-        <a class="nav-link" href="#" id="ProviderAdd">Добавить поставщика</a>
+        <a class="nav-link" href="#" id="BuyerId">Добавить покупателя</a>
     </li>
 </ul>
-@if (Model != null && Model.Any())
-{
 
+@if (Model.Any())
+{
 
     <div class="row">
 
-        @foreach (var Us in Model)
+        @foreach (var Buy in Model)
         {
 
             <div class="col-md-3 mb-3">
                 <div class="card user-animation" style="  width: 100%; margin:15px; ">
                     <div class="card-header">
-                        <p class="card-title">Поставщик</p>
+                        <p class="card-title">Покупатель</p>
                     </div>
                     <div class="card-body">
-                        <p class="card-text">@Us.ProviderName</p>
+                        <p class="card-text">@Buy.BuyerName</p>
                     </div>
                     <div class="card-footer">
                         <div class="d-grid-gap-2">
                             <a class="btn btn-outline-primary ">Изменить</a>
-                            <a class="btn btn-outline-danger">Удалить</a>
+                            <a class="btn btn-outline-secondary">Удалить</a>
                         </div>
                     </div>
                 </div>
@@ -49,40 +49,19 @@
 }
 else
 {
-    <p>Список поставщиков пуст</p>
+    <p>Список покупателей пуст</p>
 }
-
-
-
 @section Scripts
 {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js">
     </script><script src="~/js/modal.js?v=2"></script>
-
     <script>
-        $(document).ready(function () {
-
+        $(document).ready(function() {
             $('.user-animation').addClass('show');
-
-            $('#ProviderAdd').on('click', async function () {
-                const { value: providerName } = await Swal.fire({
-                    title: 'Укажите наименование поставщика',
-                    input: 'text',
-                    inputPlaceholder: 'Введите наименование поставщика ',
-                    inputValidator: (value) => {
-                        if (!value || value.length < 5) {
-                            return 'Минимальная длина наименования - 5 символов!';
-                        }
-                    }
-                });
-
-                if (providerName) {
-                    CreateProvider(providerName);
-                }
-            });
         });
-
     </script>
+
 }
+

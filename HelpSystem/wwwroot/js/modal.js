@@ -154,8 +154,8 @@ function UpdateStatment() {
     });
 }
 //Отправка на создание поставщика
-function CreateProvider(parameters) {
-    const ProviderName = parameters.data;
+function CreateProvider(providerName) {
+    
     //Загрузка
     Swal.fire({
         title: 'Создание поставщика',
@@ -169,8 +169,8 @@ function CreateProvider(parameters) {
     });
     $.ajax({
         type: 'POST',
-        url: 'CreateProv',
-        data: ProviderName,
+        url: 'Provider/CreateProv',
+        data: { ProviderName: providerName },
         success: function(response) {
             setTimeout(function() {
                     Swal.fire({

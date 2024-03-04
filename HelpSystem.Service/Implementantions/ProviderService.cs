@@ -100,7 +100,7 @@ namespace HelpSystem.Service.Implementantions
                     })
                     .ToListAsync();
 
-                if (AllProviders == null)
+                if (AllProviders.Count == 0)
                 {
                     return new BaseResponse<IEnumerable<ProviderViewModel>>()
                     {

@@ -43,6 +43,9 @@ namespace HelpSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("BuyerId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -67,6 +70,8 @@ namespace HelpSystem.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("BuyerId");
 
                     b.HasIndex("ProviderId");
 
@@ -111,8 +116,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("84ad5e96-cc27-4c3a-b4b2-6939d6a420c7"),
-                            UserId = new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1")
+                            Id = new Guid("0d677722-ce53-4c59-8e0f-44e58a711a9c"),
+                            UserId = new Guid("36637315-84c6-419b-b57f-c290bf0f2f9d")
                         });
                 });
 
@@ -232,7 +237,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("32b1a929-3f86-4917-99b9-dea4d10119e1"),
+                            Id = new Guid("36637315-84c6-419b-b57f-c290bf0f2f9d"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -257,6 +262,12 @@ namespace HelpSystem.Migrations
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>
                 {
+                    b.HasOne("HelpSystem.Domain.Entity.Buyer", "Buyer")
+                        .WithMany("Products")
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HelpSystem.Domain.Entity.Provider", "Provider")
                         .WithMany("Products")
                         .HasForeignKey("ProviderId")
@@ -273,6 +284,8 @@ namespace HelpSystem.Migrations
                         .HasForeignKey("WarehouseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Buyer");
 
                     b.Navigation("Provider");
 
@@ -311,6 +324,11 @@ namespace HelpSystem.Migrations
                         .IsRequired();
 
                     b.Navigation("Roles");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.Buyer", b =>
+                {
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Provider", b =>

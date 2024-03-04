@@ -101,7 +101,7 @@ namespace HelpSystem.Service.Implementantions
                         WarehouseName = x.Name
                     })
                     .ToListAsync();
-                if (AllWarehouse == null)
+                if (AllWarehouse.Count == 0)
                 {
                     return new BaseResponse<IEnumerable<WarehouseViewModel>>()
                     {
