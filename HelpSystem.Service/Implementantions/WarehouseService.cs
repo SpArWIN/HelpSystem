@@ -98,6 +98,7 @@ namespace HelpSystem.Service.Implementantions
                 var AllWarehouse = await _warehouseRepository.GetAll()
                     .Select(x => new WarehouseViewModel()
                     {
+                        Id = x.Id,
                         WarehouseName = x.Name
                     })
                     .ToListAsync();

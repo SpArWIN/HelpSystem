@@ -17,6 +17,7 @@ namespace HelpSystem
             services.AddScoped<IBaseRepository<Provider>, ProviderRepository>();
             services.AddScoped<IBaseRepository<Warehouse>, WarehouseRepository>();
             services.AddScoped<IBaseRepository<Products>, ProductRepository>();
+            services.AddScoped<IBaseRepository<Invoice>, InvoiceRepository>();
 
             //TODO Незабудь добавить сервисы
         }
@@ -30,8 +31,8 @@ namespace HelpSystem
             services.AddScoped<IProviderService, ProviderService>();
             services.AddScoped<IWarehouseService, WarehouseService>();
             services.AddScoped<IProviderService, ProviderService>();
-            
-
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
 
         }
     }

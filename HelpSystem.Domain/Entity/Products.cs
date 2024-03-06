@@ -3,12 +3,10 @@
     public class Products
     {
         public Guid Id { get; set; }
-        public string NumberDocument { get; set; } = string.Empty; //Номер документа
         public string InventoryCode { get; set; } = string.Empty; //Инвертарный код
         //public string Type {get;set;} -если будет нужно, то добавим товару тип
         public string NameProduct { get; set; } = string.Empty;
         public string? Comments { get; set; }
-        public DateTime DeliveryDate { get; set; }
         //Внешний ключ поставщика
         //public Guid ProviderId { get; set; }
         public virtual Provider Provider { get; set; } //Поставщик

@@ -104,7 +104,8 @@ namespace HelpSystem.Service.Implementantions
                 {
                     return new BaseResponse<IEnumerable<ProviderViewModel>>()
                     {
-                        StatusCode = StatusCode.NotFind
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Нет поставщиков"
                     };
                 }
 

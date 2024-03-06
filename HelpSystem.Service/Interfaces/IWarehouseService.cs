@@ -24,5 +24,7 @@ namespace HelpSystem.Service.Interfaces
         /// <returns>Возвращает список всех складов</returns>
         Task<BaseResponse<IEnumerable<WarehouseViewModel>>> GetAllWarehouse();
 
+
+
     }
 }

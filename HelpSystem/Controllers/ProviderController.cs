@@ -45,5 +45,7 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+        //Метод для получения списка всез поставщиков  для отображения при  создании товара
+       
     }
 }
