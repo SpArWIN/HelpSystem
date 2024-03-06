@@ -1,11 +1,13 @@
 ﻿using HelpSystem.Domain.ViewModel.Statment;
 using HelpSystem.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using System.Security.Claims;
 
 namespace HelpSystem.Controllers
 {
+    [Authorize]
     public class StatmentController : Controller
     {
         private readonly IStatmentIService _statmentIService;

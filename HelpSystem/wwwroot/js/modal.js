@@ -172,7 +172,8 @@ function CreateProvider(providerName) {
         url: 'Provider/CreateProv',
         data: { ProviderName: providerName },
         success: function(response) {
-            setTimeout(function() {
+            setTimeout(function () {
+                    Swal.close(); 
                     Swal.fire({
                         title: 'Создание поставщика',
                         text: response.description,
@@ -185,7 +186,8 @@ function CreateProvider(providerName) {
 
         },
         error:function(response) {
-            setTimeout(function() {
+            setTimeout(function () {
+                Swal.close(); 
                 Swal.fire({
                     title: 'Что-то пошло не так..',
                     text: response.responseJSON.description,
@@ -195,6 +197,48 @@ function CreateProvider(providerName) {
             },1000);
         }
 
+    });
+
+}
+
+function CreateWarehouse(WhName) {
+    Swal.fire({
+        title: 'Создание склада',
+        html: 'Пожалуйста подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: 'Warehouse/CreateWarehouse',
+        data: { WarehouseName: WhName },
+
+        success: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Создание склада',
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей'
+                });
+            },1000);
+        },
+        erorr:function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Упс, что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText:'Окей'
+                });
+            },1000);
+        }
     });
 
 }

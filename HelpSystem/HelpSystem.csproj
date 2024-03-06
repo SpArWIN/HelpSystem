@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="Views\Admin\AdminPanel.cshtml" />
-    <_ContentIncludedByDefault Remove="Views\Buyer\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\Detail.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Profile\GetUsers.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Provider\Index.cshtml" />
@@ -83,10 +82,6 @@
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Provider\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Buyer\Index.cshtml" />
   </ItemGroup>
 
 </Project>

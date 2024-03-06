@@ -1,9 +1,11 @@
 ﻿using HelpSystem.Domain.ViewModel.Provider;
 using HelpSystem.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpSystem.Controllers
 {
+    [Authorize]
     public class ProviderController : Controller
     {
         private readonly IProviderService _providerService;
