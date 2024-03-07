@@ -1,0 +1,249 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model HelpSystem.Domain.ViewModel.Product.ProductViewModel 
+
+@{
+    ViewBag.Title = "Накладные";
+    Layout = "_Layout";
+}
+
+<style>
+    /* Добавляем границу вокруг элемента <ul> с классом nav и nav-pills */
+    ul.nav.nav-pills {
+      border: 1px solid #ccc;
+      border-radius: 5px; /* Для скругления углов */
+      padding: 5px; /* Добавляем немного отступа внутри границы */
+    }
+
+    .form-container {
+        display: none; /* Скрыть форму по умолчанию */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+         background-color: rgba(255, 255, 255, 0.9);
+        padding: 10px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        width: 80%; /* Ширина формы */
+        max-width: 900px; /* Максимальная ширина формы */
+        margin: 0 auto; /* Центрирование формы */
+        padding: 20px; /* Внутренние отступы */
+       
+
+     #PositionsContainer
+    {
+        margin-top: 20px; /* Добавляем отступ сверху */
+        padding: 10px; /* Добавляем внутренний отступ */
+        border-radius: 5px; /* Скругляем углы */
+        background-color: #f9f9f9; /* Задаем цвет фона */
+        overflow-y: auto; /* Добавляем вертикальную прокрутку, если содержимое становится слишком длинным */
+        max-height: 200px; /* Задаем максимальную высоту, чтобы контейнер не становился слишком высоким */
+    }
+ 
+
+        .position-row input[type="text"],
+        .position-row input[type="number"] {
+        width: 100%;
+            padding: 8px; /* Добавляем внутренний отступ */
+            /* Учитываем отступы и границы внутри ширины элемента */
+            margin-bottom: 10px; /* Добавляем небольшой отступ снизу для разделения */
+            border-bottom: 1px solid #ccc; /*Разделительная черта*/
+        }
+
+    .form-group {
+        margin-bottom: 20px; /* Отступы между элементами формы */
+    }
+  </style>
+
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#">Текущая</a>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+            <li><a class="dropdown-item" href="#">Поступление</a></li>
+            <li><a class="dropdown-item" href="#">Остатки</a></li>
+            <li><a class="dropdown-item" href="#">Прикрепленный товар</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Может быть что-то ещё?</a></li>
+        </ul>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navBarReferences" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочник</a>
+        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
+            <li><a class="dropdown-item" asp-controller="Provider" asp-action="Index">Поставщики</a></li>
+        </ul>
+    </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="WarehouseId" role="button" data-bs-toggle="dropdown" aria-expanded="false">Склады</a>
+        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
+            <li><a class="dropdown-item" id="WarehouseAdd" href="#">Добавить склад</a></li>
+        </ul>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="#" id="openFormLink">Создать накладную</a>
+    </li>
+</ul>
+
+<div id="formContainer" class="form-container" >
+        <h1>Создание Накладной</h1>
+        <form id="CreateProductsForm" method="post" >
+            <!-- Поле для выбора поставщика -->
+            <label for="PositionCount">Укажите номер документа</label>
+        <input type="number" class="form-control" id="NumberDocumetn" name="Number">
+            <div class="form-group">
+                <label for="Provider">Выберите поставщика</label>
+            <select class="form-control" id="Provider" name="ProviderID">
+                    @if (Model.Providers != null)
+                    {
+                        @foreach (var provider in Model.Providers)
+                        {
+                            <option value="@provider.ProviderId">@provider.ProviderName</option>
+                        }
+                    }
+                    else
+                    {
+                        <option>Нет поставщиков</option>
+                    }
+                    
+                </select>
+            </div>
+            <!-- Поле для выбора склада -->
+            <div class="form-group">
+                <label for="Warehouse">Укажите склад</label>
+            <select class="form-control" id="Warehouse" name="WarehouseId">
+                    @if (Model.Warehouses != null)
+                    {
+                        foreach (var  Ware in Model.Warehouses)
+                        {
+                            <option value="@Ware.Id">@Ware.WarehouseName</option>
+                        }
+                    }
+                    else
+                    {
+                        <option>Нет складов</option>
+                    }
+                </select>
+            </div>
+            <!-- Поле для указания количества позиций -->
+            <div class="form-group">
+                <label for="PositionCount">Укажите количество позиций</label>
+                <input type="number" class="form-control" id="PositionCount" name="PositionCount">
+            </div>
+            <!-- Поле для добавления строк с полями для каждой позиции -->
+            <div style="max-width:auto margin:10px;" id="PositionsContainer">
+
+            </div>
+            
+        <button style="margin:10px;" type="button" class="btn btn-primary" id="addPositionButton">Добавить позиции</button>
+            <!-- Кнопка для отправки формы -->
+                <button id="ButtonCreateProduct" style="margin:10px;" class="btn btn-success">Отправить</button>
+        </form>
+    </div>
+
+
+@section Scripts
+{
+    <script src="~/js/modal.js?v=3"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+    
+            $('#WarehouseAdd').on('click', async function () {
+                const { value: WarehouseNmae } = await Swal.fire({
+                    title: 'Добавление склада',
+                    input: 'text',
+                    inputPlaceholder: 'Введите наименование склада ',
+                    inputValidator: (value) => {
+                        if (!value || value.length < 5) {
+                            return 'Минимальная длина наименования - 5 символов!';
+                        }
+                    }
+                });
+
+                if (WarehouseNmae) {
+                    CreateWarehouse(WarehouseNmae);
+                }
+            });
+
+            $('#openFormLink').click(function(e) {
+               
+
+                $('#formContainer').fadeIn();
+            });
+           
+          /*   Отображение позиций  */
+            $('#addPositionButton').click(function() {
+                var count = $('#PositionCount').val();
+                var container = $('#PositionsContainer');
+                for (var i = 1; i <= count; i++) {
+                    var position = $(`<div class="position-row border mb-3 p-3"> <!-- Добавляем класс для строки товара и стили Bootstrap -->
+            <h5>Позиция ${i}</h5> <!-- Указываем номер позиции -->
+            <label for="NameProduct${i}">Наименование:</label>
+            <input type="text" class="form-control" id="NameProduct${i}" name="NameProduct${i}" />
+            <br/>
+            <label for="InventoryCode${i}">Артикул: </label>
+            <input type="text" class="form-control" id="InventoryCode${i}" name="InventoryCode${i}" />
+            <br/>
+            <label for="Quantity${i}">Количество: </label>
+            <input type="number" class="form-control" id="Quantity${i}" name="Quantity${i}" />
+        </div>`);
+                    container.append(position);
+                }
+            });
+
+            $('#ButtonCreateProduct').on('click',
+                function(e) {
+                    e.preventDefault();
+                    CreateInvoice();
+                });
+
+
+        });
+       
+        // $('#CreateProductsForm').on('submit', function(e) {
+        //     e.preventDefault(); 
+        //     var formData = $(this).serialize();
+          
+        //     Swal.fire({
+        //         title: 'Создание накладной',
+        //         html: 'Пожалуйста подождите...',
+        //         timerProgressBar: true,
+        //         showConfirmButton: false,
+        //         allowOutsideClick: false,
+        //         didOpen: () => {
+        //             Swal.showLoading();
+        //         }
+        //     });
+        //     $.ajax({
+        //         url: $(this).attr('action'), // URL для отправки данных формы
+        //         type: 'POST',
+        //         data: formData,
+        //         success: function(response) {
+        //             setTimeout(function() {
+        //                 Swal.close();
+        //                 Swal.fire({
+        //                     title: 'Создание накладной',
+        //                     text: response.description,
+        //                     icon: 'success',
+        //                     confirmButtonText: 'Окей'
+        //                 });
+        //             },1000);
+        //         },
+        //         error: function(response) {
+        //             setTimeout(function() {
+        //                 Swal.close();
+        //                 Swal.fire({
+        //                     title: 'Упс, что-то пошло не так',
+        //                     text: response.responseJSON.description,
+        //                     icon: 'error',
+        //                     confirmButtonText:'Окей'
+        //                 });
+        //             },1000);
+        //         }
+        //     });
+        // });
+       
+    </script>
+}

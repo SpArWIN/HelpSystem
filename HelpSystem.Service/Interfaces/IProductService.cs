@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.Domain.Entity;
+﻿using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
 
@@ -17,6 +12,6 @@ namespace HelpSystem.Service.Interfaces
         /// <returns></returns>
         Task<BaseResponse<IEnumerable<ProductShowViewModel>>> GetAllProduct();
 
-        Task<BaseResponse<Products>> CreateProduct(string NumberDocument, List<ProductViewModel> positions);
+        Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
     }
 }

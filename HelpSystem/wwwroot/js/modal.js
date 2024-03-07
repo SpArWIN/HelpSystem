@@ -248,3 +248,64 @@ function CreateWarehouse(WhName) {
 $('#AnswerIdB').click(function() {
     UpdateStatment();
 });
+
+//Метод отправки данных на создание накладной и товаров
+
+    function CreateInvoice() {
+        var formData = {
+            Number: $('#NumberDocumetn').val(),
+            ProviderID: $('#Provider').val(),
+            WarehouseId: $('#Warehouse').val(),
+            Positions: []
+        };
+        $('#PositionsContainer').find('.position-row').each(function (index, element) {
+            var position = {
+                NameProduct: $(element).find(`input[name="NameProduct${index + 1}"]`).val(),
+                InventoryCode: $(element).find(`input[name="InventoryCode${index + 1}"]`).val(),
+                Quantity: $(element).find(`input[name="Quantity${index + 1}"]`).val(),
+                ProviderID: $('#Provider').val(), // Добавляем ProviderID
+                WarehouseId: $('#Warehouse').val() // Добавляем WarehouseId
+            };
+            formData.Positions.push(position);
+        });
+        Swal.fire({
+            title: 'Создание накладной',
+            html: 'Пожалуйста подождите...',
+            timerProgressBar: true,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+        $.ajax({
+            url: '/Invoice/CreateInvoiceProducts', // URL для отправки данных формы
+            type: 'POST',
+            data: formData,     
+            success: function (response) {
+                setTimeout(function () {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'Создание накладной',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Окей'
+                    });
+                }, 1000);
+            },
+            error: function (response) {
+                setTimeout(function () {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'Упс, что-то пошло не так',
+                        text: response.responseJSON.description,
+                        icon: 'error',
+                        confirmButtonText: 'Окей'
+                    });
+                }, 1000);
+            }
+        });
+    }
+
+
+   

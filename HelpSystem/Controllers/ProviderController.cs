@@ -16,7 +16,7 @@ namespace HelpSystem.Controllers
         }
         //В index сразу передаем всех поставщиков
         [HttpGet]
-        public async Task< IActionResult >Index()
+        public async Task<IActionResult> Index()
         {
             var Response = await _providerService.GetAllProvider();
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -46,6 +46,6 @@ namespace HelpSystem.Controllers
             return BadRequest(new { description = Response.Description });
         }
         //Метод для получения списка всез поставщиков  для отображения при  создании товара
-       
+
     }
 }

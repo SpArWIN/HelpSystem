@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 
 namespace HelpSystem.DAL.Implementantions
 {
-    public class InvoiceRepository :IBaseRepository<Invoice>
+    public class InvoiceRepository : IBaseRepository<Invoice>
     {
         private readonly AppDbContext _appDbContext;
         public InvoiceRepository(AppDbContext appDbContext)
@@ -24,7 +19,7 @@ namespace HelpSystem.DAL.Implementantions
 
         public IQueryable<Invoice> GetAll()
         {
-           return _appDbContext.Invoices;
+            return _appDbContext.Invoices;
         }
 
         public async Task<Invoice> Update(Invoice entity)
@@ -41,5 +36,7 @@ namespace HelpSystem.DAL.Implementantions
 
 
         }
+
+      
     }
 }

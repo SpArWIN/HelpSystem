@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
-
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,19 +10,20 @@ namespace HelpSystem.Service.Implementantions
 {
     public class InvoiceService : IInvoiceService
     {
-      private readonly IBaseRepository<Invoice> _invoiceRepository;
+        private readonly IBaseRepository<Invoice> _invoiceRepository;
+        private readonly IProductService _productService;
 
-
-      public InvoiceService(IBaseRepository<Invoice> invoiceRepository)
-      {
-          _invoiceRepository = invoiceRepository;
-      }
-        public async Task<IBaseResponse<Invoice>> CreateInvoice(string NumberDocument)
+        public InvoiceService(IBaseRepository<Invoice> invoiceRepository, IProductService productService)
+        {
+            _invoiceRepository = invoiceRepository;
+            _productService = productService;
+        }
+        public async Task<IBaseResponse<Invoice>> CreateInvoice(string NumberDocument, List<ProductViewModel> positions)
         {
             try
             {
                 var Response = await _invoiceRepository.GetAll()
-                    .FirstOrDefaultAsync(x => x.NumberDocument ==NumberDocument);
+                    .FirstOrDefaultAsync(x => x.NumberDocument == NumberDocument);
                 if (Response != null)
                 {
                     return new BaseResponse<Invoice>()
@@ -44,13 +39,29 @@ namespace HelpSystem.Service.Implementantions
                     NumberDocument = NumberDocument,
 
                 };
+
                 await _invoiceRepository.Create(Invoice);
+
+                var ProductResponse = await _productService.CreateProduct(positions);
+
+                if (ProductResponse.StatusCode == StatusCode.Ok)
+                {
+                    Invoice.Products = ProductResponse.Data.ToList();
+                    await _invoiceRepository.Update(Invoice);
+                    
+                    return new BaseResponse<Invoice>()
+                    {
+                        Data = Invoice,
+                        Description = $"Товарная накладная с номером {NumberDocument} успешно создана ",
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+
                 return new BaseResponse<Invoice>()
                 {
-                    Data = Invoice,
-                    Description = $"Товарная накладная с номером {NumberDocument} " +
-                                  $"успешно создана ",
-                    StatusCode = StatusCode.Ok
+                    Description = ProductResponse.Description,
+                    StatusCode = ProductResponse.StatusCode
                 };
 
             }
