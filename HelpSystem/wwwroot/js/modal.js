@@ -287,7 +287,7 @@ $('#AnswerIdB').click(function() {
                     Swal.close();
                     Swal.fire({
                         title: 'Создание накладной',
-                        text: response.description,
+                        text: response.message,
                         icon: 'success',
                         confirmButtonText: 'Окей'
                     });

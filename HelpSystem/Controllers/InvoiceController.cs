@@ -49,10 +49,10 @@ namespace HelpSystem.Controllers
             var Response = await _invoiceService.CreateInvoice(Number, positions);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok(new { Response.Data, description = Response.Description });
+                return Ok(new { message = Response.Description });
             }
 
-            return BadRequest(new { Response.Description });
+            return BadRequest(new { description = Response.Description });
         }
     }
 }
