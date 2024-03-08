@@ -177,7 +177,9 @@
             $('#addPositionButton').click(function() {
                 var count = $('#PositionCount').val();
                 var container = $('#PositionsContainer');
+                container.empty();
                 for (var i = 1; i <= count; i++) {
+
                     var position = $(`<div class="position-row border mb-3 p-3"> <!-- Добавляем класс для строки товара и стили Bootstrap -->
             <h5>Позиция ${i}</h5> <!-- Указываем номер позиции -->
             <label for="NameProduct${i}">Наименование:</label>

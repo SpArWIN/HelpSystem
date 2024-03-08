@@ -62,7 +62,9 @@ namespace HelpSystem.DAL
             modelBuilder.Entity<Provider>()
                 .Property(r => r.Id)
                 .ValueGeneratedOnAdd();
-
+            modelBuilder.Entity<Products>()
+                .Property(r => r.Id)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Warehouse>()
                 .Property(r => r.Id)

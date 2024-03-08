@@ -33,22 +33,33 @@ namespace HelpSystem.Service.Implementantions
                     };
                 }
 
+                if (string.IsNullOrEmpty(NumberDocument))
+                {
+                    return new BaseResponse<Invoice>()
+                    {
+                        Description = "Не указан номер документа",
+                        StatusCode = StatusCode.UnCreated
+                    };
+                }
                 var Invoice = new Invoice()
                 {
                     CreationDate = DateTime.Now,
                     NumberDocument = NumberDocument,
 
                 };
+                //Создаем накладную
 
-                await _invoiceRepository.Create(Invoice);
 
+                //Добавляем товары
                 var ProductResponse = await _productService.CreateProduct(positions);
 
                 if (ProductResponse.StatusCode == StatusCode.Ok)
                 {
+                    await _invoiceRepository.Create(Invoice);
+                    //Привязываем товары к накладной, которую создали
                     Invoice.Products = ProductResponse.Data.ToList();
                     await _invoiceRepository.Update(Invoice);
-                    
+
                     return new BaseResponse<Invoice>()
                     {
                         Data = Invoice,

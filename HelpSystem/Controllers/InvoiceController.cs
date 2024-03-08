@@ -10,7 +10,7 @@ namespace HelpSystem.Controllers
         private readonly IProviderService _providerService;
         private readonly IWarehouseService _warehouseService;
 
-        public InvoiceController(IProviderService pro, IWarehouseService warehouseService,IInvoiceService service)
+        public InvoiceController(IProviderService pro, IWarehouseService warehouseService, IInvoiceService service)
         {
             _providerService = pro;
             _warehouseService = warehouseService;
@@ -33,19 +33,19 @@ namespace HelpSystem.Controllers
                 return View(viewModel);
             }
 
-            
+
             return View(viewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> CreateInvoiceProducts( List<ProductViewModel> positions, string Number)
+        public async Task<IActionResult> CreateInvoiceProducts(List<ProductViewModel> positions, string Number)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Values.SelectMany(v => v.Errors)
-                    .Select(e => e.ErrorMessage);
-                var errorDescription = string.Join(",", errors);
-                return BadRequest(new { description = errorDescription });
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    var errors = ModelState.Values.SelectMany(v => v.Errors)
+            //        .Select(e => e.ErrorMessage);
+            //    var errorDescription = string.Join(",", errors);
+            //    return BadRequest(new { description = errorDescription });
+            //}
             var Response = await _invoiceService.CreateInvoice(Number, positions);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {

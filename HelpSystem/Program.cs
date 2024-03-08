@@ -1,12 +1,22 @@
 using HelpSystem;
 using HelpSystem.DAL;
+using HelpSystem.Domain.ViewModel.Product;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix) // Добавляем поддержку локализации представлений
+    .AddDataAnnotationsLocalization(options =>
+    {
+        options.DataAnnotationLocalizerProvider = (type, factory) =>
+            factory.Create(typeof(ProductViewModel)); // Указываем класс с ресурсами для локализации сообщений об ошибках
+    });
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
 var Con = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>

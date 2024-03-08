@@ -37,6 +37,6 @@ namespace HelpSystem.DAL.Implementantions
 
         }
 
-      
+
     }
 }
