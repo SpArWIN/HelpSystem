@@ -290,7 +290,18 @@ $('#AnswerIdB').click(function() {
                         text: response.message,
                         icon: 'success',
                         confirmButtonText: 'Окей'
-                    });
+                    }).then((result) => {
+            if (result.isConfirmed) {
+                $('#CreateProductsForm')[0].reset();
+                // Скрыть форму
+                $('#formContainer').hide();
+                // Скрыть все позиции
+                $('.position-row').hide();
+                $('.table-container').show();
+                let table = $('#InvoiceTableID').DataTable();
+                table.ajax.reload();
+            }
+        });
                 }, 1000);
             },
             error: function (response) {

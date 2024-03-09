@@ -10,23 +10,22 @@ namespace HelpSystem.Service.Implementantions
 {
     public class ProductService : IProductService
     {
-
+        //private readonly IBaseRepository<Invoice> _invoiceRepository;
         private readonly IBaseRepository<Products> _productsRepository;
         private readonly IBaseRepository<Warehouse> _warehouseRepository;
         private readonly IBaseRepository<Provider> _providerRepository;
 
-        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository)
+        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository, IBaseRepository<Invoice> invoiceRepository)
         {
 
             _productsRepository = productsRepository;
             _warehouseRepository = waRepository;
             _providerRepository = provideRepository;
+            //_invoiceRepository = invoiceRepository;
         }
 
-        public Task<BaseResponse<IEnumerable<ProductShowViewModel>>> GetAllProduct()
-        {
-            throw new NotImplementedException();
-        }
+
+     
 
         public async Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions)
         {

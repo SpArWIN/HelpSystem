@@ -2,6 +2,7 @@
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
+using HelpSystem.Domain.ViewModel.Invoice;
 using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -79,6 +80,82 @@ namespace HelpSystem.Service.Implementantions
             catch (Exception e)
             {
                 return new BaseResponse<Invoice>()
+                {
+                    Description = $"{e.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<DataTableResponse> GetAllInvoices()
+        {
+            try
+            {
+                var QueryResponse = await _invoiceRepository.GetAll()
+                    .Select(x => new InvoiceShowViewModel()
+                    {
+                        Id = x.Id,
+                        DateCreated = x.CreationDate.ToString("dd.MM.yyyy HH:mm"),
+                        NumberInvoice = x.NumberDocument
+                    }).ToListAsync();
+                    //Пока в total 0
+                return new DataTableResponse()
+                {
+                    Data = QueryResponse,
+                    Total = 0
+
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataTableResponse()
+                {
+                    Data = null,
+                    Total = 0
+                };
+            }
+        }
+        /// <summary>
+        /// Метод нацелен на возвращение списков товаров, связанных с этой накладной
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<IBaseResponse<IEnumerable<ProductShowViewModel>>> GetPartialProduct(Guid id)
+        {
+            try
+            {
+                //Находим накладную по ее id
+                var Invoice = await _invoiceRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                if (Invoice != null)
+                {
+                    var Products = Invoice.Products
+                        .GroupBy(p => p.NameProduct)
+                        .Select(g => new ProductShowViewModel()
+                        {
+                            NameProduct = g.Key,
+                            CodeProduct = g.First().InventoryCode, //взятия кода товара из первой записи группы
+                            Warehouse = g.First().Warehouse.Name, //взятия склада 
+                            Provider = g.First().Provider.Name, //поставщика
+                            TotalCount = g.Count() //подсчёт количество по группе
+                        });
+                    return new BaseResponse<IEnumerable<ProductShowViewModel>>()
+                    {
+                        Data = Products,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<ProductShowViewModel>>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                    Description = "Накладная не найдена",
+
+                };
+            }
+            catch (Exception e)
+            {
+                return new BaseResponse<IEnumerable<ProductShowViewModel>>()
                 {
                     Description = $"{e.Message}",
                     StatusCode = StatusCode.InternalServerError

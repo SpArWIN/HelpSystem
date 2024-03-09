@@ -24,7 +24,6 @@
   <ItemGroup>
     <Folder Include="Pages\" />
     <Folder Include="Views\Account\" />
-    <Folder Include="Views\Invoice\" />
   </ItemGroup>
 
   <ItemGroup>

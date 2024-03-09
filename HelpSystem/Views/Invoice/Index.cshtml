@@ -5,8 +5,18 @@
     ViewBag.Title = "Накладные";
     Layout = "_Layout";
 }
-
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
 <style>
+
+    /*стиль для таблицы*/
+    .table-container {
+        margin : 30px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        padding: 10px;
+    }
     /* Добавляем границу вокруг элемента <ul> с классом nav и nav-pills */
     ul.nav.nav-pills {
       border: 1px solid #ccc;
@@ -87,7 +97,8 @@
 </ul>
 
 <div id="formContainer" class="form-container" >
-        <h1>Создание Накладной</h1>
+    <h1>Создание Накладной</h1>
+    <button id="closeFormButton" style="position: absolute; top: 10px; right: 10px;" class="btn btn-danger">Закрыть</button>
         <form id="CreateProductsForm" method="post" >
             <!-- Поле для выбора поставщика -->
             <label for="PositionCount">Укажите номер документа</label>
@@ -141,12 +152,26 @@
                 <button id="ButtonCreateProduct" style="margin:10px;" class="btn btn-success">Отправить</button>
         </form>
     </div>
-
+<!--А тут таблица со списком всех когда либо накладных-->
+<div class="table-container">
+    <table class="display" id="InvoiceTableID">
+        <thead>
+            <tr>
+                <th>Дата создания</th>
+                <th>Номер документа </th>
+                <th>Действия</th>
+                <th style="display:none">Id</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 @section Scripts
 {
     <script src="~/js/modal.js?v=3"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
     <script>
         $(document).ready(function() {
     
@@ -168,9 +193,8 @@
             });
 
             $('#openFormLink').click(function(e) {
-               
-
                 $('#formContainer').fadeIn();
+                $('.table-container').hide();
             });
            
           /*   Отображение позиций  */
@@ -199,9 +223,46 @@
                 function(e) {
                     e.preventDefault();
                     CreateInvoice();
+                    data.ajax.reload();
                 });
+            $('#closeFormButton').click(function() {
+                // Сбросить значения формы
+                $('#CreateProductsForm')[0].reset();
+                // Скрыть форму
+                $('#formContainer').hide();
+                $('.table-container').show();
+            });
 
 
+            // Таблица
+            let Data = $('#InvoiceTableID').DataTable({
+                ajax: {
+                    url: "@Url.Action("AllInvoices")",
+                    type: "POST",
+                    dataSrc: "data"
+                },
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
+                    emptyTable: "Нет накладных для отображения"
+                },
+                columns:[
+                    { data: "dateCreated", name: "DateCreated" ,width: "50%", className: "text-center" },
+                    { data: "numberInvoice", name: "NumberInvoice", width: "30%", className: "text-center" },
+                    {
+                        data: null,
+                        sortable: false,
+                        render: function (data, type) {
+                            return '<button class="btn btn-success btn-sm center-block detail-btn" >Детали поступления</button>'
+                        }
+                    },
+                    { data: "id", name: "Id", visible: false, width: "20%" }
+                ]
+
+            });
+            $('#InvoiceTableID').on('click','.detail-btn',function() {
+                var rowData = Data.row($(this).parents('tr')).data();
+                openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
+            })
         });
        
         // $('#CreateProductsForm').on('submit', function(e) {

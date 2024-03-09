@@ -7,10 +7,11 @@ namespace HelpSystem.Service.Interfaces
     public interface IProductService
     {
         /// <summary>
-        /// Метод,  возвращающий спиоск всех товаров, со всех складов 
+        /// Метод,  который будет возвращать в частичное преставление конкретные товары, привязанные к накладной
         /// </summary>
         /// <returns></returns>
-        Task<BaseResponse<IEnumerable<ProductShowViewModel>>> GetAllProduct();
+        //Task<BaseResponse<IEnumerable<Products>>> GetPartialProduct(Guid id);
+
 
         Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
     }

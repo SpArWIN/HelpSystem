@@ -1,4 +1,5 @@
-﻿using HelpSystem.Domain.ViewModel.Product;
+﻿using Azure;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,5 +55,25 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+        //Для возврата значений, то есть список в таблицу
+        public async Task<IActionResult> AllInvoices()
+        {
+            var Response = await _invoiceService.GetAllInvoices();
+            return Json(new { data = Response.Data });
+        }
+
+        //Для частичного представления
+        public async Task<IActionResult> PartialInvoiceProduct(Guid id)
+        {
+            var Response = await _invoiceService.GetPartialProduct(id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView("_InvoicePartialProduct",Response.Data);
+            }
+
+            return PartialView("_InvoicePartialProduct");
+
+        }
+
     }
 }
