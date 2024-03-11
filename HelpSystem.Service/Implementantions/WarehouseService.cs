@@ -127,5 +127,95 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+        public async Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id)
+        {
+            try
+            {
+                var Response = await _warehouseRepository.GetAll()
+                    .Select(x => new WarehouseViewModel()
+                    {
+                        Id = x.Id,
+                        WarehouseName = x.Name
+                    }).FirstOrDefaultAsync(x => x.Id == id);
+                if (Response != null)
+                {
+                    return new BaseResponse<WarehouseViewModel>()
+                    {
+                        Data = Response,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<WarehouseViewModel>()
+                {
+                    Description = $"Склад не найден",
+                    StatusCode = StatusCode.NotFind
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<WarehouseViewModel>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<IBaseResponse<Warehouse>> SaveWarehouse(WarehouseViewModel model)
+        {
+            try
+            {
+                var Response = await _warehouseRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == model.Id);
+                if (Response != null)
+                {
+                    if (Response.Name != model.WarehouseName)
+                    {
+                        var ExistWarehouse = await _warehouseRepository.GetAll()
+                            .FirstOrDefaultAsync(x => x.Name == model.WarehouseName);
+                        if (ExistWarehouse != null)
+                        {
+                            return new BaseResponse<Warehouse>()
+                            {
+                                Description = "Склад с таким наименованием уже существует",
+                                StatusCode = StatusCode.UnChanched
+                            };
+                        }
+                        Response.Name = model.WarehouseName;
+                        await _warehouseRepository.Update(Response);
+                        return new BaseResponse<Warehouse>()
+                        {
+                            Data = Response,
+                            Description = "Наименование склада успешно изменено",
+                            StatusCode = StatusCode.Ok
+                        };
+
+                    }
+
+                    return new BaseResponse<Warehouse>()
+                    {
+                        Description = "Не вижу никаких изменений",
+                        StatusCode = StatusCode.UnChanched
+                    };
+
+                }
+
+                return new BaseResponse<Warehouse>()
+                {
+                    Description = "Склад не найден",
+                    StatusCode = StatusCode.NotFind
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Warehouse>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
     }
 }

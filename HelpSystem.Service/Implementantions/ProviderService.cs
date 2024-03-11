@@ -125,5 +125,96 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+        public async Task<BaseResponse<ProviderViewModel>> GetProviderCurrent(Guid id)
+        {
+            try
+            {
+                var Response = await _Providerrepository.GetAll()
+                    .Select(x => new ProviderViewModel
+                    {
+                        ProviderId = x.Id,
+                        ProviderName = x.Name,
+                    })
+                    .FirstOrDefaultAsync(x => x.ProviderId == id);
+                if (Response != null)
+                {
+                    return new BaseResponse<ProviderViewModel>()
+                    {
+                        Data = Response,
+                        StatusCode = StatusCode.Ok,
+
+                    };
+                }
+
+                return new BaseResponse<ProviderViewModel>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                    Description = "Поставщик не найден",
+                };
+
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<ProviderViewModel>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<BaseResponse<Provider>> SaveProvider(ProviderViewModel model)
+        {
+            try
+            {
+              
+
+                var UpdateProvider = await _Providerrepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == model.ProviderId);
+
+                if (UpdateProvider.Name != model.ProviderName)
+                {
+                    // Проверяем, существует ли поставщик с таким же наименованием, которое хотим поменять
+                    var ExistProvider = await _Providerrepository
+                        .GetAll().FirstOrDefaultAsync(x => x.Name == model.ProviderName);
+                    if (ExistProvider != null)
+                    {
+                        return new BaseResponse<Provider>()
+                        {
+                            Description = "Поставщик с таким наименованием уже существует",
+                            StatusCode = StatusCode.UnChanched
+                        };
+                    }
+
+
+
+                    UpdateProvider.Name = model.ProviderName;
+                    await _Providerrepository.Update(UpdateProvider);
+                    return new BaseResponse<Provider>()
+                    {
+                        Description = "Наименование поставщика успешно изменено",
+                        Data = UpdateProvider,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<Provider>()
+                {
+                    StatusCode = StatusCode.UnChanched,
+                    Description = "Не наблюдаю никаких изменений"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Provider>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+
+            }
+        }
     }
 }

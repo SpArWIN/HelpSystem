@@ -26,6 +26,38 @@ namespace HelpSystem.Controllers
 
             return View();
         }
+
+        public async Task<IActionResult> GetCurrentProvider(Guid id)
+        {
+            var CurProvider = await _providerService.GetProviderCurrent(id);
+
+            if (CurProvider.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView( "_PartialProvider", CurProvider.Data);
+            }
+
+            return PartialView("_PartialProvider");
+        }
+
+        //Метод обновления поставщика 
+        public async Task<IActionResult> UpdateProvider(ProviderViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                var errorDescription = string.Join(",", errors);
+                return BadRequest(new { description = errorDescription });
+            }
+            var Ups = await _providerService.SaveProvider(model);
+            if (Ups.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { Ups.Data, description = Ups.Description });
+            }
+
+            return BadRequest(new { description = Ups.Description });
+        }
+
         [HttpPost]
         //Метод действия создания поставщика
         public async Task<IActionResult> CreateProv(ProviderViewModel provider)

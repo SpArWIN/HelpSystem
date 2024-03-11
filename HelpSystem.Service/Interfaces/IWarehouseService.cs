@@ -23,8 +23,13 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <returns>Возвращает список всех складов</returns>
         Task<BaseResponse<IEnumerable<WarehouseViewModel>>> GetAllWarehouse();
+        /// <summary>
+        /// Метод получения конкретного склада
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id);
 
-
-
+        Task<IBaseResponse<Warehouse>> SaveWarehouse(WarehouseViewModel model);
     }
 }

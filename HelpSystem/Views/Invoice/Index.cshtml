@@ -83,12 +83,7 @@
         <a class="nav-link dropdown-toggle" href="#" id="navBarReferences" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочник</a>
         <ul class="dropdown-menu" aria-labelledby="navBarReferences">
             <li><a class="dropdown-item" asp-controller="Provider" asp-action="Index">Поставщики</a></li>
-        </ul>
-    </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="WarehouseId" role="button" data-bs-toggle="dropdown" aria-expanded="false">Склады</a>
-        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
-            <li><a class="dropdown-item" id="WarehouseAdd" href="#">Добавить склад</a></li>
+            <li><a class="dropdown-item" asp-controller="Warehouse" asp-action="Index">Склады</a></li>
         </ul>
     </li>
     <li class="nav-item">
@@ -175,22 +170,7 @@
     <script>
         $(document).ready(function() {
     
-            $('#WarehouseAdd').on('click', async function () {
-                const { value: WarehouseNmae } = await Swal.fire({
-                    title: 'Добавление склада',
-                    input: 'text',
-                    inputPlaceholder: 'Введите наименование склада ',
-                    inputValidator: (value) => {
-                        if (!value || value.length < 5) {
-                            return 'Минимальная длина наименования - 5 символов!';
-                        }
-                    }
-                });
-
-                if (WarehouseNmae) {
-                    CreateWarehouse(WarehouseNmae);
-                }
-            });
+           
 
             $('#openFormLink').click(function(e) {
                 $('#formContainer').fadeIn();
@@ -261,8 +241,8 @@
             });
             $('#InvoiceTableID').on('click','.detail-btn',function() {
                 var rowData = Data.row($(this).parents('tr')).data();
-                openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
-            })
+                openModal({ modalId: 'invoiceModal', url: '/Invoice/PartialInvoiceProduct', data: rowData.id });
+            });
         });
        
         // $('#CreateProductsForm').on('submit', function(e) {

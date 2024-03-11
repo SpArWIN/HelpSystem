@@ -1,0 +1,15 @@
+﻿
+@model HelpSystem.Domain.ViewModel.Provider.ProviderViewModel
+@{
+    ViewBag.Title = "Детали поставщика";
+    //Layout = "_Layout";
+}
+<div class="form-group">
+    <div class="form-group" style="display: none;">
+        <label for="hiden">ID:</label>
+        <input type="text" class="form-control" id="hiden" value="@Model.ProviderId">
+    </div>
+    <label for="NameProvider">Наименование:</label>
+    <input type="text" class="form-control" id="NameProvider" value="@Model.ProviderName">
+</div>
+

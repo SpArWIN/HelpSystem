@@ -98,7 +98,7 @@ namespace HelpSystem.Service.Implementantions
                         DateCreated = x.CreationDate.ToString("dd.MM.yyyy HH:mm"),
                         NumberInvoice = x.NumberDocument
                     }).ToListAsync();
-                    //Пока в total 0
+                //Пока в total 0
                 return new DataTableResponse()
                 {
                     Data = QueryResponse,
@@ -126,19 +126,29 @@ namespace HelpSystem.Service.Implementantions
             {
                 //Находим накладную по ее id
                 var Invoice = await _invoiceRepository.GetAll()
+                    .Include(p => p.Products)
+                    .ThenInclude(w => w.Provider)
+                    .Include(p => p.Products)
+                    .ThenInclude(w => w.Warehouse)
+
                     .FirstOrDefaultAsync(x => x.Id == id);
                 if (Invoice != null)
                 {
-                    var Products = Invoice.Products
+                    var productsList = Invoice.Products.ToList();
+
+                    string Numbers = Invoice.NumberDocument;
+                    var Products = productsList
                         .GroupBy(p => p.NameProduct)
                         .Select(g => new ProductShowViewModel()
                         {
+                            
                             NameProduct = g.Key,
-                            CodeProduct = g.First().InventoryCode, //взятия кода товара из первой записи группы
-                            Warehouse = g.First().Warehouse.Name, //взятия склада 
-                            Provider = g.First().Provider.Name, //поставщика
-                            TotalCount = g.Count() //подсчёт количество по группе
-                        });
+                            CodeProduct = g.FirstOrDefault().InventoryCode,    
+                           Warehouse = g.FirstOrDefault().Warehouse.Name,
+                           Provider = g.FirstOrDefault().Provider.Name,
+                           NumberDoc = Numbers,
+                            TotalCount = g.Count()
+                        }).ToList();
                     return new BaseResponse<IEnumerable<ProductShowViewModel>>()
                     {
                         Data = Products,

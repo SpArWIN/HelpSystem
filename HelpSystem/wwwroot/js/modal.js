@@ -200,7 +200,7 @@ function CreateProvider(providerName) {
     });
 
 }
-
+//Создание склада
 function CreateWarehouse(WhName) {
     Swal.fire({
         title: 'Создание склада',
@@ -242,9 +242,78 @@ function CreateWarehouse(WhName) {
     });
 
 }
+
+//Создам общий метод для массового применения с передачей парамтеров
+//Отвечает, что отображается в зазрузочном окне - NameCreating
+
+function MassUpdate(url, data,NameCreating,  ResponseTitle) {
+
+    Swal.fire({
+        title: NameCreating,
+        html: 'Пожалуйста, подождите..',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: data,
+        success: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: ResponseTitle,
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей',
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#modal').modal('hide');
+                        location.reload();
+                    }
+                });
+            },1000);
+        },
+        error: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: ResponseTitle,
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Окей',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#modal').modal('hide');
+                    }
+                });
+            },1000);
+        }
+
+    });
+}
+//Вызывается модальное окно и по кнопке изменений сохраняется профиль
     $('#SaveChanBtn').click(function () {
         SaveProfile();
     });
+    //Вызывается модальное окно и изменяется поставщик
+    $('#SaveChanBtn').click(function() {
+        var id = $('#hiden').val();
+        var Value = $('#NameProvider').val();
+        MassUpdate('/Provider/UpdateProvider', { ProviderId: id, ProviderName: Value }, 'Обновление поставщика','Изменение поставщика');
+    });
+//Вызываю тоже модальное окно и тот же метод обновления, но для склада
+$('#SaveChanBtn').click(function() {
+    var id = $("#WhHiden").val();
+    var Value = $("#WhName").val();
+    MassUpdate('/Warehouse/UpdateWarehouse', { Id: id, WarehouseName: Value }, 'Обновление склада', 'Изменение склада');
+});
+
 $('#AnswerIdB').click(function() {
     UpdateStatment();
 });

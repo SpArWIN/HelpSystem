@@ -1,10 +1,10 @@
-﻿@model dynamic
+﻿@model IEnumerable<HelpSystem.Domain.ViewModel.Warehouse.WarehouseViewModel>
 
 @{
     ViewBag.Title = "Склад";
     Layout = "_Layout";
 }
-
+<link href="~/css/myanimate.css" rel="stylesheet" />
 <style>
     /* Добавляем границу вокруг элемента <ul> с классом nav и nav-pills */
     ul.nav.nav-pills {
@@ -15,42 +15,58 @@
   </style>
 
 <ul  class="nav nav-pills">
-    <li class="nav-item">
-        <a class="nav-link active" aria-current="page" href="#">Текущая</a>
-    </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
-        <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-            <li><a class="dropdown-item" href="#">Поступление</a></li>
-            <li><a class="dropdown-item" href="#">Остатки</a></li>
-            <li><a class="dropdown-item" href="#">Прикрепленный товар</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Может быть что-то ещё?</a></li>
-        </ul>
-    </li>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="navBarReferences" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочник</a>
-        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
-            <li><a class="dropdown-item" asp-controller="Provider" asp-action="Index" >Поставщики</a></li>
-        </ul>
-    </li>
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="WarehouseId" role="button" data-bs-toggle="dropdown" aria-expanded="false">Склады</a>
         <ul class="dropdown-menu" aria-labelledby="navBarReferences">
             <li><a class="dropdown-item" id="WarehouseAdd" href="#"  >Добавить склад</a></li>
         </ul>
     </li>
-    <li class="nav-item">
-        <a  class="nav-link" asp-controller="Product" asp-action="CreateProduct" >Создать накладную</a>
-    </li>
 </ul>
+@if (Model != null && Model.Any())
+{
+
+
+    <div class="row">
+
+        @foreach (var Warehouse in Model)
+        {
+
+            <div class="col-md-3 mb-3">
+                <div class="card user-animation" style="  width: 100%; margin:15px; ">
+                    <div class="card-header">
+                        <p class="card-title">Склад</p>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@Warehouse.WarehouseName</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-grid-gap-2">
+                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({modalId: 'modal', url:'/Warehouse/GetCurrentWarehouse', data: '@Warehouse.Id'}) ">Изменить</a>
+                            <a class="btn btn-outline-danger">Удалить</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Список складов пуст</p>
+}
+
+
+
+
+
+
 @section Scripts
 {
     <script src="~/js/modal.js?v=3"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script>
     $(document).ready(function() {
-    
+        $('.user-animation').addClass('show');
             $('#WarehouseAdd').on('click', async function () {
             const { value: WarehouseNmae } = await Swal.fire({
                 title: 'Добавление склада',

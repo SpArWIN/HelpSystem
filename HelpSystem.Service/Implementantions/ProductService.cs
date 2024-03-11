@@ -25,7 +25,7 @@ namespace HelpSystem.Service.Implementantions
         }
 
 
-     
+
 
         public async Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions)
         {
@@ -98,7 +98,7 @@ namespace HelpSystem.Service.Implementantions
                          * Тут есть косяк, если на следующей итерации будет проблема, предыдущий товар уже будет создан,
                          * а значит, он не будет ни к чему прикреплен, решается это добавлением ещё одного цикла)
                          */
-                        
+
 
                         for (int i = 0; i < quantity; i++)
                         {

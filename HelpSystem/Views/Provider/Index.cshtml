@@ -15,7 +15,6 @@
 <link href="~/css/myanimate.css" rel="stylesheet" />
 <ul class="nav nav-pills">
     <li class="nav-item">
-     
         <a class="nav-link" href="#" id="ProviderAdd">Добавить поставщика</a>
     </li>
 </ul>
@@ -38,7 +37,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="d-grid-gap-2">
-                            <a class="btn btn-outline-primary ">Изменить</a>
+                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({modalId: 'modal', url:'/Provider/GetCurrentProvider', data: '@Us.ProviderId'})  ">Изменить</a>
                             <a class="btn btn-outline-danger">Удалить</a>
                         </div>
                     </div>
@@ -82,6 +81,8 @@ else
                     CreateProvider(providerName);
                 }
             });
+           
+
         });
 
     </script>

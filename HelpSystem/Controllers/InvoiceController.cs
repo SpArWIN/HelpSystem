@@ -1,5 +1,4 @@
-﻿using Azure;
-using HelpSystem.Domain.ViewModel.Product;
+﻿using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -63,15 +62,16 @@ namespace HelpSystem.Controllers
         }
 
         //Для частичного представления
+
         public async Task<IActionResult> PartialInvoiceProduct(Guid id)
         {
             var Response = await _invoiceService.GetPartialProduct(id);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return PartialView("_InvoicePartialProduct",Response.Data);
+                return PartialView("_InvoicePartialProducts", Response.Data);
             }
 
-            return PartialView("_InvoicePartialProduct");
+            return PartialView("_InvoicePartialProducts");
 
         }
 

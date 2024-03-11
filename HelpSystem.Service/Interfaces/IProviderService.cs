@@ -9,5 +9,8 @@ namespace HelpSystem.Service.Interfaces
         Task<BaseResponse<Provider>> CreateProvider(ProviderViewModel model);
         Task<BaseResponse<Provider>> DeleteProvider(Guid id);
         Task<BaseResponse<IEnumerable<ProviderViewModel>>> GetAllProvider();
+        Task<BaseResponse<ProviderViewModel>> GetProviderCurrent(Guid id);
+
+        Task<BaseResponse<Provider>> SaveProvider(ProviderViewModel model);
     }
 }
