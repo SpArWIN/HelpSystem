@@ -59,6 +59,8 @@ namespace HelpSystem.Controllers
             return View();
         }
 
+       
+
         [HttpPost]
         public async Task<IActionResult> Save(ProfileViewModel model)
         {
@@ -67,17 +69,17 @@ namespace HelpSystem.Controllers
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage);
                 var errorDescription = string.Join(",", errors);
-                return BadRequest(new { message = errorDescription });
+                return BadRequest(new { description = errorDescription });
             }
             var Response = await _profileService.Save(model);
 
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok(new { Response.Data, message = Response.Description });
+                return Ok(new { Response.Data, description = Response.Description });
             }
 
             //  return Json(new { message = Response.Description });
-            return BadRequest(new { message = Response.Description });
+            return BadRequest(new { description = Response.Description });
         }
     }
 }

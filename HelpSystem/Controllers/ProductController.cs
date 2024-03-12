@@ -1,4 +1,5 @@
-﻿using HelpSystem.Service.Interfaces;
+﻿using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpSystem.Controllers
@@ -15,21 +16,32 @@ namespace HelpSystem.Controllers
             _warehouseService = warehouse;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> CreateProduct()
+        //[HttpGet]
+        //public async Task<IActionResult> CreateProduct()
+        //{
+        //    var ProvTask = _providerService.GetAllProvider();
+        //    var WarehousTask = _warehouseService.GetAllWarehouse();
+
+        //    await Task.WhenAll(ProvTask, WarehousTask); // Ожидание завершения обеих задач
+
+        //    ViewBag.Providers = ProvTask.Result;
+        //    ViewBag.Warehouses = WarehousTask.Result;
+
+        //    //  return PartialView("_PartialProduct");
+        //    return View();
+        //}
+
+
+        //Метод когда получаем товары, пользователь то уже есть
+        public async Task<IActionResult> GetProduct(string term)
         {
-            var ProvTask = _providerService.GetAllProvider();
-            var WarehousTask = _warehouseService.GetAllWarehouse();
-
-            await Task.WhenAll(ProvTask, WarehousTask); // Ожидание завершения обеих задач
-
-            ViewBag.Providers = ProvTask.Result;
-            ViewBag.Warehouses = WarehousTask.Result;
-
-            //  return PartialView("_PartialProduct");
-            return View();
+            var Response = await _productService.GetProduct(term);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(Response.Data);
+            }
+            return Json(Response.Description);
         }
-
         public IActionResult Index()
         {
             return View();

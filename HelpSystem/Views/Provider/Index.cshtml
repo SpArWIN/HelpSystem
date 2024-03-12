@@ -37,7 +37,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="d-grid-gap-2">
-                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({modalId: 'modal', url:'/Provider/GetCurrentProvider', data: '@Us.ProviderId'})  ">Изменить</a>
+                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({modalId: 'modal', url:'/Provider/GetCurrentProvider', data: '@Us.ProviderId' , context: 'provider'})  ">Изменить</a>
                             <a class="btn btn-outline-danger">Удалить</a>
                         </div>
                     </div>
@@ -58,7 +58,8 @@ else
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js">
-    </script><script src="~/js/modal.js?v=2"></script>
+    </script>
+    <script src="~/js/modal.js?v=6"></script>
 
     <script>
         $(document).ready(function () {

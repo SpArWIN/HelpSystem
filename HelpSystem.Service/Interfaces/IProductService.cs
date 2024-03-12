@@ -12,7 +12,9 @@ namespace HelpSystem.Service.Interfaces
         /// <returns></returns>
         //Task<BaseResponse<IEnumerable<Products>>> GetPartialProduct(Guid id);
 
+        Task<BaseResponse<Dictionary<Guid, string>>> GetProduct(string term);
 
+      
         Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
     }
 }

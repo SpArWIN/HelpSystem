@@ -8,5 +8,7 @@ namespace HelpSystem.Domain.ViewModel.Warehouse
 
         [Required(ErrorMessage = "Укажите имя склада")]
         public string WarehouseName { get; set; }
+        public  int ? TotalCountWarehouse {get; set; }
+
     }
 }

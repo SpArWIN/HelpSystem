@@ -2,7 +2,10 @@
 {
     public class Warehouse
     {
-
+        public Warehouse()
+        {
+            Products = new List<Products>();
+        }
         //TODO Добавишь поля
         public Guid Id { get; set; }
         public string Name { get; set; } = string.Empty;

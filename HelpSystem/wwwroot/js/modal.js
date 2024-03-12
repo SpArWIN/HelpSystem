@@ -14,7 +14,15 @@ function openModal(parameters) {
         data: { "id": id },
         success: function (response) {
             modal.find(".modal-body").html(response);
-            modal.modal('show')
+            modal.modal('show');
+            var context = parameters.context;
+            $('#SaveChanBtn').data('context', context);
+
+            // Выполняем соответствующее действие в зависимости от контекста
+           
+
+
+
         },
         failure: function () {
             modal.modal('hide')
@@ -24,6 +32,42 @@ function openModal(parameters) {
         }
     });
 };
+$('#SaveChanBtn').on('click', function () {
+    // Получаем контекст из кнопки
+    var context = $(this).data('context');
+
+    if (context === 'profile') {
+        // Выполняем соответствующее действие для профиля
+        var id = $('#hiddenId').val();
+        var lastName = $('#lastName').val();
+        var Name = $('#firstName').val();
+        var Surname = $('#patronymic').val();
+        var age = $('#age').val();
+
+        var profileData = {
+            Id: id,
+            Age: age,
+            Surname: Surname,
+            LastName: lastName,
+            Name: Name
+        };
+        MassUpdate('/Profile/Save', profileData, 'Обновление профиля', 'Изменение профиля');
+    } else if (context === 'provider') {
+        // Выполняем соответствующее действие для поставщика
+        var providerId = $('#hiden').val();
+        var providerName = $('#NameProvider').val();
+        MassUpdate('/Provider/UpdateProvider', { ProviderId: providerId, ProviderName: providerName }, 'Обновление поставщика', 'Изменение поставщика');
+    } else if (context === 'warehouse') {
+        // Выполняем соответствующее действие для склада
+        var warehouseId = $('#WhHiden').val();
+        var warehouseName = $('#WhName').val();
+        MassUpdate('/Warehouse/UpdateWarehouse', { Id: warehouseId, WarehouseName: warehouseName }, 'Обновление склада', 'Изменение склада');
+    }
+});
+
+
+
+
 // Функкиця на стороне сервера при передаче данных отправка запроса на сервер
 function SaveProfile() {
     Swal.fire({
@@ -147,7 +191,7 @@ function UpdateStatment() {
                     icon: 'error',
                     confirmButtonText: 'Окей'
                 }).then((result) => {
-                    $('#StateModdal').modal('hide');
+
                 });
             }, 1000);
         }
@@ -297,27 +341,50 @@ function MassUpdate(url, data,NameCreating,  ResponseTitle) {
 
     });
 }
+
 //Вызывается модальное окно и по кнопке изменений сохраняется профиль
-    $('#SaveChanBtn').click(function () {
-        SaveProfile();
-    });
-    //Вызывается модальное окно и изменяется поставщик
-    $('#SaveChanBtn').click(function() {
-        var id = $('#hiden').val();
-        var Value = $('#NameProvider').val();
-        MassUpdate('/Provider/UpdateProvider', { ProviderId: id, ProviderName: Value }, 'Обновление поставщика','Изменение поставщика');
-    });
-//Вызываю тоже модальное окно и тот же метод обновления, но для склада
-$('#SaveChanBtn').click(function() {
-    var id = $("#WhHiden").val();
-    var Value = $("#WhName").val();
-    MassUpdate('/Warehouse/UpdateWarehouse', { Id: id, WarehouseName: Value }, 'Обновление склада', 'Изменение склада');
-});
+
+
 
 $('#AnswerIdB').click(function() {
     UpdateStatment();
 });
+$('#BtnBind').click(function () {
 
+    $('.row').show();
+    initializeSelect2();
+});
+
+function initializeSelect2() {
+    $('#ProductsID').select2({
+        placeholder: "Выберите товар",
+        minimumInputLength: 4,
+        allowClear: true,
+        tags: true,
+        dropdownParent: $('#StateModdal'),
+        ajax: {
+            type: 'POST',
+            url: '/Product/GetProduct',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    term: params.term
+                };
+            },
+            processResults: function(response) {
+                // Преобразование данных словаря в формат, ожидаемый select2
+                var data = $.map(response,
+                    function(value, key) {
+                        return { id: key, text: value };
+                    });
+
+                // Возвращаем результаты для select2
+                return {
+                    results: data
+                };
+            }
+        }
+    });
 //Метод отправки данных на создание накладной и товаров
 
     function CreateInvoice() {
@@ -327,7 +394,7 @@ $('#AnswerIdB').click(function() {
             WarehouseId: $('#Warehouse').val(),
             Positions: []
         };
-        $('#PositionsContainer').find('.position-row').each(function (index, element) {
+        $('#PositionsContainer').find('.position-row').each(function(index, element) {
             var position = {
                 NameProduct: $(element).find(`input[name="NameProduct${index + 1}"]`).val(),
                 InventoryCode: $(element).find(`input[name="InventoryCode${index + 1}"]`).val(),
@@ -350,42 +417,45 @@ $('#AnswerIdB').click(function() {
         $.ajax({
             url: '/Invoice/CreateInvoiceProducts', // URL для отправки данных формы
             type: 'POST',
-            data: formData,     
-            success: function (response) {
-                setTimeout(function () {
-                    Swal.close();
-                    Swal.fire({
-                        title: 'Создание накладной',
-                        text: response.message,
-                        icon: 'success',
-                        confirmButtonText: 'Окей'
-                    }).then((result) => {
-            if (result.isConfirmed) {
-                $('#CreateProductsForm')[0].reset();
-                // Скрыть форму
-                $('#formContainer').hide();
-                // Скрыть все позиции
-                $('.position-row').hide();
-                $('.table-container').show();
-                let table = $('#InvoiceTableID').DataTable();
-                table.ajax.reload();
-            }
-        });
-                }, 1000);
+            data: formData,
+            success: function(response) {
+                setTimeout(function() {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Создание накладной',
+                            text: response.message,
+                            icon: 'success',
+                            confirmButtonText: 'Окей'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#CreateProductsForm')[0].reset();
+                                // Скрыть форму
+                                $('#formContainer').hide();
+                                // Скрыть все позиции
+                                $('.position-row').hide();
+                                $('.table-container').show();
+                                let table = $('#InvoiceTableID').DataTable();
+                                table.ajax.reload();
+                            }
+                        });
+                    },
+                    1000);
             },
-            error: function (response) {
-                setTimeout(function () {
-                    Swal.close();
-                    Swal.fire({
-                        title: 'Упс, что-то пошло не так',
-                        text: response.responseJSON.description,
-                        icon: 'error',
-                        confirmButtonText: 'Окей'
-                    });
-                }, 1000);
+            error: function(response) {
+                setTimeout(function() {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Упс, что-то пошло не так',
+                            text: response.responseJSON.description,
+                            icon: 'error',
+                            confirmButtonText: 'Окей'
+                        });
+                    },
+                    1000);
             }
         });
     }
+}
 
 
    

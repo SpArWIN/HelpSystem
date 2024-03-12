@@ -35,7 +35,7 @@
         </div>
             <div class="card-footer">
                 <div class="d-grid gap-2">
-                 <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id'})">Изменить</a>
+                    <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id', context: 'profile'})">Изменить</a>
                 </div>
             </div>
     </div>
@@ -49,9 +49,10 @@
 
 @section Scripts
 {
+    <script src="~/js/modal.js?v=6"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="text/javascript" charset="utf-8" src="~/js/modal.js"></script>
+ 
     <script>
         $(document).ready(function () { 
             $('.card').addClass('show');

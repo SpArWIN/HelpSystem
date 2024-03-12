@@ -24,15 +24,58 @@ namespace HelpSystem.Service.Implementantions
             //_invoiceRepository = invoiceRepository;
         }
 
+        /// <summary>
+        /// Метод получения товара по его имени или артикулу
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public async Task<BaseResponse<Dictionary<Guid, string>>> GetProduct(string term)
+        {
+            try
+            {
+               
 
+                var productsInMemory = await _productsRepository.GetAll()
+                    .Include(w => w.Warehouse)
+                    .Where(x => x.UserId == null) // Проверяем, что товар не привязан к пользователю
+                    .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") || EF.Functions.Like(x.InventoryCode, $"%{term}%"))
+                    .ToListAsync(); // Загрузить все товары в память
 
+                var products = productsInMemory
+                    .GroupBy(x => x.NameProduct) // Группируем товары по наименованию
+                    .Select(group => group.First()) // Берем первый товар из каждой группы 
+                    .Select(x => new 
+                    {
+                        x.Id,
+                        Name = $"{x.NameProduct} ({x.InventoryCode})",
+                        Location = x.Warehouse.Name
+                        
+                    })
+                    .ToDictionary(x => x.Id, x => x.Name);
+
+                return new BaseResponse<Dictionary<Guid, string>>()
+                {
+                    StatusCode = StatusCode.Ok,
+                    Data = products
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Dictionary<Guid, string>>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
 
         public async Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions)
         {
             try
             {
                 var productsList = new List<Products>();
-                var SuccessProductList = new List<Products>();
+               
                 //Добавлю индекс для позиции, которая будет указывать пользователю в какой конкретной позиции не указано что -то
                 int positionIndex = 0;
 

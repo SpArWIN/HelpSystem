@@ -1,4 +1,5 @@
 ﻿using HelpSystem.Domain.Response;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Users;
 
 namespace HelpSystem.Service.Interfaces
@@ -7,5 +8,6 @@ namespace HelpSystem.Service.Interfaces
     {
         //реализацию брать из AccountService, 
         public Task<BaseResponse<IEnumerable<UsersViewModel>>> GetAllUsers();
+      
     }
 }

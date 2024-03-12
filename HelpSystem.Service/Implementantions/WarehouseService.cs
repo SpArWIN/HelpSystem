@@ -99,7 +99,8 @@ namespace HelpSystem.Service.Implementantions
                     .Select(x => new WarehouseViewModel()
                     {
                         Id = x.Id,
-                        WarehouseName = x.Name
+                        WarehouseName = x.Name,
+                        TotalCountWarehouse = x.Products.Count
                     })
                     .ToListAsync();
                 if (AllWarehouse.Count == 0)
@@ -133,10 +134,11 @@ namespace HelpSystem.Service.Implementantions
             try
             {
                 var Response = await _warehouseRepository.GetAll()
+                    .Include(p=>p.Products)
                     .Select(x => new WarehouseViewModel()
                     {
                         Id = x.Id,
-                        WarehouseName = x.Name
+                        WarehouseName = x.Name,
                     }).FirstOrDefaultAsync(x => x.Id == id);
                 if (Response != null)
                 {
