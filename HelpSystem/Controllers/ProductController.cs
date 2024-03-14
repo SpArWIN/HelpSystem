@@ -46,5 +46,17 @@ namespace HelpSystem.Controllers
         {
             return View();
         }
+        [HttpPost]
+        public async Task<IActionResult> BindingProduct(Guid StatId, Guid ProductId, string? Comments)
+        {
+            var Response = await _productService.BindingProduct(StatId, ProductId,Comments);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { Response.Data, description = Response.Description });
+
+            }
+
+            return BadRequest(new { description = Response.Description });
+        }
     }
 }

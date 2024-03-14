@@ -16,5 +16,8 @@ namespace HelpSystem.Service.Interfaces
 
       
         Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
+
+
+        Task<BaseResponse<Products>> BindingProduct(Guid StatId,Guid ProductId,string?  Comments);
     }
 }

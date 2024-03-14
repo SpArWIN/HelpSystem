@@ -41,22 +41,27 @@
 {
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="~/js/modal.js?v=1"></script>
+  
     <script>
+        function BindClick() {
+            var hiddenId = $('#hhID').val();
+            var productsId = $('#ProductsID').val();
+            var Com = $('#Comment').val();
+            BindProduct(hiddenId, productsId,Com);
+        }
+
         $(document).ready(function() {
 
            
-               
 
             let Data = $("#GetAllSstatTable").DataTable({
-               
                 ajax: {
                     url: "@Url.Action("GetStatmentsData")",
                     type: "POST",
                     dataSrc: "data"
                 },
                 language: {
-                    url:'//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
                     emptyTable: "Нет заявок для отображения"
                 },
                 columns: [
@@ -68,22 +73,28 @@
                     {
                         data: null,
                         sortable: false,
-                        render: function (data, type,row) {
+                        render: function(data, type, row) {
                             return '<button class="btn btn-success btn-block btn-op" ">Ответить</button>';
                         }
                     }
-                
                 ]
             });
+
+           
             // Делегирование события клика
 
-            $('#GetAllSstatTable').on('click', '.btn-op', function() {
-                var rowData = Data.row($(this).parents('tr')).data();
-                openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
-                var newStatus = '@((int)StatusStatement.Reviewed)';
-                UpdateStatus({ data: rowData.id, newStatus: newStatus });
-            });
+            $('#GetAllSstatTable').on('click',
+                '.btn-op',
+                function() {
+                    var rowData = Data.row($(this).parents('tr')).data();
+                    openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
+                    var newStatus = '@((int)StatusStatement.Reviewed)';
+                    UpdateStatus({ data: rowData.id, newStatus: newStatus });
+                });
 
+           
         });
+
+
     </script>
 }

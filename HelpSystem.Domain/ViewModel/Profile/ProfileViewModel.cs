@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using HelpSystem.Domain.Entity;
+using HelpSystem.Domain.ViewModel.Product;
 
 namespace HelpSystem.Domain.ViewModel.Profile
 {
@@ -13,6 +15,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public string? LastName { get; set; }
         public string? Description { get; set; }
         public string? Name { get; set; }
+        public List<ProductShowViewModel>? UserPdocut { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

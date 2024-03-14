@@ -161,7 +161,7 @@ function UpdateStatment() {
     });
 
     var Data = {
-        id: $('#hiddenId').val(),
+        id: $('#hhID').val(),
         Response: $('#AnID').val(),
     };
 
@@ -178,7 +178,11 @@ function UpdateStatment() {
                     icon: 'success',
                     confirmButtonText: 'Окей'
                 }).then((result) => {
-                    $('#StateModdal').modal('hide');
+                     if (result.isConfirmed) {
+                         $('#StateModdal').modal('hide');
+                        location.reload(); 
+                    }
+                   
                 });
             }, 1000);
         },
@@ -350,11 +354,65 @@ $('#AnswerIdB').click(function() {
     UpdateStatment();
 });
 $('#BtnBind').click(function () {
-
-    $('.row').show();
-    initializeSelect2();
+    if ($('.row').is(':visible')) {
+        // Если элемент видим, то скрываем его плавно
+        $('.row').slideUp();
+    } else {
+        // Если элемент скрыт, то плавно его показываем
+        $('.row').slideDown();
+        // Инициализация других компонентов или действий
+        initializeSelect2();
+    }
 });
+// Привязка данных к пользователю
+function BindProduct(hiddenId, productsId,Com) {
+    Swal.fire({
+        title: 'Создание связи',
+        html: 'Пожалуйста подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/Product/BindingProduct',
+        data: {
+            StatId: hiddenId,
+            ProductId: productsId,
+            Comments : Com
+        },
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Привязка товара',
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей',
 
+                }).then((result) => {
+                   
+                });
+            }, 1000);
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Привязка товара',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Окей',
+                }).then((result) => {
+                    
+                });
+            }, 1000);
+        }
+    });
+}
 function initializeSelect2() {
     $('#ProductsID').select2({
         placeholder: "Выберите товар",
@@ -387,74 +445,74 @@ function initializeSelect2() {
     });
 //Метод отправки данных на создание накладной и товаров
 
-    function CreateInvoice() {
-        var formData = {
-            Number: $('#NumberDocumetn').val(),
-            ProviderID: $('#Provider').val(),
-            WarehouseId: $('#Warehouse').val(),
-            Positions: []
-        };
-        $('#PositionsContainer').find('.position-row').each(function(index, element) {
-            var position = {
-                NameProduct: $(element).find(`input[name="NameProduct${index + 1}"]`).val(),
-                InventoryCode: $(element).find(`input[name="InventoryCode${index + 1}"]`).val(),
-                Quantity: $(element).find(`input[name="Quantity${index + 1}"]`).val(),
-                ProviderID: $('#Provider').val(), // Добавляем ProviderID
-                WarehouseId: $('#Warehouse').val() // Добавляем WarehouseId
-            };
-            formData.Positions.push(position);
-        });
-        Swal.fire({
-            title: 'Создание накладной',
-            html: 'Пожалуйста подождите...',
-            timerProgressBar: true,
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-        $.ajax({
-            url: '/Invoice/CreateInvoiceProducts', // URL для отправки данных формы
-            type: 'POST',
-            data: formData,
-            success: function(response) {
-                setTimeout(function() {
-                        Swal.close();
-                        Swal.fire({
-                            title: 'Создание накладной',
-                            text: response.message,
-                            icon: 'success',
-                            confirmButtonText: 'Окей'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                $('#CreateProductsForm')[0].reset();
-                                // Скрыть форму
-                                $('#formContainer').hide();
-                                // Скрыть все позиции
-                                $('.position-row').hide();
-                                $('.table-container').show();
-                                let table = $('#InvoiceTableID').DataTable();
-                                table.ajax.reload();
-                            }
-                        });
-                    },
-                    1000);
-            },
-            error: function(response) {
-                setTimeout(function() {
-                        Swal.close();
-                        Swal.fire({
-                            title: 'Упс, что-то пошло не так',
-                            text: response.responseJSON.description,
-                            icon: 'error',
-                            confirmButtonText: 'Окей'
-                        });
-                    },
-                    1000);
-            }
-        });
-    }
+    //function CreateInvoice() {
+    //    var formData = {
+    //        Number: $('#NumberDocumetn').val(),
+    //        ProviderID: $('#Provider').val(),
+    //        WarehouseId: $('#Warehouse').val(),
+    //        Positions: []
+    //    };
+    //    $('#PositionsContainer').find('.position-row').each(function(index, element) {
+    //        var position = {
+    //            NameProduct: $(element).find(`input[name="NameProduct${index + 1}"]`).val(),
+    //            InventoryCode: $(element).find(`input[name="InventoryCode${index + 1}"]`).val(),
+    //            Quantity: $(element).find(`input[name="Quantity${index + 1}"]`).val(),
+    //            ProviderID: $('#Provider').val(), // Добавляем ProviderID
+    //            WarehouseId: $('#Warehouse').val() // Добавляем WarehouseId
+    //        };
+    //        formData.Positions.push(position);
+    //    });
+    //    Swal.fire({
+    //        title: 'Создание накладной',
+    //        html: 'Пожалуйста подождите...',
+    //        timerProgressBar: true,
+    //        showConfirmButton: false,
+    //        allowOutsideClick: false,
+    //        didOpen: () => {
+    //            Swal.showLoading();
+    //        }
+    //    });
+    //    $.ajax({
+    //        url: '/Invoice/CreateInvoiceProducts', // URL для отправки данных формы
+    //        type: 'POST',
+    //        data: formData,
+    //        success: function(response) {
+    //            setTimeout(function() {
+    //                    Swal.close();
+    //                    Swal.fire({
+    //                        title: 'Создание накладной',
+    //                        text: response.message,
+    //                        icon: 'success',
+    //                        confirmButtonText: 'Окей'
+    //                    }).then((result) => {
+    //                        if (result.isConfirmed) {
+    //                            $('#CreateProductsForm')[0].reset();
+    //                            // Скрыть форму
+    //                            $('#formContainer').hide();
+    //                            // Скрыть все позиции
+    //                            $('.position-row').hide();
+    //                            $('.table-container').show();
+    //                            let table = $('#InvoiceTableID').DataTable();
+    //                            table.ajax.reload();
+    //                        }
+    //                    });
+    //                },
+    //                1000);
+    //        },
+    //        error: function(response) {
+    //            setTimeout(function() {
+    //                    Swal.close();
+    //                    Swal.fire({
+    //                        title: 'Упс, что-то пошло не так',
+    //                        text: response.responseJSON.description,
+    //                        icon: 'error',
+    //                        confirmButtonText: 'Окей'
+    //                    });
+    //                },
+    //                1000);
+    //        }
+    //    });
+    //}
 }
 
 

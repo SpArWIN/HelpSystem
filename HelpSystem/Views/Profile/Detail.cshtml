@@ -9,6 +9,19 @@
     <link rel="icon" href="@Url.Content("~/favicon.ico")" />
     <link href="~/css/myanimate.css" rel="stylesheet" />
 </head>
+<style>
+    /* Стили для таблицы */
+    .table-container {
+        border: 3px solid #ccc; /* Граница таблицы */
+        border-radius: 5px; /* Закругленные углы */
+        overflow: hidden; /* Скрытие лишнего контента, если он будет выходить за границы */
+    }
+
+    .table {
+        width: 100%; 
+        border-collapse: collapse; /* Слияние границ ячеек */
+    }
+</style>
 <br/>
 <div class="card border-warning mb-3" style="margin:10px; max-width: 100%;">
     <div class="row g-0">
@@ -33,13 +46,40 @@
                 }
             </div>
         </div>
-            <div class="card-footer">
-                <div class="d-grid gap-2">
-                    <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id', context: 'profile'})">Изменить</a>
-                </div>
+        <div class="card-footer">
+            <div class="d-grid gap-2">
+                <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id', context: 'profile'})">Изменить</a>
             </div>
+        </div>
     </div>
 </div>
+@if (Model.UserPdocut != null && Model.UserPdocut.Any())
+{
+    <p class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
+    <div class="table-container">
+
+ 
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Наименование</th>
+            <th>Количество</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var product in Model.UserPdocut)
+        {
+            <tr>
+                <td>@product.NameProduct</td>
+                <td>@product.TotalCount</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+}
+
+
 
 
 
@@ -56,6 +96,7 @@
     <script>
         $(document).ready(function () { 
             $('.card').addClass('show');
+
         });
     </script>
   

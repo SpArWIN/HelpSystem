@@ -14,14 +14,15 @@ namespace HelpSystem.Service.Implementantions
         private readonly IBaseRepository<Products> _productsRepository;
         private readonly IBaseRepository<Warehouse> _warehouseRepository;
         private readonly IBaseRepository<Provider> _providerRepository;
-
-        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository, IBaseRepository<Invoice> invoiceRepository)
+        private readonly IBaseRepository<Statement> _statementRepository;
+        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository, IBaseRepository<Statement> statement)
         {
 
             _productsRepository = productsRepository;
             _warehouseRepository = waRepository;
             _providerRepository = provideRepository;
             //_invoiceRepository = invoiceRepository;
+            _statementRepository = statement;
         }
 
         /// <summary>
@@ -33,7 +34,6 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-               
 
                 var productsInMemory = await _productsRepository.GetAll()
                     .Include(w => w.Warehouse)
@@ -41,23 +41,33 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") || EF.Functions.Like(x.InventoryCode, $"%{term}%"))
                     .ToListAsync(); // Загрузить все товары в память
 
-                var products = productsInMemory
-                    .GroupBy(x => x.NameProduct) // Группируем товары по наименованию
-                    .Select(group => group.First()) // Берем первый товар из каждой группы 
-                    .Select(x => new 
-                    {
-                        x.Id,
-                        Name = $"{x.NameProduct} ({x.InventoryCode})",
-                        Location = x.Warehouse.Name
-                        
-                    })
-                    .ToDictionary(x => x.Id, x => x.Name);
-
-                return new BaseResponse<Dictionary<Guid, string>>()
+                if (productsInMemory.Any()) // Проверяем, найдены ли товары
                 {
-                    StatusCode = StatusCode.Ok,
-                    Data = products
-                };
+                    var products = productsInMemory
+                        .GroupBy(x => x.NameProduct) // Группируем товары по наименованию
+                        .Select(group => group.First()) // Берем первый товар из каждой группы 
+                        .Select(x => new
+                        {
+                            x.Id,
+                            Name = $"{x.NameProduct} ({x.InventoryCode})",
+                            Location = x.Warehouse.Name
+                        })
+                        .ToDictionary(x => x.Id, x => x.Name);
+
+                    return new BaseResponse<Dictionary<Guid, string>>()
+                    {
+                        StatusCode = StatusCode.Ok,
+                        Data = products
+                    };
+                }
+                else // Если товары не найдены, вернем специальное значение
+                {
+                    return new BaseResponse<Dictionary<Guid, string>>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Товары не найдены"
+                    };
+                }
 
             }
             catch (Exception ex)
@@ -188,6 +198,57 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Description = $"{ex.Message}",
                     StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<BaseResponse<Products>> BindingProduct( Guid StatId ,Guid ProductId,string? Comments)
+        {
+            try
+            {
+                var User = await _statementRepository.GetAll()
+                    .Include(u => u.User)
+                    .Where(stat => stat.ID== StatId)
+                    .Select(stat => stat.User.Id)
+                    .FirstOrDefaultAsync(); ;
+                var Product = await _productsRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == ProductId);
+                if (Product != null)
+                {
+                    if (Product.UserId != null)
+                    {
+                        return new BaseResponse<Products>()
+                        {
+                            Description =
+                                $"{Product.NameProduct} ({Product.InventoryCode}) \nуже связан спользователем",
+                            StatusCode = StatusCode.UnChanched
+                        };
+                    }
+                    Product.UserId = User;
+                    Product.Comments = Comments;
+                    await _productsRepository.Update(Product);
+                    return new BaseResponse<Products>()
+                    {
+                        Data = Product,
+                        StatusCode = StatusCode.Ok,
+                        Description = $"Связь успешно установлена"
+                    };
+
+                }
+
+                return new BaseResponse<Products>()
+                {
+                    Description = $"Товар не найден",
+                    StatusCode = StatusCode.NotFind
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Products>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{ex.Message}"
                 };
             }
         }

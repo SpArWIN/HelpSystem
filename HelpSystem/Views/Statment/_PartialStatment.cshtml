@@ -4,18 +4,18 @@
 }
 
 <style> 
-    .small-select {
+    .small-select { 
         height: 30px; /* Установите желаемую высоту */
         /* Дополнительные стили по вашему выбору */
     }
-
 </style>
 
 <div class="form-group">
     <div class="form-group" style="display: none;">
-        <label for="hiddenID">ID</label>
-        <input type="text" class="form-control" id="hiddenID" value="@Model.Id" readonly />
+        <label for="hhID">ID</label>
+        <input type="text" class="form-control" id="hhID" value="@Model.Id" readonly />
     </div>
+
     <label >ФИО</label>
     <input type="text" class="form-control" id="FIO" value="@Model.FullName" readonly />
     <label for="Reason">Тема</label>
@@ -23,40 +23,31 @@
     <label for="Description">Описание</label>
     <textarea type="text" class="form-control" id="Description" readonly>@Model.Description </textarea>
 
-    
-   <div class="row" style="margin:20px; display:none">
-    <div class="col">
-        <select class="form-control small-select" id="ProductsID" name="stat"></select>
-    </div>
+<div class="row" style="margin:20px; display:none">
+       <div class="col">
+           <select class="form-control small-select" id="ProductsID" name="stat"></select>
+       </div>
+       <div class="row" style="margin: 20px; ">
+           <div class="col">
+                <div class="d-grid gap-2">
+                    <a id="BdButton" class="btn btn-danger btn-block" onclick="BindClick()">Привязать</a>
+               </div>
+           </div>
+          
+               <label for="Comment">Комментарий</label>
+               <small class="text-muted">Необязательное поле</small>
+           <textarea type="text" class="form-control-lg" style="width: 100%;" id="Comment"></textarea>
+          
+       </div>
 </div>
 
-
-   
-    <!--Тут отображаю выбранный товар-->
-    <div  style="padding:10px; margin:10px; display:none;">
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card-body">
-                    <h5 class="card-title" id="ProductIDName"></h5>
-                    <p class="card-text" id="ProductCode"></p>
-                </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item" id="ProductLocation"></li>
-                </ul>
-            </div>
-        </div>
-    </div>
+    
     <label >Ответ на заявку</label>
     <textarea id="AnID" name="Answer" class="form-control" required minlength="10"></textarea>
 </div>
 @section Scripts
 {
-  
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  
-    <script>
-        $(document).ready(function() {
-         
-        });
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 }
