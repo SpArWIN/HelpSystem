@@ -164,9 +164,10 @@
 
 @section Scripts
 {
-    <script src="~/js/modal.js?v=3"></script>
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <script src="~/js/modal.js?v=2"></script>
     <script>
         $(document).ready(function() {
     
@@ -198,13 +199,13 @@
                     container.append(position);
                 }
             });
-
-            $('#ButtonCreateProduct').on('click',
-                function(e) {
+            //Событие создания заявки
+            $('#ButtonCreateProduct').on('click', function(e) {
                     e.preventDefault();
                     CreateInvoice();
                     data.ajax.reload();
-                });
+            });
+
             $('#closeFormButton').click(function() {
                 // Сбросить значения формы
                 $('#CreateProductsForm')[0].reset();

@@ -39,10 +39,9 @@ namespace HelpSystem.DAL
                 .WithMany()
                 .HasForeignKey(k => k.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
-            //modelBuilder.Entity<Warehouse>()
-            //    .HasMany(w => w.Products) // У одного склада может быть много приходов товаров
-            //    .WithOne(i => i.Warehouse) // У прихода товаров может быть только один склад
-            //    .OnDelete(DeleteBehavior.SetNull);
+
+
+
 
             //modelBuilder.Entity<Products>()
             //    .HasOne(u => u.Provider)

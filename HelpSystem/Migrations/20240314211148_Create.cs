@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace HelpSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize : Migration
+    public partial class Create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,8 +92,8 @@ namespace HelpSystem.Migrations
                     InventoryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NameProduct = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Comments = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
@@ -108,8 +109,7 @@ namespace HelpSystem.Migrations
                         name: "FK_Products_Providers_ProviderId",
                         column: x => x.ProviderId,
                         principalTable: "Providers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Products_Users_UserId",
                         column: x => x.UserId,
@@ -120,8 +120,7 @@ namespace HelpSystem.Migrations
                         name: "FK_Products_Warehouses_WarehouseId",
                         column: x => x.WarehouseId,
                         principalTable: "Warehouses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -184,12 +183,12 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("691e322d-5477-4e9a-80dd-099117137ee7"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("341bddd4-5878-43b9-a855-343b7e50ab45"), null, null, null, null, null, new Guid("691e322d-5477-4e9a-80dd-099117137ee7") });
+                values: new object[] { new Guid("9cb7f8de-ddb3-4024-8ce7-7c6c7b268d80"), null, null, null, null, null, new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",

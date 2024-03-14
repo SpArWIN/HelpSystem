@@ -22,7 +22,7 @@ namespace HelpSystem.Controllers
             var response = await _providerService.GetAllProvider();
             var Warehouse = await _warehouseService.GetAllWarehouse();
 
-            if (response.StatusCode == Domain.Enum.StatusCode.Ok && Warehouse.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok || Warehouse.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 viewModel.Providers = response.Data;
                 viewModel.Warehouses = Warehouse.Data;

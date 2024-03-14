@@ -60,13 +60,13 @@ namespace HelpSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ProviderId")
+                    b.Property<Guid?>("ProviderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UserId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("WarehouseId")
+                    b.Property<Guid?>("WarehouseId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -116,8 +116,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("341bddd4-5878-43b9-a855-343b7e50ab45"),
-                            UserId = new Guid("691e322d-5477-4e9a-80dd-099117137ee7")
+                            Id = new Guid("9cb7f8de-ddb3-4024-8ce7-7c6c7b268d80"),
+                            UserId = new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba")
                         });
                 });
 
@@ -237,7 +237,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("691e322d-5477-4e9a-80dd-099117137ee7"),
+                            Id = new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -268,9 +268,7 @@ namespace HelpSystem.Migrations
 
                     b.HasOne("HelpSystem.Domain.Entity.Provider", "Provider")
                         .WithMany("Products")
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ProviderId");
 
                     b.HasOne("HelpSystem.Domain.Entity.User", "User")
                         .WithMany()
@@ -279,9 +277,7 @@ namespace HelpSystem.Migrations
 
                     b.HasOne("HelpSystem.Domain.Entity.Warehouse", "Warehouse")
                         .WithMany("Products")
-                        .HasForeignKey("WarehouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("WarehouseId");
 
                     b.Navigation("Provider");
 
