@@ -15,7 +15,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public string? LastName { get; set; }
         public string? Description { get; set; }
         public string? Name { get; set; }
-        public List<ProductShowViewModel>? UserPdocut { get; set; }
+        public List<BindingProductViewModel>? UserPdocut { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

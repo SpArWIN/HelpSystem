@@ -276,7 +276,7 @@ function CreateWarehouse(WhName) {
                 });
             },1000);
         },
-        erorr:function(response) {
+        error:function(response) {
             setTimeout(function() {
                 Swal.close();
                 Swal.fire({
@@ -413,7 +413,9 @@ function BindProduct(hiddenId, productsId,Com) {
         }
     });
 }
+function UnbindingProduct() {
 
+}
 function initializeSelect2() {
     $('#ProductsID').select2({
         placeholder: "Выберите товар",

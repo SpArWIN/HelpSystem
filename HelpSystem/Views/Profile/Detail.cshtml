@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "Профиль";
     Layout = "_Layout";
+   
+  
 }
 <meta charset="utf-8" />
 <head>
@@ -21,6 +23,7 @@
         border-collapse: collapse; /* Слияние границ ячеек */
     }
 </style>
+<input type="hidden" id="profileId" value="@Model.Id" />
 <br/>
 <div class="card border-warning mb-3" style="margin:10px; max-width: 100%;">
     <div class="row g-0">
@@ -34,7 +37,6 @@
                     <h5 class="card-title">Фамилия: @(!string.IsNullOrEmpty(Model.LastName) ? Model.LastName : "-")</h5>
                     <h5 class="card-title">Имя:@Model?.Name</h5>
                     <h5 class="card-title">Отчество: @(!string.IsNullOrEmpty(Model.Surname) ? Model.Surname : "-")</h5>
-
                 }
                 else
                 {
@@ -57,47 +59,64 @@
     <p class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
     <div class="table-container">
 
- 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Наименование</th>
-            <th>Количество</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var product in Model.UserPdocut)
-        {
+
+        <table id="BindingProductId" class="table">
+            <thead>
             <tr>
-                <td>@product.NameProduct</td>
-                <td>@product.TotalCount</td>
+                <th>Наименование</th>
+                <th>Инвентарный код</th>
+                <th>Количество</th>
+                <th>Действия</th>
             </tr>
-        }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            @foreach (var product in Model.UserPdocut)
+            {
+                <tr>
+                    <td>@product.NameProduct</td>
+                    <td>@product.InventoryCod</td>
+                    <td>@product.TotalCount</td>
+                    <td>
+                            <button id="unbinding" class="btn btn-success btn-sm ">Открепить</button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
     </div>
+
+
 }
-
-
-
-
 
 
 
 
 
 @section Scripts
-{
-   
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- 
-    <script>
-        $(document).ready(function () { 
-            $('.card').addClass('show');
+    {
 
-        });
-    </script>
-  
-}
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      
+        <script>
+            $(document).ready(function() {
+                $('.card').addClass('show');
+
+                $('#BindingProductId').on('click',
+                    '#unbinding',
+                    function() {
+                        // Находим родительскую строку tr
+                        var row = $(this).closest('tr');
+                        var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
+                        var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
+                        var ProfileId = $('#profileId').val();
+
+                        console.log("Наименование товара:", nameProduct);
+                        console.log("Инвентарный код:", inventoryCode);
+                        console.log("ID профиля:", ProfileId);
+                    });
+            });
+        </script>
+
+    }
 
