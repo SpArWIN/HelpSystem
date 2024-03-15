@@ -1,0 +1,20 @@
+﻿
+ <!--Тут отображаю выбранный товар-->
+ <div style="padding:10px">
+     <div class="row">
+         <div class="col-md-6">
+             <div class="card-body">
+                 <input type="hidden" id="Prof" value="@Model.Id" />
+                 <h5 class="card-title" id="ProductIDName"></h5>
+                 <p class="card-text" id="ProductCode"></p>
+             </div>
+         </div>
+
+     </div>
+    <label for="CountUnBinding">Количество открепляемого товара</label>
+    <input id="CountUnBinding" type="number" class="form-control mb-3" />
+     <div style="padding: 10px;"></div>
+     <div class="footer">
+         <a class="btn-outline-warning" id="BtnBinding">Открепить</a>
+     </div>
+ </div>

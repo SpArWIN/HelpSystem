@@ -413,8 +413,60 @@ function BindProduct(hiddenId, productsId,Com) {
         }
     });
 }
-function UnbindingProduct() {
+//Метод на открепления товара от пользователя, передача в контроллер
+function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
+    Swal.fire({
+        title: 'Открепление товара',
+        html: 'Пожалуйста, подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
 
+    });
+
+    var data = {
+        ProfileId: ProfileId,
+        NameProduct: NameProduct,
+        Code: Code,
+        CountUnbinding: CountUnbinding
+    };
+
+    $.ajax({
+        type: 'POST',
+        url: '/Product/UnbindingProduct',
+       /* contentType: 'application/json',*/
+        data: data,
+        success: function(response) {
+            Swal.close();
+            setTimeout(function() {
+                    Swal.fire({
+                        title: 'Открепление товара',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Окей',
+
+                    }).then((result) => {
+                        location.reload();
+                    });
+                },
+                1000);
+        },
+        error:function(response) {
+            Swal.close();
+            setTimeout(function() {
+                Swal.fire({
+                    title: 'Что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Хорошо',
+
+                });
+            },1000);
+        }
+    });
 }
 function initializeSelect2() {
     $('#ProductsID').select2({

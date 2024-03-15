@@ -77,7 +77,7 @@
                     <td>@product.InventoryCod</td>
                     <td>@product.TotalCount</td>
                     <td>
-                            <button id="unbinding" class="btn btn-success btn-sm ">Открепить</button>
+                            <button id="unbinding" class="btn btn-success btn-sm " >Открепить</button>
                     </td>
                 </tr>
             }
@@ -101,20 +101,40 @@
         <script>
             $(document).ready(function() {
                 $('.card').addClass('show');
+                $('#BindingProductId').on('click', '#unbinding', function() {
+                    // Находим родительскую строку tr
+                    var row = $(this).closest('tr');
+                    var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
+                    var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
+                    var ProfileId = $('#profileId').val();
 
-                $('#BindingProductId').on('click',
-                    '#unbinding',
-                    function() {
-                        // Находим родительскую строку tr
-                        var row = $(this).closest('tr');
-                        var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
-                        var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
-                        var ProfileId = $('#profileId').val();
-
-                        console.log("Наименование товара:", nameProduct);
-                        console.log("Инвентарный код:", inventoryCode);
-                        console.log("ID профиля:", ProfileId);
+                    //Через SwetAlert передадим все необходимые данные без модального окна
+                    Swal.fire({
+                        title: 'Введите необходимое количество товара, которое нужно отвязать',
+                        html: `
+                <input id="nameProduct" class="swal2-input" value="${nameProduct}" readonly>
+                <input id="inventoryCode" class="swal2-input" value="${inventoryCode}" readonly>
+                <input id="countUnbinding" class="swal2-input" placeholder="Введите количество">
+            `,
+                        focusConfirm: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Отвязать',
+                        cancelButtonText: 'Отмена',
+                        preConfirm: () => {
+                            return {
+                                ProfileId: ProfileId,
+                                NameProduct: nameProduct,
+                                Code: inventoryCode,
+                                Count: document.getElementById('countUnbinding').value
+                            };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            var countBind = result.value;
+                            UnbindingProduct(countBind.ProfileId, countBind.NameProduct, countBind.Code, countBind.Count);
+                        }
                     });
+                });
             });
         </script>
 

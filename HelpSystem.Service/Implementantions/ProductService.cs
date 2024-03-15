@@ -210,7 +210,9 @@ namespace HelpSystem.Service.Implementantions
                     .Include(u => u.User)
                     .Where(stat => stat.ID== StatId)
                     .Select(stat => stat.User.Id)
-                    .FirstOrDefaultAsync(); ;
+                    .FirstOrDefaultAsync(); 
+
+
                 var Product = await _productsRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == ProductId);
                 if (Product != null)
@@ -249,6 +251,84 @@ namespace HelpSystem.Service.Implementantions
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"{ex.Message}"
+                };
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct(UnbindingProductViewModel product)
+        {
+            try
+            {
+                //Находим пользователя, а именно его фио
+                var Profile = await _productsRepository
+                    .GetAll()
+                    .Where(x => x.UserId == product.ProfileId)
+                    .Select(x => new
+                    {
+                        FullName = x.User.Profile.Surname + " " + x.User.Profile.Name + " " + x.User.Profile.LastName
+                    })
+                    .FirstOrDefaultAsync();
+                    
+                if (Profile != null)
+                {
+
+                    //Количество запрашиваемого товара, который необходимо снять
+                    int RequestProductCount = product.CountUnbinding;
+                    if (RequestProductCount > 0)
+                    {
+                        var productsToUnbind = await _productsRepository.GetAll()
+                            .Where(x => x.UserId== product.ProfileId)
+                            .Where(x => x.NameProduct == product.NameProduct && x.InventoryCode == product.Code)
+                            .Take(RequestProductCount) // Взять запрошенное количество товаров для снятия привязки
+                            .ToListAsync();
+                            //Предположим, что у пользователя 5 катриджей, а просят снять с него 8, косяк, получается.
+
+                        if (productsToUnbind.Count < RequestProductCount)
+                        {
+                            return new BaseResponse<IEnumerable<Products>>()
+                            {
+                                Description = "Запрошено снятие привязки большего количества товаров, чем доступно",
+                                StatusCode = StatusCode.UnChanched,
+                            
+                            };
+                        }
+                        else
+                        {
+                            //Снятие происходит путём очищения привязки пользователя
+                            foreach (var prod in productsToUnbind)
+                            {
+                                prod.UserId = null;
+                                await _productsRepository.Update(prod);
+                            }
+
+                            return new BaseResponse<IEnumerable<Products>>()
+                            {
+                                Description = $"Товар(ы) {product.NameProduct} ({product.Code}) \n сняты с \n{Profile.FullName}",
+                                StatusCode = StatusCode.Ok,
+                                Data = productsToUnbind
+                            };
+                        }
+                    }
+                    return new BaseResponse<IEnumerable<Products>>()
+                    {
+                        Description = $"Количество запрашиваемого товара на снятие меньше или равно 0",
+                        StatusCode = StatusCode.UnCreated
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<Products>>()
+                {
+                    Description = $"Пользователь не найден",
+                    StatusCode = StatusCode.NotFind
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<Products>>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
         }

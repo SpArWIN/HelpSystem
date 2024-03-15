@@ -1,4 +1,5 @@
-﻿using HelpSystem.Domain.ViewModel.Product;
+﻿using System.Linq.Expressions;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,6 +55,20 @@ namespace HelpSystem.Controllers
             {
                 return Ok(new { Response.Data, description = Response.Description });
 
+            }
+
+            return BadRequest(new { description = Response.Description });
+        }
+
+        
+        //Снятие с пользователя товара
+        [HttpPost]
+        public async Task<IActionResult> UnbindingProduct(UnbindingProductViewModel model)
+        {
+            var Response = await _productService.UnBindingProduct(model);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { Response.Data, description = Response.Description });
             }
 
             return BadRequest(new { description = Response.Description });

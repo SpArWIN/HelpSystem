@@ -17,7 +17,19 @@ namespace HelpSystem.Service.Interfaces
       
         Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
 
-
+        /// <summary>
+        /// Метод создания привязки товара к пользователю
+        /// </summary>
+        /// <param name="StatId"></param>
+        /// <param name="ProductId"></param>
+        /// <param name="Comments"></param>
+        /// <returns>Привязанный товар</returns>
         Task<BaseResponse<Products>> BindingProduct(Guid StatId,Guid ProductId,string?  Comments);
+        /// <summary>
+        /// Метод отвязки товара от пользователя
+        /// </summary>
+        /// <param name="product"></param>
+        /// <returns></returns>
+        Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct(UnbindingProductViewModel  product);
     }
 }
