@@ -29,7 +29,18 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id);
+        /// <summary>
+        /// Метод сохранение изменений склада
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
 
         Task<IBaseResponse<Warehouse>> SaveWarehouse(WarehouseViewModel model);
+        /// <summary>
+        /// Метод получения всех товаров по складу
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task <DataTableResponse> GetProductWarehouse(Guid id );
     }
 }

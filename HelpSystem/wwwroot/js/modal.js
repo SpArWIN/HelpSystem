@@ -20,8 +20,10 @@ function openModal(parameters) {
 
             // Выполняем соответствующее действие в зависимости от контекста
            
+            if (context === "ListWarehouse") {
+                initializeWarehouseProductTable(id);
 
-
+            }
 
         },
         failure: function () {
@@ -360,11 +362,11 @@ $('#BtnBind').click(function () {
     } else {
         // Если элемент скрыт, то плавно его показываем
         $('.row').slideDown();
-        // Инициализация других компонентов или действий
+       //инициализируем выборку
         initializeSelect2();
     }
 });
-// Привязка данных к пользователю
+// Привязка данных к пользователю со стороны заявки
 function BindProduct(hiddenId, productsId,Com) {
     Swal.fire({
         title: 'Создание связи',
@@ -468,6 +470,23 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
         }
     });
 }
+
+
+//метод с возможностью поиска по пользователям
+function initializeSelectUser2() {
+    $("#UserId").select2({
+        placeholder: "Выберите пользователя",
+        minimumInputLength: 5,
+        allowClear: true,
+        tags: true,
+        dropdownParent: $('#DetailWarehouse'),
+        ajax: {
+            type: 'POST',
+            url:'/'
+        }
+    });
+}
+//Это combox с возможностью поиска товаров
 function initializeSelect2() {
     $('#ProductsID').select2({
         placeholder: "Выберите товар",
@@ -570,6 +589,75 @@ function initializeSelect2() {
         });
     }
 
+//Загрузка таблицы списка товаров на складе через ajax
+function initializeWarehouseProductTable(warehouseId) {
+    
+   return  $("#WarehouseProductTable").DataTable({
+        ajax: {
+            url: "/Warehouse/GetJSONWarehouse",
+            type: "GET",
+            data: { id: warehouseId },
+            dataSrc: "data"
+        },
+        language: {
+            url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json",
+            emptyTable: "Нет товаров для отображения"
+        },
+        columns: [
+            { data: "nameProduct", name: "NameProduct", className:"text-center"  },
+            { data: "codeProduct", name: "CodeProduct", className: "text-center" },
+            { data: "totalCountWarehouse", name: "TotalCountWarehouse", className: "text-center" },
+            { data: "availableCount", name: "AvailableCount", className: "text-center" },
+            {
+                data: null,
+                sortable: false,
+                render: function (data, type, row) {
+                    return '<div class="btn-group" role="group">' +
+                        '<button class="btn btn-success btn-op">Закрепить</button>' +
+                        '<button class="btn btn-primary btn-move" style="margin-left: 5px;">Переместить</button>' +
+                        '</div>' +
+                        '<div style ="margin:8px; padding:5px;" class="count-input-container"></div>'; 
+                }
+            }
+        ],
+        initComplete: function () {
+            BindingProdWarehouse();
+        }
+    });
+   
+   
+}
+//Клик события закрепление
+async function BindingProdWarehouse() {
+    // Так как клики многократные, остальные убираем, оставляем текущий
+    // Допилить событие привязки, будет почти также, но поиск по юзверю
+    $(document).on('click', '.btn-op', async function () {
+        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
+        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
+        //Это input ввода количества
+        var countInput = $('<input>', {
+            type: 'number',
+            id: 'countUnbinding',
+            class: 'swal2-input',
+            placeholder: 'Введите количество',
+            min: '0'
+        }).hide(); 
 
+        //Это Будет поиск по юзверям
+        var UserSelect = $('<select>', {
+            id: 'UserId',
+            class: 'form-control'
+        });
+
+        // Вставляем скрытый input в контейнер внутри текущей строки таблицы
+        // Вставляем скрытый input и select в контейнер внутри текущей строки таблицы
+        $(this).closest('tr').find('.count-input-container').html(countInput).append(UserSelect);
+
+        initializeSelectUser2();
+        // Показываем input
+        countInput.show();
+
+    });
+}
 
    

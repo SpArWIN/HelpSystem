@@ -11,10 +11,12 @@ namespace HelpSystem.Service.Implementantions
     public class WarehouseService : IWarehouseService
     {
         private IBaseRepository<Warehouse> _warehouseRepository;
+        private IBaseRepository<Products> _products;
 
-        public WarehouseService(IBaseRepository<Warehouse> warehouse)
+        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products)
         {
             _warehouseRepository = warehouse;
+            _products = products;
         }
         public async Task<BaseResponse<Warehouse>> CreateWarehouse(WarehouseViewModel model)
         {
@@ -216,6 +218,48 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Description = $"{ex.Message}",
                     StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+        //Получения списка всех товаров, находящихся на этом складе
+        //TODO потом немного изменить логику так, чтобы тут были только те товары, которые на момент не перемещены
+        public async Task<DataTableResponse> GetProductWarehouse(Guid id)
+        {
+            try
+            {
+                var Warehouse = await _warehouseRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == id);
+                if (Warehouse != null)
+                {
+                    var Products = await _products.GetAll()
+                        .Where(wh => wh.Warehouse == Warehouse) //Фильтрация по складу
+                        .GroupBy(x => x.NameProduct) //Группировка по 
+                        .Select(group => new ProductinWarehouseViewModel()
+                        {
+                            NameProduct = group.Key,
+                            CodeProduct = group.First().InventoryCode,
+                            TotalCountWarehouse = group.Count(),
+                            AvailableCount = group.Count(x => x.UserId == null) //Подсчитываем доступное количество товаров
+                        })
+                        .ToListAsync();
+                    return new DataTableResponse()
+                    {
+                        Data = Products,
+                        
+                    };
+
+                }
+
+                return new DataTableResponse()
+                {
+                    Data = null
+                };
+            }
+            catch (Exception ex)
+            {
+                return new DataTableResponse()
+                {
+                    Data = null
                 };
             }
         }

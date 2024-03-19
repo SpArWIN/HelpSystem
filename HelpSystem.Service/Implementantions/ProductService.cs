@@ -124,7 +124,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             return new BaseResponse<IEnumerable<Products>>()
                             {
-                                Description = $"В {positionIndex} или не указано количество или оно меньше 0",
+                                Description = $"В позиции {positionIndex} или не указано количество или оно меньше 0",
                                 StatusCode = StatusCode.UnCreated
                             };
                         }

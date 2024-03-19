@@ -1,4 +1,5 @@
-﻿using HelpSystem.Domain.ViewModel.Warehouse;
+﻿using System.Linq.Expressions;
+using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Implementantions;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -61,6 +62,22 @@ namespace HelpSystem.Controllers
             }
 
             return BadRequest(new { description = Response.Description });
+        }
+
+        //Получения списка товаров по складу
+        [HttpGet]
+        public async Task<IActionResult> GetProductsWarehouse(Guid id)
+        {
+            
+            return PartialView("_ProductWarehouse");
+            //  return Json( new {data = Response.Data});
+            // return Json(Response.Data);
+        }
+
+        public async Task<IActionResult> GetJSONWarehouse(Guid id)
+        {
+            var Response = await _warehouseService.GetProductWarehouse(id);
+            return Json(new { data = Response.Data });
         }
     }
 }

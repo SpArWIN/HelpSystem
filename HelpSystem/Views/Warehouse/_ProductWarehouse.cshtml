@@ -1,0 +1,89 @@
+﻿@model  IEnumerable<HelpSystem.Domain.ViewModel.Warehouse.ProductinWarehouseViewModel>
+
+@{
+    ViewBag.Title = "Товары на складе";
+    // Layout = "_Layout";
+}
+<link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+<style>
+    .table-container {
+     
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        overflow: clip;
+        margin:10px;
+        padding:5px;
+        text-align: center;
+      
+    }
+
+    #WarehouseProductTable {
+        border-collapse: separate; 
+        border-spacing: 6px; 
+       
+    }
+   
+     
+  
+
+</style>
+
+<div class="table-container">
+    <table class="display" id="WarehouseProductTable">
+        <thead>
+        <tr>
+            <th>Наименование</th>
+            <th>Инвентарный код</th>
+            <th>Общее количество</th>
+            <th>Доступно</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+@section Scripts
+{
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        $(document).ready(function() {
+          
+            // $("#WarehouseProductTable").DataTable({
+            //     ajax: {
+            //         url: "/Warehouse/GetProductsWarehouse",
+            //         type: "GET",
+            //         data: { id: id },
+            //         dataSrc: "data"
+            //     },
+            //     language: {
+            //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json",
+            //         emptyTable: "Нет товаров для отображения"
+            //     },
+            //     columns: [
+            //         { data: "NameProduct", name: "NameProduct" },
+            //         { data: "CodeProduct", name: "CodeProduct" },
+            //         { data: "TotalCountWarehouse", name: "TotalCountWarehouse" },
+            //         { data: "AvailableCount", name: "AvailableCount" },
+            //         {
+            //             data: null,
+            //             sortable: false,
+            //             render: function(data, type, row) {
+            //                 return '<div class="btn-group" role="group">' +
+            //                     '<button class="btn btn-success btn-op">Закрепить</button>' +
+            //                     '<button class="btn btn-primary btn-move" style="margin-left: 5px;">Переместить</button>' +
+            //                     '</div>';
+            //             }
+            //         }
+            //     ]
+            // });
+        });
+    </script>
+}
+       
+
+

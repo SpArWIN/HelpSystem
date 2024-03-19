@@ -19,6 +19,7 @@ namespace HelpSystem.Service.Interfaces
 
         /// <summary>
         /// Метод создания привязки товара к пользователю
+        /// В качестве параметров передётся ID заявки, от туда вытягивается юзверь, товар и комментарий, если нужно.
         /// </summary>
         /// <param name="StatId"></param>
         /// <param name="ProductId"></param>
