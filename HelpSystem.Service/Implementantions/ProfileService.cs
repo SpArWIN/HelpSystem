@@ -123,5 +123,48 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+        public async Task<BaseResponse<Dictionary<Guid, string>>> GetUser(string term)
+        {
+            try
+            {
+                //Мы находим только пользователей, которые имеют роль "Пользователя"
+
+                var Response = await _profileRepository.GetAll()
+                    .Include(u => u.User)
+                    .Where(u=>u.User.RoleId ==1)
+                    .Where(x => EF.Functions.Like(x.Name, $"%{term}%") || EF.Functions.Like(x.LastName, $"%{term}%") ||
+                                EF.Functions.Like(x.Surname, $"%{term}%") ||
+                                EF.Functions.Like(x.User.Login, $"%{term}%"))
+                    .ToListAsync();
+
+                if (Response.Any())
+                {
+                    var usersDictionary = Response.ToDictionary(
+                        x => x.UserId, 
+                        x => $"{x.LastName} {x.Name} {x.Surname} ({x.User.Login})" // Value: Full Name + Login
+                    );
+                    return new BaseResponse<Dictionary<Guid, string>>()
+                    {
+                        Data = usersDictionary,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<Dictionary<Guid, string>>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                    Description = "Нет ничего"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Dictionary<Guid, string>>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
     }
 }

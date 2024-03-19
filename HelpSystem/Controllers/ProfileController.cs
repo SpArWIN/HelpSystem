@@ -81,5 +81,15 @@ namespace HelpSystem.Controllers
             //  return Json(new { message = Response.Description });
             return BadRequest(new { description = Response.Description });
         }
+        [HttpPost]
+        public async Task<IActionResult> GetUsers(string term)
+        {
+            var Response = await _profileService.GetUser(term);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(Response.Data);
+            }
+            return Json(Response.Description);
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Response;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Warehouse;
 
 namespace HelpSystem.Service.Interfaces
@@ -42,5 +43,11 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task <DataTableResponse> GetProductWarehouse(Guid id );
+            /// <summary>
+            /// Метод привязки товара со стороны склада
+            /// </summary>
+            /// <param name="model"></param>
+            /// <returns></returns>
+        Task<BaseResponse<Products>> BindWarehouseProduct(BindingProductWarehouse model);
     }
 }

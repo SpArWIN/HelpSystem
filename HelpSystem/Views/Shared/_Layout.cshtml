@@ -160,17 +160,49 @@
     </div>
 </div>
 @*Модальное окно для детализации товаров на складе*@
-    <div class="modal fade" id="DetailWarehouse" tabindex="-1">
-        <div class="modal-dialog modal-xl">
+<div class="modal fade" id="DetailWarehouse" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Склад</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                 
+            </div>
+        </div>
+    </div>
+</div>
+    @*Это модальное окно, исключение, которое послужит для прикрепления товара к юзверю*@
+    <div class="modal fade" id="ModalBindingProduct" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title">Склад</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title">Привязка товара</h5>
                 </div>
                 <div class="modal-body">
-                </div>
-                <div class="modal-footer">
-                 
+                    <div class="mb-3">
+                        <label for="nameProduct" class="form-label">Наименование товара:</label>
+                        <input type="text" class="form-control" id="nameProduct" value="Наименование товара" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inventoryCode" class="form-label">Код товара:</label>
+                        <input type="text" class="form-control" id="inventoryCode" value="Код товара" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="countUnbinding" class="form-label">Количество,которое необходимо привязать</label>
+                        <input type="number" class="form-control" id="countUnbinding" placeholder="Введите количество" min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="UserId" class="form-label">Выберите пользователя:</label>
+                        <select class="form-control select2" id="UserId">  </select>
+                    </div>
+                    <div style="margin:5px;" class="d-grid gap-2">
+
+                        <a id="BtnBindWarehouse" class="btn btn-outline-warning">Привязать</a>
+                    </div>
                 </div>
             </div>
         </div>

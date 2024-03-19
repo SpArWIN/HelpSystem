@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Implementantions;
 using HelpSystem.Service.Interfaces;
@@ -73,11 +74,22 @@ namespace HelpSystem.Controllers
             //  return Json( new {data = Response.Data});
             // return Json(Response.Data);
         }
-
+        //Метод получения таблицы товаров на складе в JSON формате
         public async Task<IActionResult> GetJSONWarehouse(Guid id)
         {
             var Response = await _warehouseService.GetProductWarehouse(id);
             return Json(new { data = Response.Data });
+        }
+        //Метод привязки со стороны СКЛАДАА
+        public async Task<IActionResult> BindingWarehouseProduct(BindingProductWarehouse model)
+        {
+            var Response = await _warehouseService.BindWarehouseProduct(model);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { Response.Data, description = Response.Description });
+            }
+
+            return BadRequest(new { description = Response.Description });
         }
     }
 }

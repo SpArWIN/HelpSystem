@@ -366,6 +366,65 @@ $('#BtnBind').click(function () {
         initializeSelect2();
     }
 });
+//Привязка данных со стороны склада
+$("#BtnBindWarehouse").click(function () {
+
+    var Name = $("#nameProduct").val();
+    var Code = $("#inventoryCode").val();
+    var Count = $("#countUnbinding").val();
+    var User = $("#UserId").val();
+    var Data = {
+        UserId : User,
+        ProductName: Name,
+        InventoryCode :Code,
+        CountBinding :Count
+    }
+
+    Swal.fire({
+        title: 'Создание связи',
+        html: 'Пожалуйста подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/Warehouse/BindingWarehouseProduct',
+        data: Data,
+        success: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Привязка товара',
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей',
+
+                }).then((result) => {
+
+                });
+            },1000);
+        },
+        error: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Упс..что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Окей',
+                }).then((result) => {
+
+                });
+            },1000);
+        }
+
+    });
+
+});
 // Привязка данных к пользователю со стороны заявки
 function BindProduct(hiddenId, productsId,Com) {
     Swal.fire({
@@ -479,11 +538,27 @@ function initializeSelectUser2() {
         minimumInputLength: 5,
         allowClear: true,
         tags: true,
-        dropdownParent: $('#DetailWarehouse'),
-        ajax: {
-            type: 'POST',
-            url:'/'
-        }
+        dropdownParent: $('#ModalBindingProduct'),
+       ajax: {
+           type: 'POST',
+           url: '/Profile/GetUsers',
+           dataType: 'json',
+           data: function(params) {
+               return {
+                   term: params.term
+               };
+           },
+           processResults : function(response) {
+               var data = $.map(response,
+                   function(val, key) {
+                       return { id: key, text: val };
+                   });
+               return {
+                   results: data
+               };
+
+           }
+       }
     });
 }
 //Это combox с возможностью поиска товаров
@@ -615,8 +690,8 @@ function initializeWarehouseProductTable(warehouseId) {
                     return '<div class="btn-group" role="group">' +
                         '<button class="btn btn-success btn-op">Закрепить</button>' +
                         '<button class="btn btn-primary btn-move" style="margin-left: 5px;">Переместить</button>' +
-                        '</div>' +
-                        '<div style ="margin:8px; padding:5px;" class="count-input-container"></div>'; 
+                        '</div>';
+
                 }
             }
         ],
@@ -628,35 +703,17 @@ function initializeWarehouseProductTable(warehouseId) {
    
 }
 //Клик события закрепление
-async function BindingProdWarehouse() {
+ function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий
     // Допилить событие привязки, будет почти также, но поиск по юзверю
-    $(document).on('click', '.btn-op', async function () {
+    $(document).on('click', '.btn-op',  function () {
         var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
         var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
-        //Это input ввода количества
-        var countInput = $('<input>', {
-            type: 'number',
-            id: 'countUnbinding',
-            class: 'swal2-input',
-            placeholder: 'Введите количество',
-            min: '0'
-        }).hide(); 
-
-        //Это Будет поиск по юзверям
-        var UserSelect = $('<select>', {
-            id: 'UserId',
-            class: 'form-control'
-        });
-
-        // Вставляем скрытый input в контейнер внутри текущей строки таблицы
-        // Вставляем скрытый input и select в контейнер внутри текущей строки таблицы
-        $(this).closest('tr').find('.count-input-container').html(countInput).append(UserSelect);
-
+        
+        $('#nameProduct').val(nameProduct);
+        $('#inventoryCode').val(codeProduct);
+        $('#ModalBindingProduct').modal('show');
         initializeSelectUser2();
-        // Показываем input
-        countInput.show();
-
     });
 }
 

@@ -32,5 +32,7 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="product"></param>
         /// <returns></returns>
         Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct(UnbindingProductViewModel  product);
+      
+      
     }
 }

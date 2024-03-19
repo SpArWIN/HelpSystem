@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,6 +34,7 @@ namespace HelpSystem.Controllers
             return View();
         }
         [HttpPost]
+        //Привязка товара к пользователю со стороны заявки
         public async Task<IActionResult> BindingProduct(Guid StatId, Guid ProductId, string? Comments)
         {
             var Response = await _productService.BindingProduct(StatId, ProductId,Comments);
@@ -58,5 +60,7 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+
+     
     }
 }

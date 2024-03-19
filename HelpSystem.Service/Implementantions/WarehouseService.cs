@@ -2,6 +2,7 @@
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,13 @@ namespace HelpSystem.Service.Implementantions
         private IBaseRepository<Warehouse> _warehouseRepository;
         private IBaseRepository<Products> _products;
 
-        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products)
+        private IBaseRepository<User> _userRepository;
+        
+        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,IBaseRepository<User> user)
         {
             _warehouseRepository = warehouse;
             _products = products;
+            _userRepository = user;
         }
         public async Task<BaseResponse<Warehouse>> CreateWarehouse(WarehouseViewModel model)
         {
@@ -260,6 +264,97 @@ namespace HelpSystem.Service.Implementantions
                 return new DataTableResponse()
                 {
                     Data = null
+                };
+            }
+        }
+
+        public async Task<BaseResponse<Products>> BindWarehouseProduct(BindingProductWarehouse model)
+        {
+            try
+            {
+                //находим товары
+                var Products = await _products.GetAll()
+                    .Where(x => x.NameProduct == model.ProductName && x.InventoryCode == model.InventoryCode)
+                    .Where(x => x.UserId == null)
+                    .ToListAsync();
+                //Товары, которые нужно привязать
+                int CountWarehouseProduct = model.CountBinding;
+                
+                if (Products.Any())
+                {
+
+                    if (Products.Count < CountWarehouseProduct)
+                    {
+                        return new BaseResponse<Products>()
+                        {
+                            Description =
+                                "Количество доступного товара, которое необходимо привязать\n меньше требуемого.",
+                            StatusCode = StatusCode.NotFind
+                        };
+                    }
+
+                    var User = await _userRepository.GetAll()
+                        .Include(p=>p.Profile)
+                        .FirstOrDefaultAsync(x => x.Id == model.UserId);
+
+                    if (User != null)
+                    {
+                        for (int i = 0; i < CountWarehouseProduct; i++)
+                        {
+                            Products[i].UserId = User.Id;
+                            await _products.Update(Products[i]);
+                        }
+
+                        //foreach (var product in Products)
+                        //{
+                        //    product.UserId = User.Id;
+                        //    await _products.Update(product);
+                        //}
+                        //Для более логичного окончания
+
+                        string description;
+                        int lastDigit = CountWarehouseProduct % 10;
+                        if (CountWarehouseProduct >= 11 && CountWarehouseProduct <= 14) // Исключение для чисел 11-14
+                        {
+                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                        }
+                        else if (lastDigit == 1)
+                        {
+                            description = $"{CountWarehouseProduct} товар был прикреплен к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                        }
+                        else if (lastDigit >= 2 && lastDigit <= 4)
+                        {
+                            description = $"{CountWarehouseProduct} товара было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                        }
+                        else
+                        {
+                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                        }
+
+
+
+                        return new BaseResponse<Products>()
+                        {
+
+
+                            StatusCode = StatusCode.Ok,
+                            Description = description
+                        };
+                    }
+                }
+
+                return new BaseResponse<Products>()
+                {
+                    Description = $"Нет доступного товара для привязки",
+                    StatusCode = StatusCode.NotFind
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Products>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
         }
