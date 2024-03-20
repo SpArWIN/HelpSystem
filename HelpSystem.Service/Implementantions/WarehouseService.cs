@@ -279,7 +279,14 @@ namespace HelpSystem.Service.Implementantions
                     .ToListAsync();
                 //Товары, которые нужно привязать
                 int CountWarehouseProduct = model.CountBinding;
-                
+                if (CountWarehouseProduct <= 0)
+                {
+                    return new BaseResponse<Products>()
+                    {
+                        Description = "Невозможно привязать товар с количеством, меньшим или равным 0",
+                        StatusCode = StatusCode.NotFind
+                    };
+                }
                 if (Products.Any())
                 {
 
@@ -288,7 +295,7 @@ namespace HelpSystem.Service.Implementantions
                         return new BaseResponse<Products>()
                         {
                             Description =
-                                "Количество доступного товара, которое необходимо привязать\n меньше требуемого.",
+                                "Количество доступного товара, который необходимо привязать\n меньше требуемого.",
                             StatusCode = StatusCode.NotFind
                         };
                     }
@@ -304,13 +311,7 @@ namespace HelpSystem.Service.Implementantions
                             Products[i].UserId = User.Id;
                             await _products.Update(Products[i]);
                         }
-
-                        //foreach (var product in Products)
-                        //{
-                        //    product.UserId = User.Id;
-                        //    await _products.Update(product);
-                        //}
-                        //Для более логичного окончания
+                            //Для более логичного окончания
 
                         string description;
                         int lastDigit = CountWarehouseProduct % 10;

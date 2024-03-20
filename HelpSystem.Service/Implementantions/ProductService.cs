@@ -49,7 +49,7 @@ namespace HelpSystem.Service.Implementantions
                         .Select(x => new
                         {
                             x.Id,
-                            Name = $"{x.NameProduct} ({x.InventoryCode})",
+                            Name = $"{x.NameProduct} ({x.InventoryCode}) Склад: {x.Warehouse.Name}",
                             Location = x.Warehouse.Name
                         })
                         .ToDictionary(x => x.Id, x => x.Name);
@@ -265,7 +265,7 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.UserId == product.ProfileId)
                     .Select(x => new
                     {
-                        FullName = x.User.Profile.Surname + " " + x.User.Profile.Name + " " + x.User.Profile.LastName
+                        FullName = x.User.Profile.LastName + " " + x.User.Profile.Name + " " + x.User.Profile.Surname
                     })
                     .FirstOrDefaultAsync();
                     
@@ -301,9 +301,32 @@ namespace HelpSystem.Service.Implementantions
                                 await _productsRepository.Update(prod);
                             }
 
+                            string description;
+                            int lastDigit = RequestProductCount % 10;
+                            if (RequestProductCount >= 11 && RequestProductCount <= 14)
+                            {
+                                description =
+                                    $"{RequestProductCount} товаров {product.NameProduct} ({product.Code}) \n было снято с {Profile.FullName}";
+
+                            }
+                            else if (lastDigit == 1)
+                            {
+                                description =
+                                    $"{RequestProductCount} товар: {product.NameProduct} ({product.Code}) \n был снят с {Profile.FullName}";
+                            }
+                            else if (lastDigit >= 2 && lastDigit <= 4)
+                            {
+                                description =
+                                    $"{RequestProductCount} товара : {product.NameProduct} ({product.Code}) \n было снято с {Profile.FullName}";
+                            }
+                            else
+                            {
+                                description =
+                                    $"{RequestProductCount} товаров : {product.NameProduct} ({product.Code}) \n было снято с {Profile.FullName}";
+                            }
                             return new BaseResponse<IEnumerable<Products>>()
                             {
-                                Description = $"Товар(ы) {product.NameProduct} ({product.Code}) \n сняты с \n{Profile.FullName}",
+                                Description = description,
                                 StatusCode = StatusCode.Ok,
                                 Data = productsToUnbind
                             };

@@ -26,6 +26,7 @@ namespace HelpSystem.Service.Implementantions
 
                 var UserViews = users.Select(x => new UsersViewModel
                 {
+                    UserId = x.Id,
                     Login = x.Login,
                     Name = x.Name,
                     Surname = x.Profile.Surname,

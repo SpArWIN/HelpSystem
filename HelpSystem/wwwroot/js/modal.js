@@ -539,6 +539,18 @@ function initializeSelectUser2() {
         allowClear: true,
         tags: true,
         dropdownParent: $('#ModalBindingProduct'),
+        language: {
+            inputTooShort: function (args) {
+                var remainingChars = args.minimum - args.input.length;
+                return "Пожалуйста, введите не менее " + remainingChars + " символов";
+            },
+            "noResults": function () {
+                return "Результаты не найдены";
+            },
+            "searching": function () {
+                return "Поиск...";
+            }
+        },
        ajax: {
            type: 'POST',
            url: '/Profile/GetUsers',
@@ -569,6 +581,19 @@ function initializeSelect2() {
         allowClear: true,
         tags: true,
         dropdownParent: $('#StateModdal'),
+        language: {
+            inputTooShort: function (args) {
+                var remainingChars = args.minimum - args.input.length;
+                return "Пожалуйста, введите не менее " + remainingChars + " символов";
+            },
+            "noResults": function () {
+                return "Результаты не найдены";
+            },
+            "searching": function () {
+                return "Поиск...";
+            }
+        },
+
         ajax: {
             type: 'POST',
             url: '/Product/GetProduct',
@@ -697,15 +722,25 @@ function initializeWarehouseProductTable(warehouseId) {
         ],
         initComplete: function () {
             BindingProdWarehouse();
+            MoveProductWarehouse();
         }
     });
    
    
 }
+
+//Клик на событие перемещение
+function MoveProductWarehouse() {
+    $(document).on('click','.btn-op',function() {
+        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
+        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
+
+    });
+}
 //Клик события закрепление
  function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий
-    // Допилить событие привязки, будет почти также, но поиск по юзверю
+   
     $(document).on('click', '.btn-op',  function () {
         var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
         var codeProduct = $(this).closest('tr').find('td:eq(1)').text();

@@ -11,6 +11,7 @@ namespace HelpSystem.DAL
         {
 
         }
+        public DbSet<ProductMovement> TransferProducts { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Products> Products { get; set; }
         public DbSet<Warehouse> Warehouses { get; set; }

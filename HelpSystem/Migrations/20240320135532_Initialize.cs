@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HelpSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Create : Migration
+    public partial class Initialize : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -170,6 +170,27 @@ namespace HelpSystem.Migrations
                         onDelete: ReferentialAction.SetNull);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "TransferProducts",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SourceWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DestinationWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    MovementDate = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TransferProducts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TransferProducts_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "Roles",
                 columns: new[] { "Id", "RoleType" },
@@ -183,12 +204,12 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("9cb7f8de-ddb3-4024-8ce7-7c6c7b268d80"), null, null, null, null, null, new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba") });
+                values: new object[] { new Guid("dfc5eb2d-6733-4f35-b83d-642e279b6ab3"), null, null, null, null, null, new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",
@@ -222,6 +243,11 @@ namespace HelpSystem.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TransferProducts_ProductId",
+                table: "TransferProducts",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
@@ -231,13 +257,16 @@ namespace HelpSystem.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Products");
-
-            migrationBuilder.DropTable(
                 name: "Profiles");
 
             migrationBuilder.DropTable(
                 name: "Statements");
+
+            migrationBuilder.DropTable(
+                name: "TransferProducts");
+
+            migrationBuilder.DropTable(
+                name: "Products");
 
             migrationBuilder.DropTable(
                 name: "Invoices");
@@ -246,10 +275,10 @@ namespace HelpSystem.Migrations
                 name: "Providers");
 
             migrationBuilder.DropTable(
-                name: "Warehouses");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Warehouses");
 
             migrationBuilder.DropTable(
                 name: "Roles");

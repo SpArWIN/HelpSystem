@@ -18,18 +18,30 @@ namespace HelpSystem.Controllers
         }
 
 
-        public async Task<IActionResult> Detail()
+        public async Task<IActionResult> Detail(Guid? id)
         {
-            var currentUser = HttpContext.User;
-            var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier);
-            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
+            //Тут или мы переходим на свой профиль или админ переходит по профилям
+
+            if (id == null)
             {
-                // Вызов метода с идентификатором пользователя
-                var response = await _profileService.GetProfile(userId);
-                if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+
+
+                var currentUser = HttpContext.User;
+                var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier);
+                if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
                 {
-                    return View(response.Data);
+                    // Вызов метода с идентификатором пользователя
+                    var response = await _profileService.GetProfile(userId);
+                    if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+                    {
+                        return View(response.Data);
+                    }
                 }
+            }
+            var Response = await _profileService.GetProfile(id.Value);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return View(Response.Data);
             }
 
             return View();

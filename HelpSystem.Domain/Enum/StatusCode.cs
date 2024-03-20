@@ -13,6 +13,7 @@
         //Не найден, объект
         NotFind = 11,
         //Неизменено
-        UnChanched = 12
+        UnChanched = 12,
+        UnMove = 13,
     }
 }

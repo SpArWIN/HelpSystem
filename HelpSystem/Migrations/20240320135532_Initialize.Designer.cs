@@ -12,15 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240314211148_Create")]
-    partial class Create
+    [Migration("20240320135532_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -41,6 +41,31 @@ namespace HelpSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.ProductMovement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DestinationWarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("MovementDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SourceWarehouseId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("TransferProducts");
                 });
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>
@@ -119,8 +144,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9cb7f8de-ddb3-4024-8ce7-7c6c7b268d80"),
-                            UserId = new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba")
+                            Id = new Guid("dfc5eb2d-6733-4f35-b83d-642e279b6ab3"),
+                            UserId = new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b")
                         });
                 });
 
@@ -240,7 +265,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("94303fb9-a2cf-40a3-a86c-39e9ded9b6ba"),
+                            Id = new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -261,6 +286,17 @@ namespace HelpSystem.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Warehouses");
+                });
+
+            modelBuilder.Entity("HelpSystem.Domain.Entity.ProductMovement", b =>
+                {
+                    b.HasOne("HelpSystem.Domain.Entity.Products", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>

@@ -2,6 +2,7 @@
 {
     public class UsersViewModel
     {
+        public Guid ?UserId { get; set; }
         public string Login { get; set; }
         public string? Surname { get; set; } //Фамилия
         //Отчество

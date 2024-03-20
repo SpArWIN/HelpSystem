@@ -57,34 +57,66 @@
 @if (Model.UserPdocut != null && Model.UserPdocut.Any())
 {
     <p class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
-    <div class="table-container">
+    @if (User.IsInRole("3"))
+    {
 
 
-        <table id="BindingProductId" class="table">
-            <thead>
-            <tr>
-                <th>Наименование</th>
-                <th>Инвентарный код</th>
-                <th>Количество</th>
-                <th>Действия</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var product in Model.UserPdocut)
-            {
-                <tr>
-                    <td>@product.NameProduct</td>
-                    <td>@product.InventoryCod</td>
-                    <td>@product.TotalCount</td>
-                    <td>
-                            <button id="unbinding" class="btn btn-success btn-sm " >Открепить</button>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
+        <div class="table-container">
 
+
+            <table id="BindingProductId" class="table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>Инвентарный код</th>
+                        <th>Количество</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.UserPdocut)
+                    {
+                        <tr>
+                            <td>@product.NameProduct</td>
+                            <td>@product.InventoryCod</td>
+                            <td>@product.TotalCount</td>
+                            <td>
+                                <button id="unbinding" class="btn btn-success btn-sm " >Открепить</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="table-container">
+
+
+            <table id="BindingProductId" class="table">
+                <thead>
+                    <tr>
+                        <th>Наименование</th>
+                        <th>Инвентарный код</th>
+                        <th>Количество</th>
+                     
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model.UserPdocut)
+                    {
+                        <tr>
+                            <td>@product.NameProduct</td>
+                            <td>@product.InventoryCod</td>
+                            <td>@product.TotalCount</td>
+                       
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
 
 }
 
@@ -114,24 +146,25 @@
                         html: `
                 <input id="nameProduct" class="swal2-input" value="${nameProduct}" readonly>
                 <input id="inventoryCode" class="swal2-input" value="${inventoryCode}" readonly>
-                <input id="countUnbinding" class="swal2-input" placeholder="Введите количество">
+                <input id="Bindc" class="swal2-input" placeholder="Введите количество">
             `,
                         focusConfirm: false,
                         showCancelButton: true,
                         confirmButtonText: 'Отвязать',
                         cancelButtonText: 'Отмена',
                         preConfirm: () => {
+                        var countUnbinding = document.getElementById('Bindc').value;
                             return {
                                 ProfileId: ProfileId,
                                 NameProduct: nameProduct,
                                 Code: inventoryCode,
-                            Count: document.getElementById('countUnbinding').value
+                            CountUnbinding: countUnbinding
                             };
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             var countBind = result.value;
-                            UnbindingProduct(countBind.ProfileId, countBind.NameProduct, countBind.Code, countBind.Count);
+                        UnbindingProduct(countBind.ProfileId, countBind.NameProduct, countBind.Code, countBind.CountUnbinding);
                         }
                     });
                 });
