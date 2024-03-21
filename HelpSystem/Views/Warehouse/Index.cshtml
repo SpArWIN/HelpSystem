@@ -43,7 +43,7 @@
                         </div>
                         <div class="d-grid-gap-2">
                             <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({ modalId: 'modal', url: '/Warehouse/GetCurrentWarehouse', data: '@Warehouse.Id' , context: 'warehouse' }) ">Изменить</a>
-                            <a class="btn btn-outline-danger">Удалить</a>
+                            <a class="btn btn-outline-danger" onclick="openModal({modalId: 'ModalMove', url:'/Warehouse/GetProductsDetail', data: '@Warehouse.Id' , context: 'MoveProductWarehouse'}) ">Переместить товар</a>
                             <a type="button" style="margin:5px;" class="btn btn-outline-info" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetProductsWarehouse', data: '@Warehouse.Id' , context: 'ListWarehouse'})  ">Список товаров</a>
                         </div>
                         
@@ -78,25 +78,29 @@ else
 
     @*   <script src="~/js/modal.js?v=3"></script> *@
     <script>
-    $(document).ready(function() {
-        $('.user-animation').addClass('show');
+
+
+
+
+        $(document).ready(function() {
+            $('.user-animation').addClass('show');
             $('#WarehouseAdd').on('click', async function () {
-            const { value: WarehouseNmae } = await Swal.fire({
-                title: 'Добавление склада',
-                input: 'text',
-                inputPlaceholder: 'Введите наименование склада ',
-                inputValidator: (value) => {
-                    if (!value || value.length < 5) {
-                        return 'Минимальная длина наименования - 5 символов!';
+                const { value: WarehouseNmae } = await Swal.fire({
+                    title: 'Добавление склада',
+                    input: 'text',
+                    inputPlaceholder: 'Введите наименование склада ',
+                    inputValidator: (value) => {
+                        if (!value || value.length < 5) {
+                            return 'Минимальная длина наименования - 5 символов!';
+                        }
                     }
-                }
-            });
+                });
 
                 if (WarehouseNmae) {
                     CreateWarehouse(WarehouseNmae);
-            }
-        });
+                }
+            });
         
-});
+        });
     </script>
 }

@@ -1,11 +1,14 @@
-﻿using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Implementantions;
+using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.Json;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -15,12 +18,13 @@ namespace HelpSystem.Service.Implementantions
         private IBaseRepository<Products> _products;
 
         private IBaseRepository<User> _userRepository;
-        
-        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,IBaseRepository<User> user)
+        private IBaseRepository<ProductMovement> _productMovementRepository;
+        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,IBaseRepository<User> user, IBaseRepository<ProductMovement> productMovementRepository)
         {
             _warehouseRepository = warehouse;
             _products = products;
             _userRepository = user;
+            _productMovementRepository = productMovementRepository;
         }
         public async Task<BaseResponse<Warehouse>> CreateWarehouse(WarehouseViewModel model)
         {
@@ -233,22 +237,37 @@ namespace HelpSystem.Service.Implementantions
             {
                 var Warehouse = await _warehouseRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == id);
+
                 if (Warehouse != null)
                 {
-                    var Products = await _products.GetAll()
-                        .Where(wh => wh.Warehouse == Warehouse) //Фильтрация по складу
-                        .GroupBy(x => x.NameProduct) //Группировка по 
+                    // Получаем список всех товаров на выбранном складе
+                    var productsOnWarehouse = await _products.GetAll()
+                        .Where(p => p.Warehouse == Warehouse)
+                        .ToListAsync();
+                    // Получаем список ID всех товаров, которые были перемещены с этого склада
+                    var movementProducts = await _productMovementRepository.GetAll()
+                        .Where(m => m.DestinationWarehouseId == Warehouse.Id)
+                        .Select(m => m.ProductId)
+                        .ToListAsync();
+                    // Фильтруем товары на выбранном складе: оставляем только те товары, которые не были перемещены
+
+                    var AvailableProducts = productsOnWarehouse.Where(p => !movementProducts.Contains(p.Id));
+
+
+                    // Группируем товары по их наименованию
+                    var groupedProducts = AvailableProducts
+                        .GroupBy(x => x.NameProduct)
                         .Select(group => new ProductinWarehouseViewModel()
                         {
                             NameProduct = group.Key,
                             CodeProduct = group.First().InventoryCode,
                             TotalCountWarehouse = group.Count(),
-                            AvailableCount = group.Count(x => x.UserId == null) //Подсчитываем доступное количество товаров
+                            AvailableCount = group.Count(x => x.UserId == null)
                         })
-                        .ToListAsync();
+                        .ToList();
                     return new DataTableResponse()
                     {
-                        Data = Products,
+                        Data = groupedProducts,
                         
                     };
 
@@ -356,6 +375,55 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Description = $"{ex.Message}",
                     StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+        //Тут мы получим все товары, не группируя их, тогда можно будет перемещать каждый товар по отдельности
+        public  async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
+        {
+            try
+            {
+                var Warehouse = await _warehouseRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == WhId);
+                if (Warehouse != null)
+                {
+                    //Получаем все товары на складе
+                    var productsOnWarehouse = await _products.GetAll()
+                        .Where(p => p.Warehouse == Warehouse)
+                        .ToListAsync();
+                    //Получаем список товаров, которые вообще были перемещены с этого склада
+                    var movementProducts = await _productMovementRepository.GetAll()
+                        .Where(m => m.DestinationWarehouseId == Warehouse.Id) // Фильтруем по ID склада товара
+                        .Select(m => m.ProductId)
+                        .ToListAsync();
+
+                    // Фильтруем товары на выбранном складе: оставляем только те товары, которые не были перемещены и не закреплены за пользователем
+                    var availableProducts = productsOnWarehouse.Where(p => !movementProducts.Contains(p.Id) && p.UserId == null);
+                    // Формируем список деталей товара для аккордеона
+                    var productDetails = availableProducts.Select(p => new TransferProductViewModel
+                    {
+                        Id = p.Id,
+                        Name = p.NameProduct,
+                        Code = p.InventoryCode
+                    }).ToList();
+                    return new BaseResponse<IEnumerable<TransferProductViewModel>>
+                    {
+                        Data = productDetails,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<TransferProductViewModel>>()
+                {
+                    StatusCode = StatusCode.NotFind
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<TransferProductViewModel>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{ex.Message}"
                 };
             }
         }

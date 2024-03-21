@@ -1,6 +1,7 @@
 ﻿using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Warehouse;
 
 namespace HelpSystem.Service.Interfaces
@@ -49,5 +50,8 @@ namespace HelpSystem.Service.Interfaces
             /// <param name="model"></param>
             /// <returns></returns>
         Task<BaseResponse<Products>> BindWarehouseProduct(BindingProductWarehouse model);
+
+        //Метод, который получит детали товаров, т.е не по группировке, а все товары.
+        Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId);
     }
 }

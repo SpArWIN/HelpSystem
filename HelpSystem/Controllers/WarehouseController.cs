@@ -91,5 +91,17 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+        //метод получения списка всех складов, кроме текущего местоположения товара
+        public async Task<IActionResult> GetProductsDetail(Guid id)
+        {
+            var Response = await _warehouseService.GetProductsDetails(id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                PartialView("_MoveProductWarehouse", Response.Data);
+
+            }
+
+            return PartialView("_MoveProductWarehouse");
+        }
     }
 }

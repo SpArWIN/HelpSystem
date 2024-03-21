@@ -712,17 +712,14 @@ function initializeWarehouseProductTable(warehouseId) {
                 data: null,
                 sortable: false,
                 render: function (data, type, row) {
-                    return '<div class="btn-group" role="group">' +
-                        '<button class="btn btn-success btn-op">Закрепить</button>' +
-                        '<button class="btn btn-primary btn-move" style="margin-left: 5px;">Переместить</button>' +
-                        '</div>';
+                    return '<button class="btn btn-success btn-op">Закрепить</button>';
 
                 }
             }
         ],
         initComplete: function () {
             BindingProdWarehouse();
-            MoveProductWarehouse();
+          /*  MoveProductWarehouse();*/
         }
     });
    
@@ -730,13 +727,16 @@ function initializeWarehouseProductTable(warehouseId) {
 }
 
 //Клик на событие перемещение
-function MoveProductWarehouse() {
-    $(document).on('click','.btn-op',function() {
-        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
-        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
+//function MoveProductWarehouse() {
+//    $(document).on('click','.btn-move',function() {
+//        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
+//        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
 
-    });
-}
+//        $('#MoveNameProduct').val(nameProduct);
+//        $('#MoveInventoryCode').val(codeProduct);
+//        $('#ModalMove').modal('show');
+//    });
+//}
 //Клик события закрепление
  function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий

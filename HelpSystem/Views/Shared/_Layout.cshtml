@@ -177,7 +177,7 @@
 </div>
     @*Это модальное окно, исключение, которое послужит для прикрепления товара к юзверю*@
     <div class="modal fade" id="ModalBindingProduct" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered " role="document">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-white">
                     <h5 class="modal-title">Привязка товара</h5>
@@ -209,38 +209,19 @@
     </div>
     
     
-    @*Модальное окно для перемещения товара*@
+   @*  @*Модальное окно для перемещения товара*@
     <div class="modal fade" id="ModalMove" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-warning text-white">
-                    <h5 class="modal-title">Перемещение твоара</h5>
+                    <h5 class="modal-title">Перемещение товара</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="MoveNameProduct" class="form-label">Наименование товара:</label>
-                        <input type="text" class="form-control" id="MoveNameProduct" value="Наименование товара" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="MoveInventoryCode" class="form-label">Код товара:</label>
-                        <input type="text" class="form-control" id="MoveInventoryCode" value="Код товара" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label for="countUnbinding" class="form-label">Количество,которое необходимо переместить</label>
-                        <input type="number" class="form-control" id="CountMove" placeholder="Введите количество" min="0">
-                    </div>
-                    <div class="mb-3">
-                        <label for="DestinationWarehouseId" class="form-label">Выберите склад:</label>
-                        <select class="form-control select2" id="DestinationWarehouseId">  </select>
-                    </div>
-                    <div style="margin:5px;" class="d-grid gap-2">
-
-                        <a id="BtnMoveHouse" class="btn btn-outline-warning">Переместить</a>
-                    </div>
+                  
                 </div>
             </div>
         </div>
-    </div>
+    </div> 
 
 
     <footer style="margin-top:10px;" class="border-top footer text-muted">

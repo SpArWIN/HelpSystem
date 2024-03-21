@@ -149,7 +149,7 @@ namespace HelpSystem.Service.Implementantions
                 }
                 return new BaseResponse<ProductMovement>()
                 {
-                    StatusCode = StatusCode.Ok,
+                    StatusCode = StatusCode.NotFind,
                     Description = "Информация о перемещениях данного товара отсутствует"
                 };
 
