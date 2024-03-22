@@ -1,40 +1,142 @@
 ﻿@model IEnumerable<HelpSystem.Domain.ViewModel.Transfer.TransferProductViewModel>
+
+@{
+    ViewBag.Title = "Формирование заявки";
+   
+}
 <div class="accordion" id="accordionExample">
-    @foreach (var productGroup in Model.GroupBy(p => p.Name))
+    <style>
+        #massMoveFooter {
+            display: block;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: height 0.3s ease, opacity 0.3s ease;
+        }
+
+            #massMoveFooter.show {
+                height: auto;
+                opacity: 1;
+            }
+    </style>
+
+
+
+
+
+    @if (Model.Any())
     {
-        var position = 0; // Переменная для хранения номера позиции
+        <div class="accordion" id="accordionExample">
+            @foreach (var productGroup in Model.GroupBy(p => p.Name))
+            {
+                var position = 0; // Переменная для хранения номера позиции
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="@($"heading{productGroup.Key}")">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{productGroup.Key.Replace(" ", "-")}")" aria-expanded="true" aria-controls="@($"collapse{productGroup.Key.Replace(" ", "-")}")">
+                            @productGroup.Key
+                        </button>
+                    </h2>
+                    <div id="@($"collapse{productGroup.Key.Replace(" ", "-")}")" class="accordion-collapse collapse" aria-labelledby="@($"heading{productGroup.Key}")" data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                            @foreach (var product in productGroup)
+                            {
+                                position++; // Увеличиваем номер позиции для каждого элемента
+                                <div style="border: 2px solid gray; padding: 10px; margin-bottom: 10px; box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);">
+                                    <p>Позиция: @position</p>
+                                    <p style="display:none">Id: @product.Id</p>
+                                    <p>Наименование: @product.Name</p>
+                                    <p>Инвентарный код: @product.Code</p>
+                                    <div style="margin:6px; margin-bottom:6px;">
+                                        <label id="WareLabel">Выберите склад</label>
+                                        <select class="form-select" id="SelectWarehouse">
+                                            @if (product.Warehouses != null && product.Warehouses.Any())
+                                            {
+                                                foreach (var warehouse in product.Warehouses)
+                                                {
+                                                    <option value="@warehouse.Id">@warehouse.Name</option>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <option disabled>Нет доступных складов</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <a id="BtnMoves" class="btn btn-danger">Переместить</a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
         <div class="accordion-item">
-            <h2 class="accordion-header" id="@($"heading{productGroup.Key}")">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{productGroup.Key.Replace(" ", "-")}")" aria-expanded="true" aria-controls="@($"collapse{productGroup.Key.Replace(" ", "-")}")">
-                    @productGroup.Key
+            <h2 class="accordion-header" id="headingSettings">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSettings" aria-expanded="true" aria-controls="collapseSettings">
+                    Настройки перемещения
                 </button>
             </h2>
-            <div id="@($"collapse{productGroup.Key.Replace(" ", "-")}")" class="accordion-collapse collapse" aria-labelledby="@($"heading{productGroup.Key}")" data-bs-parent="#accordionExample">
+            <div id="collapseSettings" class="accordion-collapse collapse" aria-labelledby="headingSettings" data-bs-parent="#accordionExample">
                 <div class="accordion-body">
-                    @foreach (var product in productGroup)
-                    {
-                        position++; // Увеличиваем номер позиции для каждого элемента
-                        <div style="border: 2px solid gray; padding: 10px; margin-bottom: 10px; box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);">
-                            <p>Позиция: @position</p>
-                            <p style="display:none">Id: @product.Id</p>
-                            <p>Наименование: @product.Name</p>
-                            <p>Инвентарный код: @product.Code</p>
-                            <div class="d-grid-gap-2">
-                                <a class="btn btn-danger">Переместить</a>
-                            </div>
-                        </div>
-                    }
+                    <div class="form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                        <label class="form-check-label" for="flexSwitchCheckDefault">Режим массового перемещения</label>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <footer id="massMoveFooter" style="display:none;">
+            <div class="d-grid gap-2" style="margin:5px; text-align:center">
+                <div style="margin:6px;">
+                    <label for="SelectMassWarehouse">Выберите склад</label>
+                    <select class="form-select" id="SelectMassWarehouse">
+                    </select>
+                </div>
+                <a id="BtnMassMove" class="btn btn-danger">Массовое перемещение</a>
+            </div>
+        </footer>
     }
-</div>
-
-
-
-@section Scripts{
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.4.3/dist/js/bootstrap.min.js"></script>
+    else
+    {
+        <p>На складе нет товаров для перемещения.</p>
+    }
     
-}
+
+
+    <script>
+    $(document).ready(function() {
+        // Обработчик изменения состояния переключателя
+        $('#flexSwitchCheckDefault').change(function() {
+            if ($(this).prop('checked')) {
+                $('.accordion-button').removeClass('collapsed');
+                $('.accordion-button').attr('aria-expanded', 'true');
+                $('.accordion-collapse').addClass('show');
+                $('.accordion-body  #SelectWarehouse').css('display', 'none');
+                $('#massMoveFooter').css('display', 'block');
+                $('.accordion-body #WareLabel').css('display', 'none');
+                $('#massMoveFooter').addClass('show');
+                //отключаем кнопки, включаем checkbox
+                $('.accordion-body #BtnMoves').fadeOut(400, function() {
+                    $(this).replaceWith('<div class="form-check"><input class="form-check-input" type="checkbox" id="flexSwitchMove"><label class="form-check-label" for="flexSwitchMove">Переместить</label></div>');
+                }).fadeIn();
+               
+            } else {
+                $('.accordion-button').addClass('collapsed');
+                $('.accordion-button').attr('aria-expanded', 'false');
+                $('.accordion-collapse').removeClass('show');
+                $('#massMoveFooter').css('display', 'block');
+                $('.accordion-body  #SelectWarehouse').css('display', 'block');
+                $('.accordion-body #WareLabel').css('display', 'none');
+                $('.accordion-body .form-check').fadeOut(400, function () {
+                    $(this).replaceWith('<div id="BtnMoves" class="d-grid-gap-2"><a class="btn btn-danger">Переместить</a></div>');
+                }).fadeIn();
+              
+            }
+        });
+    });
+</script>
+
+
+

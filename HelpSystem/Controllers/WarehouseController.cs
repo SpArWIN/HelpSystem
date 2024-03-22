@@ -103,5 +103,16 @@ namespace HelpSystem.Controllers
 
             return PartialView("_MoveProductWarehouse");
         }
+        //Метод получения складов, кроме текущего
+        public async Task<IActionResult> GetNotCurrentWarehouse(Guid id)
+        {
+            var Response = await _warehouseService.GetNotCurrentWH(id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { data = Response.Data });
+            }
+
+            return BadRequest(new { description = Response.Description });
+        }
     }
 }

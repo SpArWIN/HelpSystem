@@ -24,6 +24,9 @@ function openModal(parameters) {
                 initializeWarehouseProductTable(id);
 
             }
+            if (context === "MoveProductWarehouse") {
+                MassInputWarehouse(id);
+            }
 
         },
         failure: function () {
@@ -726,17 +729,29 @@ function initializeWarehouseProductTable(warehouseId) {
    
 }
 
-//Клик на событие перемещение
-//function MoveProductWarehouse() {
-//    $(document).on('click','.btn-move',function() {
-//        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
-//        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
-
-//        $('#MoveNameProduct').val(nameProduct);
-//        $('#MoveInventoryCode').val(codeProduct);
-//        $('#ModalMove').modal('show');
-//    });
-//}
+//функиця для заполнения данными mass select 
+function MassInputWarehouse(id) {
+    $.ajax({
+        url: '/Warehouse/GetNotCurrentWarehouse',
+        type: 'GET',
+        data: { id: id }, // Передаем идентификатор склада как параметр запроса
+        success: function (response) {
+            if (response && response.data) {
+                var warehouses = response.data;
+                var selectMassWarehouse = $('#SelectMassWarehouse');
+                selectMassWarehouse.empty(); // Очищаем список перед добавлением новых элементов
+                warehouses.forEach(function (warehouse) {
+                    selectMassWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
+                });
+            } else {
+                console.error('Ошибка при получении списка складов');
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Произошла ошибка при выполнении запроса:', error);
+        }
+    });
+}
 //Клик события закрепление
  function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий
@@ -752,4 +767,4 @@ function initializeWarehouseProductTable(warehouseId) {
     });
 }
 
-   
+

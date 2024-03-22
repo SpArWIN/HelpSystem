@@ -53,5 +53,6 @@ namespace HelpSystem.Service.Interfaces
 
         //Метод, который получит детали товаров, т.е не по группировке, а все товары.
         Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId);
+        Task<IBaseResponse<IEnumerable<Warehouse>>> GetNotCurrentWH(Guid idGuid);
     }
 }

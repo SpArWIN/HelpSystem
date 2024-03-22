@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HelpSystem.Domain.ViewModel.Warehouse;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,6 @@ namespace HelpSystem.Domain.ViewModel.Transfer
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Code { get; set; }
-       
+        public IEnumerable<Entity.Warehouse>? Warehouses { get; set; }
     }
 }

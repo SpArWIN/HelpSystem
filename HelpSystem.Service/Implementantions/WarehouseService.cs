@@ -399,16 +399,22 @@ namespace HelpSystem.Service.Implementantions
 
                     // Фильтруем товары на выбранном складе: оставляем только те товары, которые не были перемещены и не закреплены за пользователем
                     var availableProducts = productsOnWarehouse.Where(p => !movementProducts.Contains(p.Id) && p.UserId == null);
+
+                    //Сразу же передадим список складов, кроме текущего.
+                    var NotCurrentWarehouse = await _warehouseRepository.GetAll()
+                        .Where(x => x.Id != WhId)
+                        .ToListAsync();
                     // Формируем список деталей товара для аккордеона
                     var productDetails = availableProducts.Select(p => new TransferProductViewModel
                     {
                         Id = p.Id,
                         Name = p.NameProduct,
-                        Code = p.InventoryCode
+                        Code = p.InventoryCode,
+                        Warehouses = NotCurrentWarehouse
                     }).ToList();
                     return new BaseResponse<IEnumerable<TransferProductViewModel>>
                     {
-                        Data = productDetails,
+                        Data  = productDetails,
                         StatusCode = StatusCode.Ok
                     };
                 }
@@ -421,6 +427,43 @@ namespace HelpSystem.Service.Implementantions
             catch (Exception ex)
             {
                 return new BaseResponse<IEnumerable<TransferProductViewModel>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{ex.Message}"
+                };
+            }
+        }
+        /// <summary>
+        /// Простой достаточно метод получения всех складов кроме текущего
+        /// </summary>
+        /// <param name="idGuid"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<IBaseResponse<IEnumerable<Warehouse>>> GetNotCurrentWH(Guid idGuid)
+        {
+            try
+            {
+                //Сразу же передадим список складов, кроме текущего.
+                var NotCurrentWarehouse = await _warehouseRepository.GetAll()
+                    .Where(x => x.Id != idGuid)
+                    .ToListAsync();
+                if (NotCurrentWarehouse.Any())
+                {
+                    return new BaseResponse<IEnumerable<Warehouse>>()
+                    {
+                        Data = NotCurrentWarehouse,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<Warehouse>>()
+                {
+                    StatusCode = StatusCode.NotFind
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<Warehouse>>()
                 {
                     StatusCode = StatusCode.InternalServerError,
                     Description = $"{ex.Message}"
