@@ -11,7 +11,7 @@ namespace HelpSystem.Controllers
         {
             _transferService = transfer;
         }
-
+        public async Task<IActionResult>AddTransfer ()
        
         public IActionResult Index()
         {

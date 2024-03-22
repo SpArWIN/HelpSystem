@@ -24,18 +24,23 @@ namespace HelpSystem.Service.Implementantions
             _productsRepository = productsRepository;
             _warehouseRepository = warehouse;
         }
-
-        public async Task<BaseResponse<ProductMovement>> AddTransfer(TransferViewModel model)
+        //todo ПРИЕХАТЬ И ДОПИСАТЬ МЕТОД, СО СКЛАДОМ, ЧТОБЫ БЫЛА КОЛЛЕЦИЯ
+        public async Task<IEnumerable<ProductMovement>> AddTransfer(List<TransferViewModel> model)
         {
             try
             {
+                foreach (var prod in model)
+                {
+                    var products = await _productsRepository.GetAll()
+                        .Include(w => w.Warehouse)
+                        .Where(x => x.NameProduct == prod.NameProduct && x.InventoryCode == prod.CodeProduct)
+                        .Where(x => x.UserId == null)
+                        .ToListAsync();
 
+
+                }
                 // Получаем товары по наименованию и инвентарному коду
-                var products = await _productsRepository.GetAll()
-                    .Include(w => w.Warehouse)
-                    .Where(x => x.NameProduct == model.NameProduct && x.InventoryCode == model.CodeProduct)
-                    .Where(x => x.UserId == null)
-                    .ToListAsync();
+                
 
                 if (!products.Any())
                 {
@@ -122,7 +127,6 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-
 
         public async Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(Guid ProductId)
         {
