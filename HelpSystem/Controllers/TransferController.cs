@@ -13,6 +13,7 @@ namespace HelpSystem.Controllers
             _transferService = transfer;
         }
         [HttpPost]
+        //Метод добавление записи о перемещени товара
         public async Task<IActionResult> AddTransfer(List<TransferViewModel> model)
         {
             var Response = await _transferService.AddTransferService(model);

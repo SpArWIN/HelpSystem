@@ -77,10 +77,21 @@ namespace HelpSystem.Service.Implementantions
                         DestinationWarehouseId = DestinationWarehouseId,
                         MovementDate = DateTime.Now
                     };
+                    //Найдём по id Наименование склада на какой 
+                    var FindName = await _warehouseRepository.GetAll()
+                        .Where(x => x.Id == DestinationWarehouseId)
+                        .Select(n => n.Name)
+                        .FirstOrDefaultAsync();
+                    //Найдем по id наименованиею склада, откуда 
+                    var FindGetName = await _warehouseRepository.GetAll()
+                        .Where(x=>x.Id == sourceWarehouseId)
+                        .Select(x=>x.Name)
+                        .FirstOrDefaultAsync();
+
                     await _transBaseRepository.Create(movement);
                     return new BaseResponse<IEnumerable<ProductMovement>>()
                     {
-                        Description = "Товар успешно перемещен.",
+                        Description = $"{ProductMove.NameProduct} перемещён с \n {FindGetName} на {FindName}  ",
                         StatusCode = StatusCode.Ok
                     };
                 }
@@ -216,7 +227,7 @@ namespace HelpSystem.Service.Implementantions
                     return new BaseResponse<ProductMovement>()
                     {
                         Data = LatesMovement,
-                        Description = $"Товар находится на складе {WhName}",
+                        Description = $" {WhName}",
                         StatusCode = StatusCode.Ok
                     };
                 }
