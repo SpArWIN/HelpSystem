@@ -71,8 +71,7 @@ namespace HelpSystem.Controllers
         {
             
             return PartialView("_ProductWarehouse");
-            //  return Json( new {data = Response.Data});
-            // return Json(Response.Data);
+       
         }
         //Метод получения таблицы товаров на складе в JSON формате
         public async Task<IActionResult> GetJSONWarehouse(Guid id)

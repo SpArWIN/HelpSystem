@@ -16,7 +16,7 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        Task<IEnumerable<ProductMovement>> AddTransfer( List<TransferViewModel> model);
+        Task <BaseResponse<IEnumerable<ProductMovement>>> AddTransferService( List<TransferViewModel> model);
 
         Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(Guid ProductId);
     }

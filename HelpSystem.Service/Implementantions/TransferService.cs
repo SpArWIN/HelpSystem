@@ -25,94 +25,163 @@ namespace HelpSystem.Service.Implementantions
             _warehouseRepository = warehouse;
         }
         //todo ПРИЕХАТЬ И ДОПИСАТЬ МЕТОД, СО СКЛАДОМ, ЧТОБЫ БЫЛА КОЛЛЕЦИЯ
-        public async Task<IEnumerable<ProductMovement>> AddTransfer(List<TransferViewModel> model)
+        public async Task<BaseResponse<IEnumerable<ProductMovement>>> AddTransferService(List<TransferViewModel> model)
         {
             try
             {
-                foreach (var prod in model)
+                // Проверяем, что список model не является пустым
+                if ( model.Count == 0)
                 {
-                    var products = await _productsRepository.GetAll()
-                        .Include(w => w.Warehouse)
-                        .Where(x => x.NameProduct == prod.NameProduct && x.InventoryCode == prod.CodeProduct)
-                        .Where(x => x.UserId == null)
-                        .ToListAsync();
-
-
-                }
-                // Получаем товары по наименованию и инвентарному коду
-                
-
-                if (!products.Any())
-                {
-                    return new BaseResponse<ProductMovement>()
+                    return new BaseResponse<IEnumerable<ProductMovement>>()
                     {
-                        Description = "Нет доступных товаров на перемещение.",
-                        StatusCode = StatusCode.Ok,
+                        Description = "Список товаров для перемещения пуст.",
+                        StatusCode = StatusCode.NotFind,
                     };
                 }
 
-                // Проверяем, что запрошенное количество товаров доступно для перемещения
-                int availableCount = products.Count;
-                if (availableCount < model.CountTransfer)
+
+                if (model.Count == 1)
                 {
-                    return new BaseResponse<ProductMovement>()
+                    Guid productId = model.First().Id;
+                    
+                    //Находим товар в бд
+                    var ProductMove = await _productsRepository.GetAll()
+                        .Include(w=>w.Warehouse)
+                        .FirstOrDefaultAsync(x => x.Id == productId);
+                    if (ProductMove == null)
                     {
-                        Description = "Запрошено больше количество перемещаемых товаров, чем доступно",
-                        StatusCode = StatusCode.UnMove
-                    };
-                }
+                        return new BaseResponse<IEnumerable<ProductMovement>>()
+                        {
+                            Description = "Внутренняя ошибка",
+                            StatusCode = StatusCode.NotFind,
+                        };
+                    }
 
-                Guid destinationWarehouseId = model.DestinationWarehouseId;
-
-                // Выполняем операцию перемещения для указанного количества товаров
-                foreach (var product in products.Take(model.CountTransfer))
-                {
-                    // Получаем текущее местоположение товара
-                    var currentPositionResponse = await GetCurrentPositionProduct(product.Id);
+                    // Получение текущего склада, исходя из информации о перемещениях товара
+                    var currentPositionResponse = await GetCurrentPositionProduct(ProductMove.Id);
                     Guid sourceWarehouseId;
-
                     if (currentPositionResponse.StatusCode == StatusCode.Ok)
                     {
+                        // Если информация о перемещениях товара доступна, берем его текущий склад назначения
                         sourceWarehouseId = currentPositionResponse.Data.DestinationWarehouseId;
                     }
                     else
                     {
-                        sourceWarehouseId = product.Warehouse.Id; // Если информация о перемещениях отсутствует, берем исходный склад
+                        sourceWarehouseId = ProductMove.Warehouse.Id;
                     }
-
-                    // Создаем запись о перемещении товара
+                    Guid DestinationWarehouseId = model.First().DestinationWarehouseId;
                     var movement = new ProductMovement()
                     {
-                        ProductId = product.Id,
+                        ProductId = ProductMove.Id,
                         SourceWarehouseId = sourceWarehouseId,
-                        DestinationWarehouseId = destinationWarehouseId,
+                        DestinationWarehouseId = DestinationWarehouseId,
                         MovementDate = DateTime.Now
                     };
                     await _transBaseRepository.Create(movement);
+                    return new BaseResponse<IEnumerable<ProductMovement>>()
+                    {
+                        Description = "Товар успешно перемещен.",
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+                //В противном случае, когда там целая коллекция товаров
+
+                var products = new List<Products>(); // Создаем список товаров для перемещения
+
+                foreach (var prod in model)
+                {
+                    // Получаем товары по наименованию и инвентарному коду
+                    var productList = await _productsRepository.GetAll()
+                        .Include(w => w.Warehouse)
+                        .Where(x =>x.Id == prod.Id)
+                        .Where(x => x.UserId == null)
+                        .ToListAsync();
+
+                    products.AddRange(productList); // Добавляем товары в общий список
+                }
+
+                // Проверяем, что есть доступные товары для перемещения
+                if (!products.Any())
+                {
+                    return new BaseResponse<IEnumerable<ProductMovement>>()
+                    {
+                        Description = "Нет доступных товаров на перемещение.",
+                        StatusCode = StatusCode.NotFind,
+                    };
+                }
+
+                int totalTransferCount = model.Sum(x => x.CountTransfer); // Общее количество перемещаемых товаров
+
+                // Проверяем, что запрошенное количество товаров доступно для перемещения
+                if (totalTransferCount > products.Count)
+                {
+                    return new BaseResponse<IEnumerable<ProductMovement>>()
+                    {
+                        Description = "Запрошено больше количество перемещаемых товаров, чем доступно.",
+                        StatusCode = StatusCode.UnMove
+                    };
+                }
+
+                Guid destinationWarehouseId = model.First().DestinationWarehouseId; // Получаем id целевого склада
+
+                // Выполняем операцию перемещения для указанного количества товаров
+                foreach (var transfer in model)
+                {
+                    var transferCount = transfer.CountTransfer; // Количество перемещаемых товаров из текущей модели
+                    var productName = transfer.NameProduct; // Наименование товара из текущей модели
+
+                    // Получаем список товаров для текущей модели
+                    var productsToTransfer = products.Where(p => p.NameProduct == productName).Take(transferCount);
+
+                    foreach (var product in productsToTransfer)
+                    {
+                        // Получаем текущее местоположение товара
+                        var currentPositionResponse = await GetCurrentPositionProduct(product.Id);
+                        Guid sourceWarehouseId;
+
+                        if (currentPositionResponse.StatusCode == StatusCode.Ok)
+                        {
+                            sourceWarehouseId = currentPositionResponse.Data.DestinationWarehouseId;
+                        }
+                        else
+                        {
+                            sourceWarehouseId = product.Warehouse.Id; // Если информация о перемещениях отсутствует, берем исходный склад
+                        }
+
+                        // Создаем запись о перемещении товара
+                        var movement = new ProductMovement()
+                        {
+                            ProductId = product.Id,
+                            SourceWarehouseId = sourceWarehouseId,
+                            DestinationWarehouseId = destinationWarehouseId,
+                            MovementDate = DateTime.Now
+                        };
+                        await _transBaseRepository.Create(movement);
+                    }
                 }
 
                 // Составляем описание операции перемещения
                 string destinationWarehouseName = ""; // Вставьте наименование целевого склада
-                int lastDigit = model.CountTransfer % 10;
+                int lastDigit = totalTransferCount % 10;
                 string description;
-                if (model.CountTransfer >= 11 && model.CountTransfer <= 14)
+                if (totalTransferCount >= 11 && totalTransferCount <= 14)
                 {
-                    description = $"{model.CountTransfer} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
                 }
                 else if (lastDigit == 1)
                 {
-                    description = $"{model.CountTransfer} товар был перемещён с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товар был перемещён с {products[0].Warehouse.Name} на {destinationWarehouseName}";
                 }
                 else if (lastDigit >= 2 && lastDigit <= 4)
                 {
-                    description = $"{model.CountTransfer} товара было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товара было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
                 }
                 else
                 {
-                    description = $"{model.CountTransfer} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
                 }
 
-                return new BaseResponse<ProductMovement>()
+                return new BaseResponse<IEnumerable<ProductMovement>>()
                 {
                     StatusCode = StatusCode.Ok,
                     Description = description
@@ -120,10 +189,10 @@ namespace HelpSystem.Service.Implementantions
             }
             catch (Exception ex)
             {
-                return new BaseResponse<ProductMovement>()
+                return new BaseResponse<IEnumerable<ProductMovement>>()
                 {
-                    Description = $"{ex.Message}",
-                    StatusCode = StatusCode.Ok
+                    Description = $"Произошла ошибка при перемещении товаров: {ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
         }

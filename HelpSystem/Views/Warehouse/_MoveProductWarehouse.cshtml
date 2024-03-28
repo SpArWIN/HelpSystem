@@ -4,7 +4,7 @@
     ViewBag.Title = "Формирование заявки";
    
 }
-<div class="accordion" id="accordionExample">
+
     <style>
         #massMoveFooter {
             display: block;
@@ -14,12 +14,11 @@
             transition: height 0.3s ease, opacity 0.3s ease;
         }
 
-            #massMoveFooter.show {
+       #massMoveFooter.show {
                 height: auto;
                 opacity: 1;
-            }
+        }
     </style>
-
 
 
 
@@ -43,12 +42,12 @@
                                 position++; // Увеличиваем номер позиции для каждого элемента
                                 <div style="border: 2px solid gray; padding: 10px; margin-bottom: 10px; box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);">
                                     <p>Позиция: @position</p>
-                                    <p style="display:none">Id: @product.Id</p>
-                                    <p>Наименование: @product.Name</p>
-                                    <p>Инвентарный код: @product.Code</p>
+                                    <p id="ProductID_@position" style="display:none">Id: @product.Id</p>
+                                    <p id="nameProduct_@position">Наименование: @product.Name</p>
+                                    <p id="Code_@position">Инвентарный код: @product.Code</p>
                                     <div style="margin:6px; margin-bottom:6px;">
                                         <label id="WareLabel">Выберите склад</label>
-                                        <select class="form-select" id="SelectWarehouse">
+                                    <select class="form-select" id="SelectWarehouse_">
                                             @if (product.Warehouses != null && product.Warehouses.Any())
                                             {
                                                 foreach (var warehouse in product.Warehouses)
@@ -62,7 +61,7 @@
                                             }
                                         </select>
                                     </div>
-                                    <a id="BtnMoves" class="btn btn-danger">Переместить</a>
+                                    <a id="@($"BtnMoves_{productGroup.Key}_{position}")" class="btn btn-danger btn-move-product" data-product-id="@product.Id" data-product-name="@product.Name" data-product-code="@product.Code" >Переместить</a>
                                 </div>
                             }
                         </div>
@@ -104,9 +103,21 @@
     }
     
 
-
-    <script>
+<script>
     $(document).ready(function() {
+
+        $('.btn-move-product').on('click', function() { 
+            var productId = $(this).data('product-id');
+            var productName = $(this).data('product-name');
+            var productCode = $(this).data('product-code');
+            var warehouseId = $(this).closest('div').find('select').val();
+           
+            SingleMoveProduct(productId, productName, productCode, warehouseId);
+        });
+            // Вызываем функцию для перемещения товара
+           
+      
+
         // Обработчик изменения состояния переключателя
         $('#flexSwitchCheckDefault').change(function() {
             if ($(this).prop('checked')) {
@@ -135,6 +146,7 @@
               
             }
         });
+
     });
 </script>
 

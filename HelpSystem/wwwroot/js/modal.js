@@ -1,4 +1,6 @@
 //Чтобы  js код в кеш не отправляло, нужно добавлять рандомное значение при подключении
+var currentWarehouseId; // Переменная глобальная для передачи id склада без параметра в любую функицю
+//Так прощее:)
 function openModal(parameters) {
     const id = parameters.data;
     const url = parameters.url + '?random=' + Math.random();;
@@ -26,6 +28,8 @@ function openModal(parameters) {
             }
             if (context === "MoveProductWarehouse") {
                 MassInputWarehouse(id);
+                currentWarehouseId = parameters.data; 
+               
             }
 
         },
@@ -768,3 +772,61 @@ function MassInputWarehouse(id) {
 }
 
 
+//Метод одиночгого перемещения товара
+function SingleMoveProduct(productId, productName, productCode, warehouseId) {
+    var products = [];
+    var Product = {
+        Id: productId,
+        NameProduct: productName,
+        CodeProduct: productCode,
+        SourceWarehouseId: currentWarehouseId,
+        DestinationWarehouseId: warehouseId,
+        CountTransfer: 1
+    };
+    products.push(Product);
+    var transferData = { model: products };  // Объект с полем "model", содержащим список товаров
+    Swal.fire({
+        title: 'Перемещение товара',
+        html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/Transfer/AddTransfer',
+        data: transferData,
+        success: function (response) {
+            setTimeout(function () {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'Перемещение  товара',
+                        text: response.description,
+                        icon: 'success',
+                        confirmButtonText: 'Окей',
+
+                    }).then((result) => {
+                        location.reload();
+                    });
+                },
+                2000);
+        },
+        error: function(response) {
+            setTimeout(function () {
+                    Swal.close();
+                    Swal.fire({
+                        title: 'Упс, что-то пошло не так',
+                        text: response.responseJSON.description,
+                        icon: 'error',
+                        confirmButtonText: 'Окей'
+                    });
+                },
+                2000);
+            
+        }
+    });
+
+}

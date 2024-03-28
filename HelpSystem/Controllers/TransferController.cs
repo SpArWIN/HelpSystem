@@ -1,4 +1,5 @@
-﻿using HelpSystem.Service.Interfaces;
+﻿using HelpSystem.Domain.ViewModel.Transfer;
+using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpSystem.Controllers
@@ -11,7 +12,17 @@ namespace HelpSystem.Controllers
         {
             _transferService = transfer;
         }
-        public async Task<IActionResult>AddTransfer ()
+        [HttpPost]
+        public async Task<IActionResult> AddTransfer(List<TransferViewModel> model)
+        {
+            var Response = await _transferService.AddTransferService(model);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { data = Response.Data, description = Response.Description });
+            }
+
+            return BadRequest(new { description = Response.Description });
+        }
        
         public IActionResult Index()
         {

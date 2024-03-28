@@ -9,6 +9,7 @@ using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
+using System.Linq;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -19,6 +20,7 @@ namespace HelpSystem.Service.Implementantions
 
         private IBaseRepository<User> _userRepository;
         private IBaseRepository<ProductMovement> _productMovementRepository;
+        
         public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,IBaseRepository<User> user, IBaseRepository<ProductMovement> productMovementRepository)
         {
             _warehouseRepository = warehouse;
@@ -120,6 +122,15 @@ namespace HelpSystem.Service.Implementantions
                         Description = "Не удалось найти ни одного склада",
                         StatusCode = StatusCode.NotFind
                     };
+                }
+                //Если есть информация о том, что товар был перемещн на этот склад, делаем подсчёт и отображаем
+                foreach (var warehouse in AllWarehouse)
+                {
+                    var transferCountOut = _productMovementRepository.GetAll().Count(x => x.SourceWarehouseId == warehouse.Id); //Текущий склад
+                    var transferCountIn = _productMovementRepository.GetAll().Count(x => x.DestinationWarehouseId == warehouse.Id); //перемещяемый
+
+                    warehouse.TotalCountWarehouse -= transferCountOut; // Вычитаем перемещенные товары
+                    warehouse.TotalCountWarehouse += transferCountIn; // Добавляем перемещенные товары
                 }
 
                 return new BaseResponse<IEnumerable<WarehouseViewModel>>()
@@ -379,7 +390,7 @@ namespace HelpSystem.Service.Implementantions
             }
         }
         //Тут мы получим все товары, не группируя их, тогда можно будет перемещать каждый товар по отдельности
-        public  async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
+        public async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
         {
             try
             {
@@ -391,32 +402,110 @@ namespace HelpSystem.Service.Implementantions
                     var productsOnWarehouse = await _products.GetAll()
                         .Where(p => p.Warehouse == Warehouse)
                         .ToListAsync();
-                    //Получаем список товаров, которые вообще были перемещены с этого склада
-                    var movementProducts = await _productMovementRepository.GetAll()
-                        .Where(m => m.DestinationWarehouseId == Warehouse.Id) // Фильтруем по ID склада товара
-                        .Select(m => m.ProductId)
-                        .ToListAsync();
-
-                    // Фильтруем товары на выбранном складе: оставляем только те товары, которые не были перемещены и не закреплены за пользователем
-                    var availableProducts = productsOnWarehouse.Where(p => !movementProducts.Contains(p.Id) && p.UserId == null);
-
-                    //Сразу же передадим список складов, кроме текущего.
-                    var NotCurrentWarehouse = await _warehouseRepository.GetAll()
-                        .Where(x => x.Id != WhId)
-                        .ToListAsync();
-                    // Формируем список деталей товара для аккордеона
-                    var productDetails = availableProducts.Select(p => new TransferProductViewModel
+                    if (productsOnWarehouse.Any())
                     {
-                        Id = p.Id,
-                        Name = p.NameProduct,
-                        Code = p.InventoryCode,
-                        Warehouses = NotCurrentWarehouse
-                    }).ToList();
-                    return new BaseResponse<IEnumerable<TransferProductViewModel>>
+                        // Получаем последние записи перемещения для каждого товара на склад и из склада
+                        var lastMovementsFromWarehouse = _productMovementRepository.GetAll()
+          .Where(m => m.SourceWarehouseId == Warehouse.Id && m.Product.UserId == null)
+          .GroupBy(m => m.ProductId)
+          .Select(g => g.OrderByDescending(m => m.MovementDate).First().ProductId)
+          .ToList();
+
+                        // Получаем список товаров, которые пришли на этот склад по последней записи
+                        var lastMovementsToWarehouse = _productMovementRepository.GetAll()
+                            .Where(m => m.DestinationWarehouseId == Warehouse.Id && m.Product.UserId == null)
+                            .GroupBy(m => m.ProductId)
+                            .Select(g => g.OrderByDescending(m => m.MovementDate).First().Product)
+                            .ToList();
+
+                        // Исключаем из основного списка товары, которые были перемещены или отправлены с этого склада
+                        var filteredProducts = productsOnWarehouse
+                            .Where(product => !lastMovementsFromWarehouse.Contains(product.Id))
+                            .Union(lastMovementsToWarehouse.Select(product => new Products { Id = product.Id, NameProduct = product.NameProduct, InventoryCode = product.InventoryCode, Warehouse = Warehouse }))
+                            .ToList();
+
+                        // Получаем товары, которые пришли по накладной и не были перемещены
+                        var incomingProducts = lastMovementsToWarehouse
+                            .Where(productId => productsOnWarehouse.Any(p => p.Id == productId.Id))
+                            .Select(productId => productsOnWarehouse.FirstOrDefault(p => p.Id == productId.Id))
+                            .Distinct()
+                            .ToList();
+                            /*
+                             * В связи с тем, что в отправленных и полученных товаров может быть одна и та же запись,
+                             * мы просто исключим одно из другого, затем объединим
+                             */
+                            var ExceptionsProduct = incomingProducts.Except(lastMovementsToWarehouse);
+                        // Объединяем товары, которые пришли по накладной и не были перемещены, с товарами, поступившими на склад по последней записи
+                        var availableProducts = filteredProducts.Union(ExceptionsProduct).ToList();
+
+                        // Получаем список всех складов, кроме текущего
+                        var NotCurrentWarehouse = await _warehouseRepository.GetAll()
+                            .Where(x => x.Id != WhId)
+                            .ToListAsync();
+
+                        // Формируем список деталей товара для аккордеона
+                        var productDetails = availableProducts.Select(p => new TransferProductViewModel
+                        {
+                            Id = p.Id,
+                            Name = p.NameProduct,
+                            Code = p.InventoryCode,
+                            Warehouses = NotCurrentWarehouse
+                        }).ToList();
+
+                        return new BaseResponse<IEnumerable<TransferProductViewModel>>
+                        {
+                            Data = productDetails,
+                            StatusCode = StatusCode.Ok
+                        };
+
+                    }
+
+
+
+                    else
                     {
-                        Data  = productDetails,
-                        StatusCode = StatusCode.Ok
-                    };
+                        // Получаем список товаров, которые пришли на этот склад
+                        var incomingProducts = await _productMovementRepository.GetAll()
+                            .Include(p => p.Product)
+                            .Where(m => m.DestinationWarehouseId == Warehouse.Id)
+                            .ToListAsync();
+
+                        // Получаем список товаров, которые уже были перемещены с текущего склада
+                        var transferredProducts = await _productMovementRepository.GetAll()
+                            .Include(p => p.Product)
+                            .Where(m => m.SourceWarehouseId == Warehouse.Id)
+                            .GroupBy(m => m.ProductId)
+                            .Select(g => g.OrderByDescending(m => m.MovementDate).FirstOrDefault())
+                            .ToListAsync();
+
+                        // Формируем список доступных товаров, учитывая последнее перемещение
+                        var availableProducts = incomingProducts.Where(p =>
+                        {
+                            var lastMovement = transferredProducts.FirstOrDefault(t => t.ProductId == p.ProductId);
+                            return lastMovement == null || lastMovement.MovementDate < p.MovementDate;
+                        });
+
+
+                        // Получаем список складов, кроме текущего
+                        var otherWarehouses = await _warehouseRepository.GetAll()
+                            .Where(x => x.Id != WhId)
+                            .ToListAsync();
+
+                        // Формируем список деталей товара для аккордеона
+                        var productDetails = availableProducts.Select(p => new TransferProductViewModel
+                        {
+                            Id = p.ProductId,
+                            Name = p.Product.NameProduct,
+                            Code = p.Product.InventoryCode,
+                            Warehouses = otherWarehouses
+                        }).ToList();
+
+                        return new BaseResponse<IEnumerable<TransferProductViewModel>>
+                        {
+                            Data = productDetails,
+                            StatusCode = StatusCode.Ok
+                        };
+                    }
                 }
 
                 return new BaseResponse<IEnumerable<TransferProductViewModel>>()
@@ -433,6 +522,10 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+
+
+
         /// <summary>
         /// Простой достаточно метод получения всех складов кроме текущего
         /// </summary>
