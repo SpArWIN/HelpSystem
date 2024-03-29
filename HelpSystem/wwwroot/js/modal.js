@@ -21,14 +21,14 @@ function openModal(parameters) {
             $('#SaveChanBtn').data('context', context);
 
             // Выполняем соответствующее действие в зависимости от контекста
-           
+            currentWarehouseId = parameters.data; 
             if (context === "ListWarehouse") {
                 initializeWarehouseProductTable(id);
 
             }
             if (context === "MoveProductWarehouse") {
                 MassInputWarehouse(id);
-                currentWarehouseId = parameters.data; 
+               
                
             }
 
@@ -380,12 +380,16 @@ $("#BtnBindWarehouse").click(function () {
     var Code = $("#inventoryCode").val();
     var Count = $("#countUnbinding").val();
     var User = $("#UserId").val();
+    
     var Data = {
         UserId : User,
         ProductName: Name,
         InventoryCode :Code,
-        CountBinding :Count
+        CountBinding: Count,
+        WarehouseId: currentWarehouseId
     }
+
+    
 
     Swal.fire({
         title: 'Создание связи',
@@ -716,17 +720,25 @@ function initializeWarehouseProductTable(warehouseId) {
             { data: "totalCountWarehouse", name: "TotalCountWarehouse", className: "text-center" },
             { data: "availableCount", name: "AvailableCount", className: "text-center" },
             {
-                data: null,
+
+                data : function(row) {
+                    return warehouseId;
+                },
                 sortable: false,
                 render: function (data, type, row) {
-                    return '<button class="btn btn-success btn-op">Закрепить</button>';
+                    return '<button class="btn btn-success btn-op"  data-id="' + data + '">Закрепить</button>';
 
                 }
             }
         ],
         initComplete: function () {
-            BindingProdWarehouse();
-          /*  MoveProductWarehouse();*/
+            
+            /*  MoveProductWarehouse();*/
+            $("#WarehouseProductTable").on("click", ".btn-op", function () {
+               
+
+                BindingProdWarehouse();
+            });
         }
     });
    
@@ -757,7 +769,7 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события закрепление
- function BindingProdWarehouse() {
+ function BindingProdWarehouse(WarehouseID) {
     // Так как клики многократные, остальные убираем, оставляем текущий
    
     $(document).on('click', '.btn-op',  function () {

@@ -129,18 +129,20 @@ namespace HelpSystem.Service.Implementantions
                 {
                     // Получаем количество записей, представляющих товары, прибывшие на этот склад
                     var incomingCount = await _productMovementRepository.GetAll()
-                        .OrderByDescending(m=>m.MovementDate)
+                        .OrderByDescending(m => m.MovementDate)
                         .Where(x => x.DestinationWarehouseId == warehouse.Id)
                         .CountAsync();
 
                     // Получаем количество записей, представляющих товары, ушедшие со склада
                     var outgoingCount = await _productMovementRepository.GetAll()
-                        .OrderByDescending(m=>m.MovementDate)
+                        .OrderByDescending(m => m.MovementDate)
                         .Where(x => x.SourceWarehouseId == warehouse.Id)
                         .CountAsync();
+                    // Добавляем уже имеющееся количество товаров на складе
+                    var existingCount = warehouse.TotalCountWarehouse;
 
                     // Обновляем общее количество товаров на складе, добавляя количество пришедших записей и вычитая количество ушедших
-                    warehouse.TotalCountWarehouse += incomingCount - outgoingCount;
+                    warehouse.TotalCountWarehouse = existingCount + ( incomingCount - outgoingCount);
                 }
 
                 return new BaseResponse<IEnumerable<WarehouseViewModel>>()
@@ -292,6 +294,7 @@ namespace HelpSystem.Service.Implementantions
                             .GroupBy(x => x.NameProduct)
                             .Select(group => new ProductinWarehouseViewModel()
                             {
+                            
                                 NameProduct = group.Key,
                                 CodeProduct = group.First().InventoryCode,
                                 TotalCountWarehouse = group.Count(),
@@ -334,7 +337,9 @@ namespace HelpSystem.Service.Implementantions
                                 NameProduct = group.Key,
                                 CodeProduct = group.First().InventoryCode,
                                 TotalCountWarehouse = group.Count(),
-                                AvailableCount = group.Count(x => x.UserId == null)
+                                AvailableCount = group.Count(x => x.UserId == null),
+
+                                
                             })
                             .ToList();
                         return new DataTableResponse()
@@ -364,11 +369,35 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-                //находим товары
-                var Products = await _products.GetAll()
-                    .Where(x => x.NameProduct == model.ProductName && x.InventoryCode == model.InventoryCode)
-                    .Where(x => x.UserId == null)
+                var availableProducts = await _products.GetAll()
+                    .Where(x => x.NameProduct == model.ProductName && x.InventoryCode == model.InventoryCode && x.UserId == null)
                     .ToListAsync();
+
+                // Проверяем наличие записей о перемещении товара на или с этого склада
+                var movementRecords = await _productMovementRepository.GetAll()
+                    .OrderByDescending(m=>m.MovementDate)
+                    .Where(x => x.SourceWarehouseId == model.WarehouseId || x.DestinationWarehouseId == model.WarehouseId)
+                    .ToListAsync();
+
+                
+                // Фильтруем товары, которые уже были перемещены с этого склада или на него
+                var movedProductIds = movementRecords.Select(m=>m.ProductId);
+
+                // Фильтруем товары, доступные для привязки на этом складе
+                var availableProductsOnWarehouse = availableProducts
+                    .Where(p =>!movedProductIds.Contains(p.Id))
+                    .ToList();
+                //Если идёт привязка перемещённого товара на этом складе, берём именно его
+                if (movementRecords.Any(m => m.DestinationWarehouseId == model.WarehouseId))
+                {
+                    var movedProductIdsOnThisWarehouse = movementRecords.Select(m => m.ProductId).ToList();
+
+                    availableProductsOnWarehouse = availableProducts
+                        .Where(p =>movedProductIdsOnThisWarehouse.Contains(p.Id))
+                        .ToList();
+                }
+
+
                 //Товары, которые нужно привязать
                 int CountWarehouseProduct = model.CountBinding;
                 if (CountWarehouseProduct <= 0)
@@ -379,10 +408,10 @@ namespace HelpSystem.Service.Implementantions
                         StatusCode = StatusCode.NotFind
                     };
                 }
-                if (Products.Any())
+                if (availableProductsOnWarehouse.Any())
                 {
 
-                    if (Products.Count < CountWarehouseProduct)
+                    if (availableProductsOnWarehouse.Count() < CountWarehouseProduct)
                     {
                         return new BaseResponse<Products>()
                         {
@@ -398,12 +427,18 @@ namespace HelpSystem.Service.Implementantions
 
                     if (User != null)
                     {
-                        for (int i = 0; i < CountWarehouseProduct; i++)
+                        int count = 0;
+                        foreach (var product in availableProductsOnWarehouse)
                         {
-                            Products[i].UserId = User.Id;
-                            await _products.Update(Products[i]);
+                            if (count == CountWarehouseProduct)
+                            {
+                                break; // Если мы достигли нужного количества товаров для привязки, выходим из цикла
+                            }
+                            product.UserId = User.Id;
+                            await _products.Update(product);
+                            count++;
                         }
-                            //Для более логичного окончания
+                        //Для более логичного окончания
 
                         string description;
                         int lastDigit = CountWarehouseProduct % 10;
