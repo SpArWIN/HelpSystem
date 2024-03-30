@@ -43,7 +43,7 @@ namespace HelpSystem.Service.Implementantions
                     .Include(w => w.Warehouse)
                     .Where(x => x.UserId == null) // Проверяем, что товар не привязан к пользователю
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") || EF.Functions.Like(x.InventoryCode, $"%{term}%"))
-                    .ToListAsync(); // Загрузить все товары в память
+                    .ToListAsync(); 
 
 
               

@@ -524,7 +524,7 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
                         location.reload();
                     });
                 },
-                1000);
+                2000);
         },
         error:function(response) {
             Swal.close();
@@ -536,7 +536,7 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
                     confirmButtonText: 'Хорошо',
 
                 });
-            },1000);
+            },2000);
         }
     });
 }
