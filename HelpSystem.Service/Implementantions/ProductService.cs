@@ -1,10 +1,12 @@
-﻿using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Implementantions;
+using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -15,7 +17,8 @@ namespace HelpSystem.Service.Implementantions
         private readonly IBaseRepository<Warehouse> _warehouseRepository;
         private readonly IBaseRepository<Provider> _providerRepository;
         private readonly IBaseRepository<Statement> _statementRepository;
-        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository, IBaseRepository<Statement> statement)
+        private readonly IBaseRepository<ProductMovement> _productMovementRepository;
+        public ProductService(IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> waRepository, IBaseRepository<Provider> provideRepository, IBaseRepository<Statement> statement, IBaseRepository<ProductMovement> productMovementRepository)
         {
 
             _productsRepository = productsRepository;
@@ -23,6 +26,7 @@ namespace HelpSystem.Service.Implementantions
             _providerRepository = provideRepository;
             //_invoiceRepository = invoiceRepository;
             _statementRepository = statement;
+            _productMovementRepository = productMovementRepository;
         }
 
         /// <summary>
@@ -41,24 +45,98 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") || EF.Functions.Like(x.InventoryCode, $"%{term}%"))
                     .ToListAsync(); // Загрузить все товары в память
 
+
+              
+                    
+
+
                 if (productsInMemory.Any()) // Проверяем, найдены ли товары
                 {
-                    var products = productsInMemory
-                        .GroupBy(x => x.NameProduct) // Группируем товары по наименованию
-                        .Select(group => group.First()) // Берем первый товар из каждой группы 
+
+                    var Products = new Dictionary<string, Dictionary<Guid, string>>();
+                    //Теперь пробежимся по всем получившим товарам и соориентируемся где они
+                    // Разгруппируем товары по наименованию
+                    var groupedProductsByName = productsInMemory.GroupBy(x => x.NameProduct);
+
+                    // Проходим по каждой группе товаров с одинаковым наименованием
+                    foreach (var groupByName in groupedProductsByName)
+                    {
+                        var productsByLocation = new Dictionary<Guid, string>(); // Словарь для товаров на текущем складе
+                        var movedProductsByLocation = new Dictionary<Guid, string>(); // Словарь для перемещенных товаров
+
+                        foreach (var prod in groupByName)
+                        {
+                            var destinationWarehouseName = prod.Warehouse.Name;
+
+                            // Находим последнее перемещение товара
+                            var lastMovement = await _productMovementRepository.GetAll()
+                                .OrderByDescending(pm => pm.MovementDate)
+                                .FirstOrDefaultAsync(pm => pm.ProductId == prod.Id);
+
+                            if (lastMovement != null)
+                            {
+                                // Получаем наименование склада назначения
+                                destinationWarehouseName = await _warehouseRepository.GetAll()
+                                    .Where(x => x.Id == lastMovement.DestinationWarehouseId)
+                                    .Select(x => x.Name)
+                                    .FirstOrDefaultAsync();
+
+                                // Проверяем, перемещен ли товар на другой склад
+                                if (lastMovement.DestinationWarehouseId != prod.Warehouse.Id)
+                                {
+                                    var productInfo = $"{prod.NameProduct} ({prod.InventoryCode}) Склад: {destinationWarehouseName}";
+                                    movedProductsByLocation[prod.Id] = productInfo;
+                                    continue; // Продолжаем цикл, чтобы избежать добавления товара в productsByLocation
+                                }
+                            }
+
+                            // Формируем строку с информацией о товаре и его местоположении на текущем складе
+                            var productInfoOnCurrentWarehouse = $"{prod.NameProduct} ({prod.InventoryCode}) Склад: {destinationWarehouseName}";
+                            productsByLocation[prod.Id] = productInfoOnCurrentWarehouse;
+                        }
+
+                        // Добавляем товары на текущем складе в словарь продуктов
+                        Products[groupByName.Key] = productsByLocation;
+
+                        // Добавляем товары, перемещенные на другие склады, в словарь продуктов
+                        if (movedProductsByLocation.Any())
+                        {
+                            foreach (var movedProduct in movedProductsByLocation)
+                            {
+                                Products[movedProduct.Value] = new Dictionary<Guid, string> { { movedProduct.Key, movedProduct.Value } };
+
+                            }
+                        }
+                    }
+
+                    var UnionProducts = Products
+                        .GroupBy(x => x.Value)
+                        .Select(x => x.Key.First())
                         .Select(x => new
                         {
-                            x.Id,
-                            Name = $"{x.NameProduct} ({x.InventoryCode}) Склад: {x.Warehouse.Name}",
-                            Location = x.Warehouse.Name
+                            x.Key,
+                            x.Value
                         })
-                        .ToDictionary(x => x.Id, x => x.Name);
-
+                        .ToDictionary(x => x.Key, x => x.Value);
+                    //Завтра переделать.
                     return new BaseResponse<Dictionary<Guid, string>>()
                     {
                         StatusCode = StatusCode.Ok,
-                        Data = products
+                        Data = UnionProducts
                     };
+
+                    //var products = Products
+                    //    .GroupBy(x => x.Value) // Группируем товары по наименованию
+                    //    .Select(group => group.First()) // Берем первый товар из каждой группы 
+                    //    .Select(x => new
+                    //    {
+                    //        x.Key,
+                    //        Name = $"{x.NameProduct} ({x.InventoryCode}) Склад: {x.Warehouse.Name}",
+                    //        Location = x.Warehouse.Name
+                    //    })
+                    //    .ToDictionary(x => x.Id, x => x.Name);
+
+
                 }
                 else // Если товары не найдены, вернем специальное значение
                 {

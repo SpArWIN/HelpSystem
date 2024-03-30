@@ -393,7 +393,7 @@ $("#BtnBindWarehouse").click(function () {
 
     Swal.fire({
         title: 'Создание связи',
-        html: 'Пожалуйста подождите...',
+        html: '<img src="/myIcon/icons8-cheque.gif" alt="Custom"><p>Пожалуйста, подождите...</p>',
         timerProgressBar: true,
         showConfirmButton: false,
         allowOutsideClick: false,
@@ -415,9 +415,9 @@ $("#BtnBindWarehouse").click(function () {
                     confirmButtonText: 'Окей',
 
                 }).then((result) => {
-
+                    location.reload();
                 });
-            },1000);
+            },2000);
         },
         error: function(response) {
             setTimeout(function() {
@@ -430,7 +430,7 @@ $("#BtnBindWarehouse").click(function () {
                 }).then((result) => {
 
                 });
-            },1000);
+            },2000);
         }
 
     });
@@ -614,10 +614,10 @@ function initializeSelect2() {
                     term: params.term
                 };
             },
-            processResults: function(response) {
+            processResults: function (response) {
                 // Преобразование данных словаря в формат, ожидаемый select2
                 var data = $.map(response,
-                    function(value, key) {
+                    function (value, key) {
                         return { id: key, text: value };
                     });
 
@@ -625,6 +625,7 @@ function initializeSelect2() {
                 return {
                     results: data
                 };
+
             }
         }
     });

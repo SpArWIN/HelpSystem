@@ -275,18 +275,27 @@ namespace HelpSystem.Service.Implementantions
                         //Если нет товаров по накладной, но есть перемещённые, то делаем следущее
 
                         //Создаем список товаров, которые отправлены со склада по последним данным
-                        var MovedProducts = await _productMovementRepository.GetAll()
-                            .OrderByDescending(m => m.MovementDate)
+                        var MovedProducts = await
+                            _productMovementRepository.GetAll()
                             .Where(x => x.SourceWarehouseId == Warehouse.Id)
-                            .Select(x => x.Product)
+                            .GroupBy(p => p.ProductId)
+                            .Select(g => g.OrderByDescending(m => m.MovementDate).FirstOrDefault()!.Product)
                             .ToListAsync();
+
                         //Получаем текущие товары, которые поступили на склад по последним данным
                         var GetProducts = await _productMovementRepository.GetAll()
-                            .OrderByDescending(x=>x.MovementDate)
-                            .Where(x=>x.DestinationWarehouseId == Warehouse.Id)
-                            .Select(x=>x.Product)
+                            .Where(x => x.DestinationWarehouseId == Warehouse.Id)
+                            .GroupBy(x => x.ProductId) // Группировка по ProductID
+                            .Select(group => group.OrderByDescending(m => m.MovementDate).FirstOrDefault()!.Product) // Выбор последнего перемещения из каждой группы
                             .ToListAsync();
-                        var availableProducts = GetProducts.Except(MovedProducts);
+                        // Получаем список перемещенных товаров
+                        var movedProductIds = MovedProducts.Select(pm => pm?.Id).ToList();
+
+                        var availableProducts =
+                            GetProducts.Where(rp => !movedProductIds.Contains(rp.Id))
+                                .ToList();
+
+
 
 
                         // Группируем товары по их наименованию
@@ -294,7 +303,7 @@ namespace HelpSystem.Service.Implementantions
                             .GroupBy(x => x.NameProduct)
                             .Select(group => new ProductinWarehouseViewModel()
                             {
-                            
+
                                 NameProduct = group.Key,
                                 CodeProduct = group.First().InventoryCode,
                                 TotalCountWarehouse = group.Count(),
@@ -308,6 +317,7 @@ namespace HelpSystem.Service.Implementantions
                             Data = groupedProducts,
 
                         };
+
                     }
                     else
                     {
@@ -469,6 +479,12 @@ namespace HelpSystem.Service.Implementantions
                             Description = description
                         };
                     }
+
+                    return new BaseResponse<Products>()
+                    {
+                        Description = $"Пользователь не найден.",
+                        StatusCode = StatusCode.NotFind
+                    };
                 }
 
                 return new BaseResponse<Products>()
