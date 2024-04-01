@@ -125,16 +125,7 @@ namespace HelpSystem.Service.Implementantions
                         Data = UnionProducts
                     };
 
-                    //var products = Products
-                    //    .GroupBy(x => x.Value) // Группируем товары по наименованию
-                    //    .Select(group => group.First()) // Берем первый товар из каждой группы 
-                    //    .Select(x => new
-                    //    {
-                    //        x.Key,
-                    //        Name = $"{x.NameProduct} ({x.InventoryCode}) Склад: {x.Warehouse.Name}",
-                    //        Location = x.Warehouse.Name
-                    //    })
-                    //    .ToDictionary(x => x.Id, x => x.Name);
+                  
 
 
                 }
@@ -376,6 +367,7 @@ namespace HelpSystem.Service.Implementantions
                             foreach (var prod in productsToUnbind)
                             {
                                 prod.UserId = null;
+                                prod.Comments = $"Последний владелец: {Profile.FullName}";
                                 await _productsRepository.Update(prod);
                             }
 

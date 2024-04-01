@@ -75,7 +75,8 @@ namespace HelpSystem.Service.Implementantions
                         ProductId = ProductMove.Id,
                         SourceWarehouseId = sourceWarehouseId,
                         DestinationWarehouseId = DestinationWarehouseId,
-                        MovementDate = DateTime.Now
+                        MovementDate = DateTime.Now,
+                        Product = ProductMove
                     };
                     //Найдём по id Наименование склада на какой 
                     var FindName = await _warehouseRepository.GetAll()

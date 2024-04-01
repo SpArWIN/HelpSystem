@@ -1,4 +1,5 @@
-﻿using HelpSystem.DAL.Implementantions;
+﻿using System.ComponentModel.DataAnnotations;
+using HelpSystem.DAL.Implementantions;
 using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
@@ -10,6 +11,7 @@ using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.Json;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -112,7 +114,7 @@ namespace HelpSystem.Service.Implementantions
                     {
                         Id = x.Id,
                         WarehouseName = x.Name,
-                        TotalCountWarehouse = x.Products.Count
+                        TotalCountWarehouse = x.Products.Count()
                     })
                     .ToListAsync();
                 if (AllWarehouse.Count == 0)
@@ -129,7 +131,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     // Получаем количество записей, представляющих товары, прибывшие на этот склад
                     var incomingCount = await _productMovementRepository.GetAll()
-                        .OrderByDescending(m => m.MovementDate)
+                        .OrderByDescending(m=>m.MovementDate)
                         .Where(x => x.DestinationWarehouseId == warehouse.Id)
                         .CountAsync();
 
@@ -142,7 +144,7 @@ namespace HelpSystem.Service.Implementantions
                     var existingCount = warehouse.TotalCountWarehouse;
 
                     // Обновляем общее количество товаров на складе, добавляя количество пришедших записей и вычитая количество ушедших
-                    warehouse.TotalCountWarehouse = existingCount + ( incomingCount - outgoingCount);
+                    warehouse.TotalCountWarehouse =( existingCount +  incomingCount) - outgoingCount;
                 }
 
                 return new BaseResponse<IEnumerable<WarehouseViewModel>>()
@@ -162,6 +164,7 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
+  
         public async Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id)
         {
             try
@@ -252,121 +255,134 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-        //Получения списка всех товаров, находящихся на этом складе
-        //TODO потом немного изменить логику так, чтобы тут были только те товары, которые на момент не перемещены
+        //Получения списка всех товаров, находящихся на этом складе, а также перемещенных товаров на склад
         public async Task<DataTableResponse> GetProductWarehouse(Guid id)
         {
             try
             {
-                var Warehouse = await _warehouseRepository.GetAll()
-                    .FirstOrDefaultAsync(x => x.Id == id);
-
-                if (Warehouse != null)
+                var warehouse = await _warehouseRepository.GetAll().FirstOrDefaultAsync(x => x.Id == id);
+                if (warehouse != null)
                 {
-                    // Получаем список всех товаров на выбранном складе
-                    var productsOnWarehouse = await _products.GetAll()
-                        .Where(p => p.Warehouse == Warehouse)
-                        .ToListAsync();
-
-
-                    if (!productsOnWarehouse.Any())
-                    {
-
-                        //Если нет товаров по накладной, но есть перемещённые, то делаем следущее
-
-                        //Создаем список товаров, которые отправлены со склада по последним данным
-                        var MovedProducts = await
-                            _productMovementRepository.GetAll()
-                            .Where(x => x.SourceWarehouseId == Warehouse.Id)
-                            .GroupBy(p => p.ProductId)
-                            .Select(g => g.OrderByDescending(m => m.MovementDate).FirstOrDefault()!.Product)
-                            .ToListAsync();
-
-                        //Получаем текущие товары, которые поступили на склад по последним данным
-                        var GetProducts = await _productMovementRepository.GetAll()
-                            .Where(x => x.DestinationWarehouseId == Warehouse.Id)
-                            .GroupBy(x => x.ProductId) // Группировка по ProductID
-                            .Select(group => group.OrderByDescending(m => m.MovementDate).FirstOrDefault()!.Product) // Выбор последнего перемещения из каждой группы
-                            .ToListAsync();
-                        // Получаем список перемещенных товаров
-                        var movedProductIds = MovedProducts.Select(pm => pm?.Id).ToList();
-
-                        var availableProducts =
-                            GetProducts.Where(rp => !movedProductIds.Contains(rp.Id))
-                                .ToList();
+                   //Пора это заканчивать, завтра прежде чем садиться, распиши алгоритм
+                   var productsOnWarehouse = await _products.GetAll()
+                       .Where(x => x.Warehouse == warehouse)
+                       .ToListAsync();
 
 
 
+                   if (productsOnWarehouse.Any())
+                   {
+                       var incomingMovements = await _productMovementRepository.GetAll()
+                           .Where(x => x.DestinationWarehouseId == warehouse.Id)
+                           .OrderByDescending(x => x.MovementDate)
+                           .ToListAsync();
 
-                        // Группируем товары по их наименованию
-                        var groupedProducts = availableProducts
-                            .GroupBy(x => x.NameProduct)
-                            .Select(group => new ProductinWarehouseViewModel()
-                            {
+                       // Получаем записи о перемещениях товаров, которые ушли со склада
+                       var outgoingMovements = await _productMovementRepository.GetAll()
+                           .Where(x => x.SourceWarehouseId == warehouse.Id)
+                           .OrderByDescending(x => x.MovementDate)
+                           .ToListAsync();
 
-                                NameProduct = group.Key,
-                                CodeProduct = group.First().InventoryCode,
-                                TotalCountWarehouse = group.Count(),
-                                AvailableCount = group.Count(x => x.UserId == null)
-                            })
-                            .ToList();
+                       // Получаем только что пришедшие товары
+                       var latestIncomingProducts = incomingMovements.Select(x => x.Product).ToList();
 
-                        // Возвращаем успешный ответ с данными
-                        return new DataTableResponse()
-                        {
-                            Data = groupedProducts,
+                       // Получаем только что ушедшие товары
+                       var latestOutgoingProducts = outgoingMovements.Select(x => x.Product).ToList();
 
-                        };
+                       // Обновляем список товаров на складе
+                       foreach (var incomingProduct in latestIncomingProducts)
+                       {
+                           if (!latestOutgoingProducts.Any(x => x.Id == incomingProduct.Id))
+                           {
+                               productsOnWarehouse.Add(incomingProduct);
+                           }
+                       }
 
-                    }
-                    else
-                    {
-                        //Получаем список товаров, которые были отправлены с этого склада
-                        var MovedProduct = await _productMovementRepository.GetAll()
-                            .OrderByDescending(x => x.MovementDate)
-                            .Where(x => x.SourceWarehouseId == Warehouse.Id)
-                            .Select(m => m.Product)
-                            .ToListAsync();
-                        //Получаем список товаров, которые пришли на склад по последним данным
-                        var GetProducts = await _productMovementRepository.GetAll()
-                            .OrderByDescending(m => m.MovementDate)
-                            .Where(x => x.DestinationWarehouseId == Warehouse.Id)
-                            .Select(m => m.Product)
-                            .ToListAsync();
-                        //Исключаем из списка полученных товаров, отправленные по времени
-                        var UnMovedProducts = productsOnWarehouse.Except(MovedProduct).Union(GetProducts);
-                        //Добавляем к текущим, которые по накладной, те, что перемещены
-                      
-                        
+                       foreach (var outgoingProduct in latestOutgoingProducts)
+                       {
+                           if (!latestIncomingProducts.Any(x => x.Id == outgoingProduct.Id))
+                           {
+                               productsOnWarehouse.Remove(outgoingProduct);
+                           }
+                       }
 
-                        //Группируем и также отправляем 
-                        var GroupedProducts = UnMovedProducts
-                            .GroupBy(x => x.NameProduct)
-                            .Select(group => new ProductinWarehouseViewModel()
-                            {
-                                NameProduct = group.Key,
-                                CodeProduct = group.First().InventoryCode,
-                                TotalCountWarehouse = group.Count(),
-                                AvailableCount = group.Count(x => x.UserId == null),
+                       // Группируем товары по их наименованию и создаем список ProductinWarehouseViewModel
+                       var GroupedProducts = productsOnWarehouse
+                           .GroupBy(x => x.NameProduct)
+                           .Select(group => new ProductinWarehouseViewModel()
+                           {
+                               NameProduct = group.Key,
+                               CodeProduct = group.First().InventoryCode,
+                               TotalCountWarehouse = group.Count(),
+                               AvailableCount = group.Count(x => x.UserId == null)
+                           })
+                           .ToList();
 
-                                
-                            })
-                            .ToList();
-                        return new DataTableResponse()
-                        {
-                            Data = GroupedProducts
-                        };
+                       return new DataTableResponse()
+                       {
+                           Data = GroupedProducts
+                       };
 
-                    }
+                   }
+
+                   var GetMovedProducts = await _productMovementRepository.GetAll()
+                       .Where(x=>x.DestinationWarehouseId == warehouse.Id)
+                       .Select(x=>x.Product)
+                       .ToListAsync();
+
+                   var MovedProductsNull = await _productMovementRepository.GetAll()
+                       .OrderByDescending(x => x.MovementDate)
+                       .Where(x => x.SourceWarehouseId == warehouse.Id)
+                       .Select(x => x.Product)
+                       .ToListAsync();
+
+                   List<Products> SumList = new List<Products>();
+                   if (GetMovedProducts.Any())
+                   {
+                       SumList = GetMovedProducts.Except(MovedProductsNull).ToList();
+                   }
+                   else
+                   {
+                       SumList = SumList.Except(MovedProductsNull).ToList();
+                   }
+
+                   var groupedProducts = SumList
+                       .GroupBy(x => x.NameProduct)
+                       .Select(group => new ProductinWarehouseViewModel()
+                       {
+                           NameProduct = group.Key,
+                           CodeProduct = group.First().InventoryCode,
+                           TotalCountWarehouse = group.Count(),
+                           AvailableCount = group.Count(x => x.UserId == null)
+                       }).ToList();
+                   return new DataTableResponse()
+                   {
+                       Data = groupedProducts
+                   };
+                    // Группируем товары по наименованию
+                    //var groupedProducts = allProducts
+                    //    .GroupBy(x => x.NameProduct)
+                    //    .Select(group => new ProductinWarehouseViewModel()
+                    //    {
+
+                    //        NameProduct = group.Key,
+                    //        CodeProduct = group.First().InventoryCode,
+                    //        TotalCountWarehouse = group.Count(),
+                    //        AvailableCount = group.Count(x => x.UserId == null)
+                    //    })
+                    //    .ToList();
+
+
+
                 }
-                
-
                 return new DataTableResponse()
                 {
                     Data = null
                 };
             }
-            catch (Exception ex)
+
+            
+            catch (Exception e)
             {
                 return new DataTableResponse()
                 {
@@ -374,6 +390,10 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+
+
+
 
         public async Task<BaseResponse<Products>> BindWarehouseProduct(BindingProductWarehouse model)
         {
@@ -383,30 +403,44 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.NameProduct == model.ProductName && x.InventoryCode == model.InventoryCode && x.UserId == null)
                     .ToListAsync();
 
-                // Проверяем наличие записей о перемещении товара на или с этого склада
+                // Получаем все записи о перемещении товаров на или с этого склада
                 var movementRecords = await _productMovementRepository.GetAll()
-                    .OrderByDescending(m=>m.MovementDate)
-                    .Where(x => x.SourceWarehouseId == model.WarehouseId || x.DestinationWarehouseId == model.WarehouseId)
+                    .Where(x => x.SourceWarehouseId == model.WarehouseId ||
+                                x.DestinationWarehouseId == model.WarehouseId)
+                    .OrderByDescending(m => m.MovementDate)
                     .ToListAsync();
 
-                
+
                 // Фильтруем товары, которые уже были перемещены с этого склада или на него
                 var movedProductIds = movementRecords.Select(m=>m.ProductId);
+                
 
                 // Фильтруем товары, доступные для привязки на этом складе
                 var availableProductsOnWarehouse = availableProducts
                     .Where(p =>!movedProductIds.Contains(p.Id))
                     .ToList();
+
                 //Если идёт привязка перемещённого товара на этом складе, берём именно его
-                if (movementRecords.Any(m => m.DestinationWarehouseId == model.WarehouseId))
+
+                // Если на складе нет нужного количества товаров, привязываем перемещенные товары
+                if (availableProductsOnWarehouse.Count() < model.CountBinding)
                 {
-                    var movedProductIdsOnThisWarehouse = movementRecords.Select(m => m.ProductId).ToList();
 
-                    availableProductsOnWarehouse = availableProducts
-                        .Where(p =>movedProductIdsOnThisWarehouse.Contains(p.Id))
-                        .ToList();
+                    // Если есть перемещенные товары на этом складе, добавляем их в список доступных товаров
+                    if (movementRecords.Any(m => m.DestinationWarehouseId == model.WarehouseId))
+                    {
+                        var movedProductIdsOnThisWarehouse = movementRecords
+                            .Where(m => m.DestinationWarehouseId == model.WarehouseId)
+                            .Select(m => m.ProductId)
+                            .ToList();
+
+
+
+                        availableProductsOnWarehouse = availableProducts
+                            .Where(p => movedProductIdsOnThisWarehouse.Contains(p.Id))
+                            .ToList();
+                    }
                 }
-
 
                 //Товары, которые нужно привязать
                 int CountWarehouseProduct = model.CountBinding;
@@ -454,19 +488,19 @@ namespace HelpSystem.Service.Implementantions
                         int lastDigit = CountWarehouseProduct % 10;
                         if (CountWarehouseProduct >= 11 && CountWarehouseProduct <= 14) // Исключение для чисел 11-14
                         {
-                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
                         }
                         else if (lastDigit == 1)
                         {
-                            description = $"{CountWarehouseProduct} товар был прикреплен к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                            description = $"{CountWarehouseProduct} товар был прикреплен к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
                         }
                         else if (lastDigit >= 2 && lastDigit <= 4)
                         {
-                            description = $"{CountWarehouseProduct} товара было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                            description = $"{CountWarehouseProduct} товара было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
                         }
                         else
                         {
-                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.Surname} {User.Profile.Name} {User.Profile.LastName}";
+                            description = $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
                         }
 
 
