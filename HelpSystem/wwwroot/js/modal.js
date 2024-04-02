@@ -770,7 +770,7 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события закрепление
- function BindingProdWarehouse(WarehouseID) {
+ function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий
    
     $(document).on('click', '.btn-op',  function () {
@@ -839,6 +839,52 @@ function SingleMoveProduct(productId, productName, productCode, warehouseId) {
                 },
                 2000);
             
+        }
+    });
+
+}
+
+function ReportsWarehouse(StartDate,EndDate) {
+    Swal.fire({
+        title: 'Формирование отчёта по складам',
+        html: '<img src="/myIcon/wired-lineal-edit-document.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: '/Reports/ReportWarehouses',
+        data: {
+            StartTime: StartDate,
+            EndTime: EndDate
+        },
+        success: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Формирование отчёта',
+                    text: response.description,
+                    icon:'success'
+                }).then((result) => {
+                    location.reload();
+                });
+            },1000);
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Формирование отчёта',
+                    text: response.responseJSON.description,
+                    icon: 'error'
+                });
+            }, 1000);
         }
     });
 

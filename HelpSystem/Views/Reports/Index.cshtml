@@ -80,31 +80,25 @@
                         timepicker: false // Отключение времени
                      
                     });
-                },
-                preConfirm: () => {
+                }
+               
+            }).then((result) => {
+                if (result.isConfirmed) {
                     const startDate = $('#startDate').val();
                     const endDate = $('#endDate').val();
 
                     // Проверяем, если конечная дата меньше начальной, выдаем ошибку
                     if (startDate > endDate) {
-                        // Ошибка: Конечная дата не может быть меньше начальной
+                       
                         Swal.fire({
                             icon: 'error',
                             title: 'Ошибка',
                             text: 'Конечная дата не может быть меньше начальной.'
                         });
-                        return false ;
+                    } else {
+                        // Всё в порядке, передаем даты в функцию ReportsWarehouse
+                        ReportsWarehouse(startDate, endDate);
                     }
-
-                    return true;
-                }
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    const startDate = result.value[0];
-                    const endDate = result.value[1];
-                    // Теперь можно использовать startDate и endDate для выполнения нужной логики
-                    console.log("Начальная дата:", startDate);
-                    console.log("Конечная дата:", endDate);
                 }
             });
         });

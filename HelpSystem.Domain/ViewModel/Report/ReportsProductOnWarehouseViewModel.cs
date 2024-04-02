@@ -1,4 +1,5 @@
 ﻿using HelpSystem.Domain.Entity;
+using HelpSystem.Domain.ViewModel.Warehouse;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace HelpSystem.Domain.ViewModel.Report
     {
         //Модель, которая будет отвечать за отчёт отображения товаров на складе
         //Включая перемещённые товары
-
-        public DateTime StartTime { get; set; }
-        public DateTime EndTime { get; set; }
-       public string Warehouse { get; set; }
-       //Перемещённый товар по складу
-       public int MovedProducts { get; set; }
-       public List<Products> Products { get; set; }
+        public ReportsProductOnWarehouseViewModel()
+        {
+            WarehousesReports = new List<WarehouseReports>();
+        }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public List<WarehouseReports> WarehousesReports { get; set; }
 
     }
 }

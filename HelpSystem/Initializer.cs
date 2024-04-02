@@ -36,6 +36,7 @@ namespace HelpSystem
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddScoped<ITransferService, TransferService>();
+            services.AddScoped<IReportService, ReportsService>();
 
         }
     }
