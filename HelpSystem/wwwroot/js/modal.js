@@ -870,9 +870,54 @@ function ReportsWarehouse(StartDate,EndDate) {
                 Swal.fire({
                     title: 'Формирование отчёта',
                     text: response.description,
-                    icon:'success'
+                    icon:'info'
                 }).then((result) => {
-                    location.reload();
+                    if (result) {
+                        var reportHtml = '';
+                        reportHtml += '<h3 class="text-center">Отчет по товарам за ' + response.data.startTime + ' по ' + response.data.endTime + '</h3>';
+
+                        // Перебираем данные о складах и их продуктах
+                        response.data.warehousesReports.forEach(function (warehouseReport) {
+                            reportHtml += '<div class="warehouse-report mb-4">';
+                            reportHtml += '<h4 class="text-center"> СКЛАД ' + warehouseReport.warehouseName + '</h4>';
+                            reportHtml += '<div class="table-responsive">';
+                            reportHtml += '<table class="table table-bordered">';
+                            reportHtml += '<thead>';
+                            reportHtml += '<tr>';
+                            reportHtml += '<th>Наименование товара</th>';
+                            reportHtml += '<th>Количество на складе</th>';
+                            reportHtml += '<th>Доступное количество</th>';
+                            reportHtml += '<th>Количество перемещенных товаров</th>';
+                            reportHtml += '</tr>';
+                            reportHtml += '</thead>';
+                            reportHtml += '<tbody>';
+                            warehouseReport.productsInfo.forEach(function (productInfo) {
+                                reportHtml += '<tr>';
+                                reportHtml += '<td>' + productInfo.productName + '</td>';
+                                reportHtml += '<td>' + productInfo.quantityOnWarehouse + '</td>';
+                                reportHtml += '<td>' + productInfo.availableQuantity + '</td>';
+                                reportHtml += '<td>' + productInfo.movedQuantity + '</td>';
+                                reportHtml += '</tr>';
+                            });
+                            reportHtml += '</tbody>';
+                            reportHtml += '<tfoot>';
+                            reportHtml += '<tr>';
+                            reportHtml += '<td colspan="4" class="text-center font-weight-bold">Итого товаров на складе: ' + warehouseReport.totalQuantity + '</td>';
+                            reportHtml += '</tr>';
+                            reportHtml += '</tfoot>';
+                            reportHtml += '</table>';
+                            reportHtml += '</div>'; // Закрываем div.table-responsive
+                            reportHtml += '</div>'; // Закрываем div.warehouse-report
+                        });
+                        $('#reportContainer').css('display', 'block');
+                        // Вставляем HTML-код отчета в контейнер
+                        $('#reportContainer').html(reportHtml);
+
+                  
+
+                     
+                    }
+                    
                 });
             },1000);
         },

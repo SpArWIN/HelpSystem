@@ -1,4 +1,5 @@
-﻿@model dynamic
+﻿@using HelpSystem.Domain.ViewModel.Report
+@model dynamic
 
 @{
     ViewBag.Title = "title";
@@ -8,13 +9,27 @@
 
 <link rel="stylesheet" href="~/JQUERY/jquery.datetimepicker.min.css"/>
 <style>
-    /* Добавляем стили для рамки и анимации */
+   
     .nav-pills {
         display: none;
         border: 2px solid #ced4da; /* Добавляем рамку */
-        box-shadow: 0 2px 4px rgba(0, 0, 11, 0.1); /* Добавляем тень */
+        box-shadow: 0 2px 4px rgba(0, 15, 11, 0.1); 
         border-radius: 10px; /* Добавляем скругление углов */
     }
+     .report-container
+    {
+        height: 500px; 
+        overflow-y: auto; /* Включаем вертикальный скроллинг */
+        border: 2px solid #ccc; /* Добавляем рамку для контейнера */
+        padding: 10px; /* Добавляем внутренний отступ */
+        margin:20px;
+        box-shadow: 0 2px 4px rgba(0, 15, 11, 0.2); 
+    }
+
+    .scrollable-content {
+        max-height: 100%;
+    }
+    
 </style>
 <ul class="nav nav-pills">
     <li class="nav-item dropdown">
@@ -26,26 +41,22 @@
         </ul>
     </li>
 </ul>
+<div style="display:none" class="report-container" id="reportContainer">
+  
+</div>
+
+
+
 @section Scripts
 {
     <script src="~/JQUERY/jquery.datetimepicker.full.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
-    <script>
-
-        // $.datetimepicker.setLocale('ru');
-        // $("#datetimepicker").datetimepicker({
-        //     format: 'd.m.Y', // Формат даты (день.месяц.год)
-        //     timepicker: false, // Отключение времени
-        //     minDate:'-1970/01/02'
-            
-        // });
-    </script>
+ 
     <script>
         $.datetimepicker.setLocale('ru');
         // Добавляем анимацию с помощью jQuery
         $(document).ready(function(){
             $('.nav-pills').slideDown(500);
-
 
         });
       

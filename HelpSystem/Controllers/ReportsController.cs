@@ -24,7 +24,6 @@ namespace HelpSystem.Controllers
                 return BadRequest(new { description = "Одна или обе даты являются пустыми" });
             }
 
-
             var Response = await _reportService.GetWarehouseReport(StartTime, EndTime);
 
 

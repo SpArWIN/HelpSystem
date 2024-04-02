@@ -121,7 +121,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Data = ReportData,
                     Description =
-                        $"Отчёт по товарам за {startDate.ToShortDateString()} по {endDate.ToShortDateString()} сформирован",
+                        $"Отчёт по товарам за \n {startDate.ToShortDateString()} по {endDate.ToShortDateString()} сформирован",
                     StatusCode = StatusCode.Ok
                 };
 

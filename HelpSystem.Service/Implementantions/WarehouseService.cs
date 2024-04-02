@@ -303,7 +303,8 @@ namespace HelpSystem.Service.Implementantions
                                 productsOnWarehouse.Add(incomingProduct);
                             }
                         }
-
+                        //Если мы уберём перемещенный товар, который привязан, то он логично, что рассчитает количество
+                        //доступных неправильно.
                         foreach (var outgoingProduct in latestOutgoingProducts)
                         {
                             if (!latestIncomingProducts.Any(x => x.Id == outgoingProduct.Id))
@@ -330,27 +331,42 @@ namespace HelpSystem.Service.Implementantions
                         };
 
                     }
-
-                    var GetMovedProducts = await _productMovementRepository.GetAll()
+                    //Товары которые пришли
+                    var GetProduct = await _productMovementRepository.GetAll()
+                        .Include(p => p.Product)
                         .Where(x => x.DestinationWarehouseId == warehouse.Id)
-                        .Select(x => x.Product)
-                        .ToListAsync();
-
-                    var MovedProductsNull = await _productMovementRepository.GetAll()
                         .OrderByDescending(x => x.MovementDate)
+                        .ToListAsync();
+                    //Товары, которые ушли со склада
+                    List<Products> SumList = new List<Products>();
+                    var MovedProductsNull = await _productMovementRepository.GetAll()
+                        .Include(p => p.Product)
                         .Where(x => x.SourceWarehouseId == warehouse.Id)
-                        .Select(x => x.Product)
+                        .OrderByDescending(x => x.MovementDate)
                         .ToListAsync();
 
-                    List<Products> SumList = new List<Products>();
-                    if (GetMovedProducts.Any())
+                    // Получаем только что пришедшие товары
+                    var GetIncoimingProducts = GetProduct.Select(x => x.Product).ToList();
+
+                    // Получаем только что ушедшие товары
+                    var MovedProducts = MovedProductsNull.Select(x => x.Product).ToList();
+
+                    foreach (var product in GetIncoimingProducts)
                     {
-                        SumList = GetMovedProducts.Except(MovedProductsNull).ToList();
+                        if (GetIncoimingProducts.Any(x => x.Id == product.Id))
+                        {
+                            SumList.Add(product);
+                        }
                     }
-                    else
+
+                    foreach (var OutProduct in MovedProducts)
                     {
-                        SumList = SumList.Except(MovedProductsNull).ToList();
+                        if (MovedProducts.Any(x => x.Id == OutProduct.Id))
+                        {
+                            SumList.Remove(OutProduct);
+                        }
                     }
+
 
                     var groupedProducts = SumList
                         .GroupBy(x => x.NameProduct)
@@ -365,18 +381,9 @@ namespace HelpSystem.Service.Implementantions
                     {
                         Data = groupedProducts
                     };
-                    // Группируем товары по наименованию
-                    //var groupedProducts = allProducts
-                    //    .GroupBy(x => x.NameProduct)
-                    //    .Select(group => new ProductinWarehouseViewModel()
-                    //    {
 
-                    //        NameProduct = group.Key,
-                    //        CodeProduct = group.First().InventoryCode,
-                    //        TotalCountWarehouse = group.Count(),
-                    //        AvailableCount = group.Count(x => x.UserId == null)
-                    //    })
-                    //    .ToList();
+
+
 
 
 
@@ -553,12 +560,12 @@ namespace HelpSystem.Service.Implementantions
                         .ToListAsync();
 
                     // Фильтруем товары, которые уже были перемещены с/на склад
-                    var movedProductIds = movementRecords.Select(m => m.ProductId);
+                    var movedProductIds = movementRecords.Select(m => m.Product);
 
                     // Фильтруем доступные товары, которые не были перемещены
 
                     availableProductsOnWarehouse = availableProducts
-                        .Where(p => !movedProductIds.Contains(p.Id))
+                        .Where(p => !movedProductIds.Contains(p))
                         .ToList();
 
                     // Если на складе нет нужного количества товаров, 
@@ -570,7 +577,7 @@ namespace HelpSystem.Service.Implementantions
                                         m.MovementDate <= DateTime.Now);
 
                         // Доступное количество = основные + перемещенные
-                        if (availableProductsOnWarehouse.Count() + movedProductsCount >= model.CountBinding)
+                        if (availableProductsOnWarehouse.Count() + movedProductsCount <= model.CountBinding)
                         {
                             availableProductsOnWarehouse.AddRange(movementRecords
                                 .Where(m => m.DestinationWarehouseId == model.WarehouseId &&
