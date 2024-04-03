@@ -272,46 +272,41 @@ namespace HelpSystem.Service.Implementantions
                         .Where(x => x.Warehouse == warehouse)
                         .ToListAsync();
 
-
+                        
 
                     if (productsOnWarehouse.Any())
                     {
                         var incomingMovements = await _productMovementRepository.GetAll()
-                            .Include(p=>p.Product)
+                            .Include(p => p.Product)
                             .Where(x => x.DestinationWarehouseId == warehouse.Id)
-                            .OrderByDescending(x => x.MovementDate)
+                            .OrderByDescending(m=>m.MovementDate)
                             .ToListAsync();
 
                         // Получаем записи о перемещениях товаров, которые ушли со склада
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.SourceWarehouseId == warehouse.Id)
-                            .OrderByDescending(x => x.MovementDate)
+                            .OrderByDescending(m=>m.MovementDate)
                             .ToListAsync();
 
-                        // Получаем только что пришедшие товары
-                        var latestIncomingProducts = incomingMovements.Select(x => x.Product).ToList();
-
-                        // Получаем только что ушедшие товары
-                        var latestOutgoingProducts = outgoingMovements.Select(x => x.Product).ToList();
-
-                        // Обновляем список товаров на складе
-                        foreach (var incomingProduct in latestIncomingProducts)
+                        // Перебираем только что пришедшие товары и добавляем их на склад, если последнее перемещение их на склад было после последнего перемещения из него
+                        foreach (var incomingMovement in incomingMovements)
                         {
-                            if (!latestOutgoingProducts.Any(x => x.Id == incomingProduct.Id))
+                            if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
                             {
-                                productsOnWarehouse.Add(incomingProduct);
+                                productsOnWarehouse.Add(incomingMovement.Product);
                             }
                         }
-                        //Если мы уберём перемещенный товар, который привязан, то он логично, что рассчитает количество
-                        //доступных неправильно.
-                        foreach (var outgoingProduct in latestOutgoingProducts)
+
+                        // Перебираем только что ушедшие товары и удаляем их со склада, если последнее перемещение из склада было после последнего перемещения на него
+                        foreach (var outgoingMovement in outgoingMovements)
                         {
-                            if (!latestIncomingProducts.Any(x => x.Id == outgoingProduct.Id))
+                            if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate > outgoingMovement.MovementDate))
                             {
-                                productsOnWarehouse.Remove(outgoingProduct);
+                                productsOnWarehouse.Remove(outgoingMovement.Product);
                             }
                         }
+
 
                         // Группируем товары по их наименованию и создаем список ProductinWarehouseViewModel
                         var GroupedProducts = productsOnWarehouse
@@ -329,6 +324,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             Data = GroupedProducts
                         };
+
 
                     }
                     //Товары которые пришли

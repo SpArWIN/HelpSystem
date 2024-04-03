@@ -15,7 +15,7 @@ namespace HelpSystem.Domain.ViewModel.Product
         public int QuantityOnWarehouse { get; set; }
         //Доступно
         public int AvailableQuantity { get; set; }
-        //Перемещено
-        public int MovedQuantity { get; set; }
+        ////Перемещено
+        //public int MovedQuantity { get; set; }
     }
 }

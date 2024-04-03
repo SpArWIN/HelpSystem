@@ -12,5 +12,7 @@ namespace HelpSystem.Service.Interfaces
     {
         //Получения отчётности о товарах, прибывших на склад по периоду времени
         Task<IBaseResponse<ReportsProductOnWarehouseViewModel>> GetWarehouseReport(DateTime startDate, DateTime endDate);
+
+        Task <BaseResponse<IEnumerable<UserReportViewModel>>> GetUserReports(Guid userid);
     }
 }

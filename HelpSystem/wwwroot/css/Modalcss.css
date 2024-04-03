@@ -1,0 +1,11 @@
+﻿
+/* Стили для модального окна */
+
+.modal-xl {
+    border-radius: 5px;
+    box-shadow: 0 0 15px rgb(255, 106, 0);
+}
+.modal {
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgb(255, 106, 0);
+}

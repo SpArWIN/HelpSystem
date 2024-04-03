@@ -21,13 +21,17 @@ namespace HelpSystem.Service.Implementantions
         private readonly IBaseRepository<Products> _productRepository;
         private readonly IBaseRepository<ProductMovement> _productMovementRepository;
         private readonly IBaseRepository<Invoice> _invoiceRepository;
+
+        private readonly IBaseRepository<Profile> _profileRepository;
         public ReportsService(IBaseRepository<Products> productRepository,
+            IBaseRepository<Profile> profile,
             IBaseRepository<ProductMovement> productMovementRepository,IBaseRepository<Warehouse> warehouse,IBaseRepository<Invoice> invoice)
         {
             _productMovementRepository = productMovementRepository;
             _productRepository = productRepository;
             _warehouseRepository = warehouse;
             _invoiceRepository = invoice;
+            _profileRepository =profile;
         }
         public async Task<IBaseResponse<ReportsProductOnWarehouseViewModel>> GetWarehouseReport(DateTime startDate, DateTime endDate)
         {
@@ -92,7 +96,7 @@ namespace HelpSystem.Service.Implementantions
                     }
                   
                     //Рассчитываем перемещённые товары
-                    var movedProducts = outgoingMovements.Select(x => x.Product).Distinct().Count();
+                    //var movedProducts = outgoingMovements.Select(x => x.Product).Distinct().Count();
                     var ProductInfo = productsOnWarehouse
                         .GroupBy(p => p.NameProduct)
                         .Select(x => new ProductsInfo()
@@ -101,7 +105,6 @@ namespace HelpSystem.Service.Implementantions
                             InventoryCode = x.First().InventoryCode,
                             QuantityOnWarehouse = x.Count(),
                             AvailableQuantity = x.Count(x => x.UserId == null),
-                            MovedQuantity = movedProducts
                         }).ToList();
 
                     //Берем все количество 
@@ -131,6 +134,51 @@ namespace HelpSystem.Service.Implementantions
                 return new BaseResponse<ReportsProductOnWarehouseViewModel>()
                 {
                     Description = $"{e.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
+        public async Task<BaseResponse<IEnumerable<UserReportViewModel>>> GetUserReports(Guid userid)
+        {
+            try
+            {
+                var products = await _productRepository.GetAll()
+                    .Where(x => x.UserId == userid)
+                    .ToListAsync();
+
+                var Profile = await _profileRepository.GetAll()
+                    .Where(x => x.UserId == userid)
+                    .FirstOrDefaultAsync();
+
+
+                var groupedProducts = products
+                    .GroupBy(p => new { p.NameProduct, p.InventoryCode })
+                    .Select(g => new UserReportViewModel
+                    {
+                        Name = Profile.Name,
+                        LastName = Profile.LastName,
+                        SurName = Profile.Surname,
+                        FullName = $"{Profile.LastName} {Profile.Name} {Profile.Surname}",
+                        ProductName = g.Key.NameProduct,
+                        Code = g.Key.InventoryCode,
+                        Quantity = g.Count()
+
+                    })
+                    .ToList();
+                return new BaseResponse<IEnumerable<UserReportViewModel>>()
+                {
+                    Data = groupedProducts,
+                    StatusCode = StatusCode.Ok,
+                    Description = $"Отчёт успешно сформирован"
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<UserReportViewModel>>()
+                {
+                    Description = $"{ex.Message}",
                     StatusCode = StatusCode.InternalServerError
                 };
             }

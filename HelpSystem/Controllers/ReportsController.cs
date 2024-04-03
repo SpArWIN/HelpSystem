@@ -35,5 +35,17 @@ namespace HelpSystem.Controllers
             return BadRequest(new { description = Response.Description });
 
         }
+        //Метод отвечающий за получения информации о товарах, котоыре прикреплены к этому пользователю
+        [HttpPost]
+        public async Task<IActionResult> ReportUserProducts(Guid UserId)
+        {
+            var Response = await _reportService.GetUserReports(UserId);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(Response.Data,Response.Description);
+            }
+
+            return Json(Response.Description);
+        }
     }
 }

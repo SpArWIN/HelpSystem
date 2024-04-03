@@ -35,7 +35,7 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-            <li><a class="dropdown-item" href="#">Отчёт по пользователю</a></li>
+            <li><a class="dropdown-item" id="UserReportId" href="#">Отчёт по пользователю</a></li>
             <li><a class="dropdown-item" href="#">Отчёт по пользователям</a></li>
             <li><a class="dropdown-item" href="#" id="openDatePicker">Отчёт по поступлениям</a></li>
         </ul>
@@ -43,6 +43,8 @@
 </ul>
 <div style="display:none" class="report-container" id="reportContainer">
   
+    
+    
 </div>
 
 
@@ -51,15 +53,22 @@
 {
     <script src="~/JQUERY/jquery.datetimepicker.full.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
- 
+
     <script>
         $.datetimepicker.setLocale('ru');
-        // Добавляем анимацию с помощью jQuery
-        $(document).ready(function(){
+        $(document).ready(function() {
+
+      
+            // Добавляем анимацию с помощью jQuery
             $('.nav-pills').slideDown(500);
 
+            //Функция для открытия окна и поиска юзверя
+        $(document).on("click", "#UserReportId", function () {
+
+            initialiseUserReport();
+            $('#userModal').modal('show');
         });
-      
+
         // Функция для открытия диалогового окна и выбора даты с помощью flatpickr
         $(document).on("click", "#openDatePicker", function () {
             const startDateInput = $('<input>').attr({
@@ -83,16 +92,13 @@
                     $('#startDate').datetimepicker({
                         format: 'd.m.Y', // Формат даты (день.месяц.год)
                         timepicker: false // Отключение времени
-                      
                     });
 
                     $('#endDate').datetimepicker({
                         format: 'd.m.Y', // Формат даты (день.месяц.год)
                         timepicker: false // Отключение времени
-                     
                     });
                 }
-               
             }).then((result) => {
                 if (result.isConfirmed) {
                     const startDate = $('#startDate').val();
@@ -100,7 +106,6 @@
 
                     // Проверяем, если конечная дата меньше начальной, выдаем ошибку
                     if (startDate > endDate) {
-                       
                         Swal.fire({
                             icon: 'error',
                             title: 'Ошибка',
@@ -112,6 +117,7 @@
                     }
                 }
             });
+        });
         });
     </script>
 }

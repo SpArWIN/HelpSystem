@@ -541,6 +541,49 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
     });
 }
 
+//Метод для отчёта с поиском пользователя
+//Разница в том, что один в привязке товара находится, а другой в отчётности
+function initialiseUserReport() {
+    $("#UserID").select2({
+        placeholder: "Выберите пользователя",
+        minimumInputLength: 5,
+        allowClear: true,
+        tags: true,
+        dropdownParent: $('#userModal'),
+        language: {
+            inputTooShort: function (args) {
+                var remainingChars = args.minimum - args.input.length;
+                return "Пожалуйста, введите не менее " + remainingChars + " символов";
+            },
+            "noResults": function () {
+                return "Результаты не найдены";
+            },
+            "searching": function () {
+                return "Поиск...";
+            }
+        },
+        ajax: {
+            type: 'POST',
+            url: '/Profile/GetUsers',
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    term: params.term
+                };
+            },
+            processResults: function (response) {
+                var data = $.map(response,
+                    function (val, key) {
+                        return { id: key, text: val };
+                    });
+                return {
+                    results: data
+                };
+
+            }
+        }
+    });
+}
 
 //метод с возможностью поиска по пользователям
 function initializeSelectUser2() {
@@ -874,8 +917,13 @@ function ReportsWarehouse(StartDate,EndDate) {
                 }).then((result) => {
                     if (result) {
                         var reportHtml = '';
-                        reportHtml += '<h3 class="text-center">Отчет по товарам за ' + response.data.startTime + ' по ' + response.data.endTime + '</h3>';
+                        reportHtml += '<div style="position: relative;">'; // Обертка для контейнера и кнопки
+                        reportHtml += '<button id="CloseReportsBtn" style="position: absolute; top: 10px; right: 6px;" class="btn btn-danger">Закрыть</button>';
+                        reportHtml += '<h3 class="text-center">Отчет по складам за ' + response.data.startTime + ' по ' + response.data.endTime + '</h3>';
 
+                       
+
+                        reportHtml += '</div>';
                         // Перебираем данные о складах и их продуктах
                         response.data.warehousesReports.forEach(function (warehouseReport) {
                             reportHtml += '<div class="warehouse-report mb-4">';
@@ -887,7 +935,6 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '<th>Наименование товара</th>';
                             reportHtml += '<th>Количество на складе</th>';
                             reportHtml += '<th>Доступное количество</th>';
-                            reportHtml += '<th>Количество перемещенных товаров</th>';
                             reportHtml += '</tr>';
                             reportHtml += '</thead>';
                             reportHtml += '<tbody>';
@@ -896,7 +943,6 @@ function ReportsWarehouse(StartDate,EndDate) {
                                 reportHtml += '<td>' + productInfo.productName + '</td>';
                                 reportHtml += '<td>' + productInfo.quantityOnWarehouse + '</td>';
                                 reportHtml += '<td>' + productInfo.availableQuantity + '</td>';
-                                reportHtml += '<td>' + productInfo.movedQuantity + '</td>';
                                 reportHtml += '</tr>';
                             });
                             reportHtml += '</tbody>';
@@ -908,8 +954,16 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '</table>';
                             reportHtml += '</div>'; // Закрываем div.table-responsive
                             reportHtml += '</div>'; // Закрываем div.warehouse-report
+                            
                         });
-                        $('#reportContainer').css('display', 'block');
+                        reportHtml += '<div class="footer">' +
+                            '<div class="d-grid gap-2">' +
+                            '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                            '</div>' +
+                            '</div>';
+
+                       /* $('#reportContainer').css('display', 'block');*/
+                        $('#reportContainer').show();
                         // Вставляем HTML-код отчета в контейнер
                         $('#reportContainer').html(reportHtml);
 
@@ -919,7 +973,7 @@ function ReportsWarehouse(StartDate,EndDate) {
                     }
                     
                 });
-            },1000);
+            },2000);
         },
         error: function (response) {
             setTimeout(function () {
@@ -933,4 +987,65 @@ function ReportsWarehouse(StartDate,EndDate) {
         }
     });
 
+}
+
+//Функция для передачи данных в метод формирования отчёта для юзверя
+$("#BtnUserReports").on('click', function() {
+
+    var userId = $("#UserID").val();
+    if (userId) {
+        UserReports(userId);
+    } else {
+        Swal.fire({
+            title: 'Что-то пошло не так',
+            text: 'Пользователь не выбран',
+            icon: 'error'
+        });
+    }
+    
+
+});
+
+function UserReports(user) {
+    Swal.fire({
+        title: 'Формирование отчёта по пользователю',
+        html: '<img src="/myIcon/wired-lineal-edit-document.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+
+    });
+
+
+    $.ajax({
+        type: 'POST',
+        url: '/Reports/ReportUserProducts',
+        data: { userid: user },
+        success: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Формирование отчёта.',
+                    text: response.description,
+                    icon: 'info'
+                }).then((result) => {
+
+
+                });
+            },1000);
+        },
+        error: function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error'
+                });
+            },1000);
+        }
+    });
 }
