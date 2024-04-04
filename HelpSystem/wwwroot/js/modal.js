@@ -933,6 +933,7 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '<thead>';
                             reportHtml += '<tr>';
                             reportHtml += '<th>Наименование товара</th>';
+                            reportHtml += ' <th>Инвентарный код </th>';
                             reportHtml += '<th>Количество на складе</th>';
                             reportHtml += '<th>Доступное количество</th>';
                             reportHtml += '</tr>';
@@ -941,6 +942,7 @@ function ReportsWarehouse(StartDate,EndDate) {
                             warehouseReport.productsInfo.forEach(function (productInfo) {
                                 reportHtml += '<tr>';
                                 reportHtml += '<td>' + productInfo.productName + '</td>';
+                                reportHtml += '<td>' + productInfo.inventoryCode + '</td>';
                                 reportHtml += '<td>' + productInfo.quantityOnWarehouse + '</td>';
                                 reportHtml += '<td>' + productInfo.availableQuantity + '</td>';
                                 reportHtml += '</tr>';
@@ -988,6 +990,13 @@ function ReportsWarehouse(StartDate,EndDate) {
     });
 
 }
+//Обработчик закрытия отчёта
+$(document).on('click', '#CloseReportsBtn', function () {
+
+    $("#reportContainer").fadeOut();
+});
+   
+
 
 //Функция для передачи данных в метод формирования отчёта для юзверя
 $("#BtnUserReports").on('click', function() {
@@ -1032,7 +1041,55 @@ function UserReports(user) {
                     text: response.description,
                     icon: 'info'
                 }).then((result) => {
+                    if (result) {
+                        var reportHtml = '';
+                     
+                        reportHtml += '<button id="CloseReportsBtn" class="btn btn-danger">Закрыть</button>';
+                        if (response.data.length > 0) {
+                          
+                            reportHtml += '<h3 class="text-center">Отчет по пользователю ' + response.data[0].fullName + '</h3>';
 
+                            // Добавляем таблицу с данными о товарах
+                            reportHtml += '<table class="table table-bordered">';
+                            reportHtml += '<thead>';
+                            reportHtml += '<tr>';
+                            reportHtml += '<th>Наименование товара</th>';
+                            reportHtml += '<th>Инвентарный код</th>';
+                            reportHtml += '<th>Количество</th>';
+                            reportHtml += '</tr>';
+                            reportHtml += '</thead>';
+                            reportHtml += '<tbody>';
+
+                            // Добавляем строки с данными о товарах
+                            response.data.forEach(function (item) {
+                                reportHtml += '<tr>';
+                                reportHtml += '<td>' + item.productName + '</td>';
+                                reportHtml += '<td>' + item.code + '</td>';
+                                reportHtml += '<td>' + item.quantity + '</td>';
+                                reportHtml += '</tr>';
+                            });
+                            reportHtml += '<tfoot>';
+                            reportHtml += '<tr>';
+                            reportHtml += '<td colspan="4" class="text-center font-weight-bold">Итого прикреплённых товаров: ' + response.data[0].totalCount + '</td>';
+                            reportHtml += '</tr>';
+                            reportHtml += '</tfoot>';
+                            reportHtml += '</tbody>';
+                            reportHtml += '</table>';
+                            reportHtml += '<div class="footer">' +
+                                '<div class="d-grid gap-2">' +
+                                '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                                '</div>' +
+                                '</div>';
+                        } else {
+                            // Если данных нет, добавляем сообщение об этом
+                            reportHtml += '<p class="text-center font-weight-bold" style="font-size: larger;">' + response.description + '</p>';
+                        }
+                      
+
+                        $('#reportContainer').fadeIn();
+                        // Вставляем HTML-код отчета в контейнер
+                        $('#reportContainer').html(reportHtml);
+                    }
 
                 });
             },1000);

@@ -80,7 +80,7 @@ namespace HelpSystem.Service.Implementantions
 
                     foreach (var incomingProduct in latestIncomingProducts)
                     {
-                        if (latestIncomingProducts.Any(x => x.Id == incomingProduct.Id))
+                        if (latestIncomingProducts.Any(x => x.Id == incomingProduct.Id ) )
                         {
                             productsOnWarehouse.Add(incomingProduct);
                           
@@ -150,7 +150,7 @@ namespace HelpSystem.Service.Implementantions
                 var Profile = await _profileRepository.GetAll()
                     .Where(x => x.UserId == userid)
                     .FirstOrDefaultAsync();
-
+                
 
                 var groupedProducts = products
                     .GroupBy(p => new { p.NameProduct, p.InventoryCode })
@@ -162,16 +162,37 @@ namespace HelpSystem.Service.Implementantions
                         FullName = $"{Profile.LastName} {Profile.Name} {Profile.Surname}",
                         ProductName = g.Key.NameProduct,
                         Code = g.Key.InventoryCode,
-                        Quantity = g.Count()
-
+                        Quantity = g.Count(),
+                        
                     })
                     .ToList();
+                var TotalQuantity = groupedProducts.Sum(x => x.Quantity);
+
+                foreach (var total in groupedProducts)
+                {
+                    total.TotalCount= TotalQuantity;
+                }
+
+                if (groupedProducts.Any())
+                {
+
+
+                    return new BaseResponse<IEnumerable<UserReportViewModel>>()
+                    {
+                        Data = groupedProducts,
+                        StatusCode = StatusCode.Ok,
+                        Description = $"Отчёт по пользователю {Profile.LastName} {Profile.Name} {Profile.Surname} успешно сформирован"
+                    };
+                }
+
                 return new BaseResponse<IEnumerable<UserReportViewModel>>()
                 {
-                    Data = groupedProducts,
+                    Data = Enumerable.Empty<UserReportViewModel>(),
                     StatusCode = StatusCode.Ok,
-                    Description = $"Отчёт успешно сформирован"
+                    Description = $"{Profile.LastName} {Profile.Name} {Profile.Surname}, не имеет закреплённых товаров."
                 };
+
+
 
             }
             catch (Exception ex)

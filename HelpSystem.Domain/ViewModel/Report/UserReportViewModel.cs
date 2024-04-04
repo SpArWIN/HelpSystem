@@ -20,5 +20,6 @@ namespace HelpSystem.Domain.ViewModel.Report
             get { return $"{LastName} {Name} {SurName}"; }
             set { }
         }
+        public int TotalCount { get; set; }
     }
 }

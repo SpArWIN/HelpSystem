@@ -42,7 +42,7 @@ namespace HelpSystem.Controllers
             var Response = await _reportService.GetUserReports(UserId);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json(Response.Data,Response.Description);
+                return Json( new {data = Response.Data, description = Response.Description});
             }
 
             return Json(Response.Description);

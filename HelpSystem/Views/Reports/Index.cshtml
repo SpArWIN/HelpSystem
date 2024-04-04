@@ -18,8 +18,10 @@
     }
      .report-container
     {
+        position: relative;
         height: 500px; 
         overflow-y: auto; /* Включаем вертикальный скроллинг */
+        overflow-x: auto;
         border: 2px solid #ccc; /* Добавляем рамку для контейнера */
         padding: 10px; /* Добавляем внутренний отступ */
         margin:20px;
@@ -29,7 +31,18 @@
     .scrollable-content {
         max-height: 100%;
     }
+
+    #CloseReportsBtn {
+        position: absolute;
+        top: 10px;
+        right: 6px;
+    }
     
+  
+  
+
+
+
 </style>
 <ul class="nav nav-pills">
     <li class="nav-item dropdown">
