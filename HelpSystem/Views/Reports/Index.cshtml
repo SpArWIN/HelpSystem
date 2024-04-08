@@ -25,7 +25,8 @@
         border: 2px solid #ccc; /* Добавляем рамку для контейнера */
         padding: 10px; /* Добавляем внутренний отступ */
         margin:20px;
-        box-shadow: 0 2px 4px rgba(0, 15, 11, 0.2); 
+        box-shadow: 0 2px 4px rgba(0, 15, 11, 0.2);
+   
     }
 
     .scrollable-content {
@@ -38,7 +39,36 @@
         right: 6px;
     }
     
+  /*Стили для самой таблицы*/
+    .table-bordered {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+        border-collapse: collapse;
+        border: 2px solid #dee2e6;
+        box-shadow: 0 2px 4px rgb(7,7,24)
+    }
+
+        .table-bordered th, .table-bordered td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border: 2px solid #dee2e6;
+        }
+
+        .table-bordered thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+
+        /* Эффект при наведении на строки таблицы */
+        .table-bordered tbody tr:hover {
+            background-color: #ffff99;
+            cursor: pointer;
+        }
+
   
+      
   
 
 
@@ -49,7 +79,7 @@
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
             <li><a class="dropdown-item" id="UserReportId" href="#">Отчёт по пользователю</a></li>
-            <li><a class="dropdown-item" href="#">Отчёт по пользователям</a></li>
+            <li><a class="dropdown-item" href="#" id="reportUsersProductsBtn">Отчёт по пользователям</a></li>
             <li><a class="dropdown-item" href="#" id="openDatePicker">Отчёт по поступлениям</a></li>
         </ul>
     </li>
@@ -71,7 +101,11 @@
         $.datetimepicker.setLocale('ru');
         $(document).ready(function() {
 
-      
+      //Обработка события нажатия кнопки отчёта по пользователям
+            $('#reportUsersProductsBtn').on("click",function() {
+
+                UsersReports();
+            });
             // Добавляем анимацию с помощью jQuery
             $('.nav-pills').slideDown(500);
 

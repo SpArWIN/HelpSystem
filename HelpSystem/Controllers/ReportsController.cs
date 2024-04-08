@@ -47,5 +47,18 @@ namespace HelpSystem.Controllers
 
             return Json(Response.Description);
         }
+
+        [HttpGet]
+        //Метод отвечающий за получение всех пользователей с их прикреплёнными товарами
+        public async Task<IActionResult> ReportUsersProducts()
+        {
+            var Response = await _reportService.GetUsersReports();
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(new { data = Response.Data, description = Response.Description });
+            }
+
+            return Json(Response.Description);
+        }
     }
 }

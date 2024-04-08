@@ -950,7 +950,7 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '</tbody>';
                             reportHtml += '<tfoot>';
                             reportHtml += '<tr>';
-                            reportHtml += '<td colspan="4" class="text-center font-weight-bold">Итого товаров на складе: ' + warehouseReport.totalQuantity + '</td>';
+                            reportHtml += '<td colspan="4" class="text-center font-weight-bold"><strong> Итого </strong> товаров на складе: ' + '<strong>' + warehouseReport.totalQuantity + ' </strong> </td>';
                             reportHtml += '</tr>';
                             reportHtml += '</tfoot>';
                             reportHtml += '</table>';
@@ -1070,7 +1070,7 @@ function UserReports(user) {
                             });
                             reportHtml += '<tfoot>';
                             reportHtml += '<tr>';
-                            reportHtml += '<td colspan="4" class="text-center font-weight-bold">Итого прикреплённых товаров: ' + response.data[0].totalCount + '</td>';
+                            reportHtml += '<td colspan="4" class="text-center font-weight-bold"> <strong>Итого </strong> прикреплённых товаров: ' + '<strong>' + response.data[0].totalCount + '  </strong> </td>';
                             reportHtml += '</tr>';
                             reportHtml += '</tfoot>';
                             reportHtml += '</tbody>';
@@ -1082,7 +1082,7 @@ function UserReports(user) {
                                 '</div>';
                         } else {
                             // Если данных нет, добавляем сообщение об этом
-                            reportHtml += '<p class="text-center font-weight-bold" style="font-size: larger;">' + response.description + '</p>';
+                            reportHtml += '<p class="text-center font-weight-bold" style="font-size: larger; style="background-color: #fc6;">' + response.description + '</p>';
                         }
                       
 
@@ -1106,3 +1106,108 @@ function UserReports(user) {
         }
     });
 }
+//Функция формирования отчёта по пользователям
+function UsersReports() {
+    Swal.fire({
+        title: 'Формирование отчёта по пользователям',
+        html: '<img src="/myIcon/wired-lineal-edit-document.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+
+    });
+    $.ajax({
+        type: 'GET',
+        url: '/Reports/ReportUsersProducts',
+        dataType: 'json',
+        success:function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Формирование отчёта по пользователям',
+                    text: response.description,
+                    icon: 'info',
+                    confirmButtonText: 'Отлично'
+
+                }).then((result) => {
+                    if (result) {
+                        var ReportUser = '';
+                        ReportUser += '<button id="CloseReportsBtn" class="btn btn-danger">Закрыть</button>';
+                        if (response.data.users.length > 0) {
+
+                            response.data.users.forEach(function(user) {
+                                ReportUser += '<h3 class="text-center"> Пользователь:' + user.fullName + '('+user.login +')'+ '</h3>';
+
+                                if (user.userProducts.length > 0) {
+
+                                    ReportUser += '<table class="table table-bordered">';
+                                    ReportUser += '<thead>';
+                                    ReportUser += '<tr>';
+                                    ReportUser += '<th>Наименование товара</th>';
+                                    ReportUser += '<th>Инвентарный код</th>';
+                                    ReportUser += '<th>Количество</th>';
+                                    ReportUser += '</tr>';
+                                    ReportUser += '</thead>';
+                                    ReportUser += '<tbody>';
+
+                                    user.userProducts.forEach(function (product) {
+                                        ReportUser += '<tr>';
+                                        ReportUser += '<td>' + product.nameProduct + '</td>';
+                                        ReportUser += '<td>' + product.inventoryCod + '</td>';
+                                        ReportUser += '<td>' + product.totalCount + '</td>';
+                                        ReportUser += '</tr>';
+                                    });
+
+                                    ReportUser += '<tfoot>';
+                                    ReportUser += '<tr>';
+                                    ReportUser += '<td colspan="3" class="text-center font-weight-bold" style="background-color: #fc6;"> <strong>Итого </strong> прикреплённых товаров: ' + '<strong>' + user.totalProducts + ' </strong>   </td>';
+                                    ReportUser += '</tr>';
+                                    ReportUser += '</tfoot>';
+
+                                    ReportUser += '</tbody>'; 
+                                    ReportUser += '</table>';
+                                  
+
+
+                                } else {
+                                    ReportUser += '<p class="text-center font-weight-bold" style="font-size: larger;">' +user.message+ '</p>';
+                                }
+
+
+                            });
+                        } else {
+                            ReportUser+= '<p class="text-center font-weight-bold" style="font-size: larger;">Нет пользователей</p>';
+                        }
+                        ReportUser += '<div class="footer">' +
+                            '<div class="d-grid gap-2">' +
+                            '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                            '</div>' +
+                            '</div>';
+                        $('#reportContainer').fadeIn();
+                        // Вставляем HTML-код отчета в контейнер
+                        $('#reportContainer').html(ReportUser);
+                    }
+                });
+
+            },2000);
+        },
+        error:function(response) {
+            setTimeout(function() {
+                Swal.close();
+
+                Swal.fire({
+                    title: 'Упс,что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                });
+            },1000)
+        }
+    });
+}
+//Функция экспорта в csv
+$(document).on('click',"#ExportBtn",function() {
+  
+});

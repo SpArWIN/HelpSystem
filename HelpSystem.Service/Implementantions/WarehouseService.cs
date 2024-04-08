@@ -463,7 +463,7 @@ namespace HelpSystem.Service.Implementantions
                     // Убираем из списка пришедших товаров те, которые ушли
                     foreach (var outgoingMovement in outgoingMovements)
                     {
-                        if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate > outgoingMovement.MovementDate))
+                        if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
                         {
                             availableProductsOnWarehouse.Remove(outgoingMovement.Product);
                         }
@@ -501,7 +501,14 @@ namespace HelpSystem.Service.Implementantions
                         int Counts = 0;
                         foreach (var incom in availableProductsOnWarehouse)
                         {
-                          
+                            if (incom.UserId != null)
+                            {
+                                return new BaseResponse<Products>()
+                                {
+                                    StatusCode = StatusCode.NotFind,
+                                    Description = $"Нет доступного товара для привязки",
+                                };
+                            }
                             if (Counts == CountTakeWarehouse)
                             {
                                 break;    // Если мы достигли нужного количества товаров для привязки, выходим из цикла
