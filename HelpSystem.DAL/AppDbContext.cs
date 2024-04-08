@@ -34,6 +34,9 @@ namespace HelpSystem.DAL
             modelBuilder.Entity<User>()
                 .HasOne(u => u.Roles)
                 .WithMany(r => r.Users);
+            modelBuilder.Entity<Products>()
+                .Property(p => p.Id)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<Products>()
                 .HasOne(u => u.User)

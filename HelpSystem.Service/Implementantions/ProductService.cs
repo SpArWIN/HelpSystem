@@ -34,7 +34,7 @@ namespace HelpSystem.Service.Implementantions
         /// </summary>
         /// <param name="term"></param>
         /// <returns></returns>
-        public async Task<BaseResponse<Dictionary<Guid, string>>> GetProduct(string term)
+        public async Task<BaseResponse<Dictionary<int, string>>> GetProduct(string term)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace HelpSystem.Service.Implementantions
                 if (productsInMemory.Any()) // Проверяем, найдены ли товары
                 {
 
-                    var Products = new Dictionary<string, Dictionary<Guid, string>>();
+                    var Products = new Dictionary<string, Dictionary<int, string>>();
                     //Теперь пробежимся по всем получившим товарам и соориентируемся где они
                     // Разгруппируем товары по наименованию
                     var groupedProductsByName = productsInMemory.GroupBy(x => x.NameProduct);
@@ -61,8 +61,8 @@ namespace HelpSystem.Service.Implementantions
                     // Проходим по каждой группе товаров с одинаковым наименованием
                     foreach (var groupByName in groupedProductsByName)
                     {
-                        var productsByLocation = new Dictionary<Guid, string>(); // Словарь для товаров на текущем складе
-                        var movedProductsByLocation = new Dictionary<Guid, string>(); // Словарь для перемещенных товаров
+                        var productsByLocation = new Dictionary<int, string>(); // Словарь для товаров на текущем складе
+                        var movedProductsByLocation = new Dictionary<int, string>(); // Словарь для перемещенных товаров
 
                         foreach (var prod in groupByName)
                         {
@@ -103,7 +103,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             foreach (var movedProduct in movedProductsByLocation)
                             {
-                                Products[movedProduct.Value] = new Dictionary<Guid, string> { { movedProduct.Key, movedProduct.Value } };
+                                Products[movedProduct.Value] = new Dictionary<int, string> { { movedProduct.Key, movedProduct.Value } };
 
                             }
                         }
@@ -119,7 +119,7 @@ namespace HelpSystem.Service.Implementantions
                         })
                         .ToDictionary(x => x.Key, x => x.Value);
                     //Завтра переделать.
-                    return new BaseResponse<Dictionary<Guid, string>>()
+                    return new BaseResponse<Dictionary<int, string>>()
                     {
                         StatusCode = StatusCode.Ok,
                         Data = UnionProducts
@@ -131,7 +131,7 @@ namespace HelpSystem.Service.Implementantions
                 }
                 else // Если товары не найдены, вернем специальное значение
                 {
-                    return new BaseResponse<Dictionary<Guid, string>>()
+                    return new BaseResponse<Dictionary<int, string>>()
                     {
                         StatusCode = StatusCode.NotFind,
                         Description = "Товары не найдены"
@@ -141,7 +141,7 @@ namespace HelpSystem.Service.Implementantions
             }
             catch (Exception ex)
             {
-                return new BaseResponse<Dictionary<Guid, string>>()
+                return new BaseResponse<Dictionary<int, string>>()
                 {
                     Description = $"{ex.Message}",
                     StatusCode = StatusCode.InternalServerError
@@ -221,12 +221,14 @@ namespace HelpSystem.Service.Implementantions
                          * а значит, он не будет ни к чему прикреплен, решается это добавлением ещё одного цикла)
                          */
 
-
+                        //Для уникальности товаров, для их идентификационных номеров будем добавлять id
+                        //Найдем максимальный id 
+                        
                         for (int i = 0; i < quantity; i++)
                         {
                             var NewProduct = new Products
                             {
-                                InventoryCode = pos.InventoryCode,
+                                InventoryCode = $"{pos.InventoryCode}",
                                 NameProduct = pos.NameProduct,
                                 Comments = pos.Comments,
                                 Provider = Provider,
@@ -246,7 +248,16 @@ namespace HelpSystem.Service.Implementantions
                     {
                         await _productsRepository.Create(product);
                     }
+                    // После добавления всех продуктов обновляем InventoryCode
+                 
 
+                    foreach (var prod in productsList)
+                    {
+                       
+                        prod.InventoryCode = $"{prod.InventoryCode}_{prod.Id}";
+                        await _productsRepository.Update(prod);
+
+                    }
                     return new BaseResponse<IEnumerable<Products>>()
                     {
                         Data = productsList,
@@ -271,7 +282,7 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        public async Task<BaseResponse<Products>> BindingProduct( Guid StatId ,Guid ProductId,string? Comments)
+        public async Task<BaseResponse<Products>> BindingProduct( Guid StatId ,int ProductId,string? Comments)
         {
             try
             {

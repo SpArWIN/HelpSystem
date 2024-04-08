@@ -10,7 +10,7 @@ namespace HelpSystem.Domain.Entity
     public class ProductMovement
     {
         public Guid Id { get; set; }
-        public Guid ProductId { get; set; } // ID перемещаемого товара
+        public int ProductId { get; set; } // ID перемещаемого товара
         public Guid SourceWarehouseId { get; set; } // ID исходного склада
         public Guid DestinationWarehouseId { get; set; } // ID целевого склада
         public DateTime MovementDate { get; set; } // Дата перемещения

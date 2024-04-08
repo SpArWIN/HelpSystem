@@ -23,6 +23,7 @@ function openModal(parameters) {
             // Выполняем соответствующее действие в зависимости от контекста
             currentWarehouseId = parameters.data; 
             if (context === "ListWarehouse") {
+               
                 initializeWarehouseProductTable(id);
 
             }
@@ -745,49 +746,27 @@ function initializeSelect2() {
     }
 
 //Загрузка таблицы списка товаров на складе через ajax
+
+
 function initializeWarehouseProductTable(warehouseId) {
-    
-   return  $("#WarehouseProductTable").DataTable({
-        ajax: {
-            url: "/Warehouse/GetJSONWarehouse",
-            type: "GET",
-            data: { id: warehouseId },
-            dataSrc: "data"
-        },
+    var tableSelector = "#productAccordion .accordion-body table";
+    var languageUrl = "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json";
+
+    $(tableSelector).DataTable({
+        searching: true,
+        paging: true,
+        ordering: true,
+        info: true,
         language: {
-            url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json",
-            emptyTable: "Нет товаров для отображения"
-        },
-        columns: [
-            { data: "nameProduct", name: "NameProduct", className:"text-center"  },
-            { data: "codeProduct", name: "CodeProduct", className: "text-center" },
-            { data: "totalCountWarehouse", name: "TotalCountWarehouse", className: "text-center" },
-            { data: "availableCount", name: "AvailableCount", className: "text-center" },
-            {
-
-                data : function(row) {
-                    return warehouseId;
-                },
-                sortable: false,
-                render: function (data, type, row) {
-                    return '<button class="btn btn-success btn-op"  data-id="' + data + '">Закрепить</button>';
-
-                }
-            }
-        ],
-        initComplete: function () {
-            
-            /*  MoveProductWarehouse();*/
-            $("#WarehouseProductTable").on("click", ".btn-op", function () {
-               
-
-                BindingProdWarehouse();
-            });
+            url: languageUrl
         }
+      
     });
-   
-   
 }
+
+
+   
+
 
 //функиця для заполнения данными mass select 
 function MassInputWarehouse(id) {
@@ -813,7 +792,7 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события закрепление
- function BindingProdWarehouse() {
+function BindingProdWarehouse() {
     // Так как клики многократные, остальные убираем, оставляем текущий
    
     $(document).on('click', '.btn-op',  function () {

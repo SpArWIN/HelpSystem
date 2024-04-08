@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240320135532_Initialize")]
+    [Migration("20240408120702_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -55,8 +55,8 @@ namespace HelpSystem.Migrations
                     b.Property<DateTime>("MovementDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ProductId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
 
                     b.Property<Guid>("SourceWarehouseId")
                         .HasColumnType("uniqueidentifier");
@@ -70,9 +70,11 @@ namespace HelpSystem.Migrations
 
             modelBuilder.Entity("HelpSystem.Domain.Entity.Products", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Comments")
                         .HasColumnType("nvarchar(max)");
@@ -144,8 +146,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dfc5eb2d-6733-4f35-b83d-642e279b6ab3"),
-                            UserId = new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b")
+                            Id = new Guid("621b8e37-3450-47f3-81eb-6b1e73dea4a1"),
+                            UserId = new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901")
                         });
                 });
 
@@ -265,7 +267,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b"),
+                            Id = new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

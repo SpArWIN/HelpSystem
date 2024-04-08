@@ -1,42 +1,64 @@
-﻿@model IEnumerable<HelpSystem.Domain.ViewModel.Product.ProductShowViewModel>
+﻿@model HelpSystem.Domain.ViewModel.Product.ProductShowViewModel
 
 <div class="container">
     <div class="row" style="text-align:center">
-        <small class="text-center">  <strong> Накладная: @Model.FirstOrDefault()?.NumberDoc </strong></small>
+        <small class="text-center">  <strong> Накладная: @Model.Product.FirstOrDefault()?.NumberDoc </strong></small>
     </div>
     <div class="row">
         <div class="col">
-            <small class="text-muted"> <strong> Склад:</strong> @Model.FirstOrDefault()?.Warehouse</small>
+            <small class="text-muted"> <strong> Склад:</strong> @Model.Product.FirstOrDefault()?.Warehouse</small>
         </div>
     </div>
     <div class="row">
         <div class="col">
-            <small class="text-muted"> <strong>Поставщик:</strong> @Model.FirstOrDefault()?.Provider</small>
+            <small class="text-muted"> <strong>Поставщик:</strong> @Model.Product.FirstOrDefault()?.Provider</small>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="table-responsive">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Наименование</th>
-                        <th>Инвентарный код</th>
-                        <th>Количество на складе</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var product in Model)
-                    {
-                        <tr>
-                            <td >@product.NameProduct</td>
-                            <td >@product.CodeProduct</td>
-                            <td style="vertical-align:middle">@product.TotalCount</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
+    <div class="accordion" id="accordionExample">
+        @foreach (var group in Model.Product.GroupBy(p => p.NameProduct))
+        {
+            var accordionId = $"accordion-{Guid.NewGuid()}"; // Генерируем уникальный ID для каждой группы
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-@accordionId">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@accordionId" aria-expanded="false" aria-controls="collapse-@accordionId">
+                        @group.Key
+                    </button>
+                </h2>
+                <div id="collapse-@accordionId" class="accordion-collapse collapse" aria-labelledby="heading-@accordionId" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Наименование</th>
+                                    <th>Инвентарный код</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var product in group)
+                                {
+                                    <tr>
+                                        <td>@product.NameProduct</td>
+                                        <td>@product.CodeProduct</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="text-center" style="background-color: #ffff99;">
+                <strong>Общее количество товаров:</strong> @Model.TotalCount
             </div>
         </div>
     </div>
 </div>
+
+
+

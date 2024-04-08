@@ -19,6 +19,6 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Список товаров, связанных с накладной, отсортированной по наименованиию</returns>
-        Task<IBaseResponse<IEnumerable<ProductShowViewModel>>> GetPartialProduct(Guid id);
+        Task<IBaseResponse<ProductShowViewModel>> GetPartialProduct(Guid id);
     }
 }

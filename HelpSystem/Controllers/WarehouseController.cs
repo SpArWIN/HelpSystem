@@ -69,16 +69,17 @@ namespace HelpSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProductsWarehouse(Guid id)
         {
-            
-            return PartialView("_ProductWarehouse");
+            var Response = await _warehouseService.GetProductWarehouse(id);
+          
+            return PartialView("_ProductWarehouse",Response.Data);
        
         }
         //Метод получения таблицы товаров на складе в JSON формате
-        public async Task<IActionResult> GetJSONWarehouse(Guid id)
-        {
-            var Response = await _warehouseService.GetProductWarehouse(id);
-            return Json(new { data = Response.Data });
-        }
+        //public async Task<IActionResult> GetJSONWarehouse(Guid id)
+        //{
+        //    var Response = await _warehouseService.GetProductWarehouse(id);
+        //    return Json(new { data = Response.Data });
+        //}
         //Метод привязки со стороны СКЛАДАА
         public async Task<IActionResult> BindingWarehouseProduct(BindingProductWarehouse model)
         {

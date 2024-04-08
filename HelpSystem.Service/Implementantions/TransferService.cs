@@ -42,7 +42,7 @@ namespace HelpSystem.Service.Implementantions
 
                 if (model.Count == 1)
                 {
-                    Guid productId = model.First().Id;
+                    int productId = model.First().Id;
                     
                     //Находим товар в бд
                     var ProductMove = await _productsRepository.GetAll()
@@ -209,7 +209,7 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        public async Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(Guid ProductId)
+        public async Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(int ProductId)
         {
             try
             {

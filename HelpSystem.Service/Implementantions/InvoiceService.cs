@@ -120,7 +120,7 @@ namespace HelpSystem.Service.Implementantions
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<IBaseResponse<IEnumerable<ProductShowViewModel>>> GetPartialProduct(Guid id)
+        public async Task<IBaseResponse<ProductShowViewModel>> GetPartialProduct(Guid id)
         {
             try
             {
@@ -135,28 +135,41 @@ namespace HelpSystem.Service.Implementantions
                 if (Invoice != null)
                 {
                     var productsList = Invoice.Products.ToList();
+                    int Total = productsList.Count;
+
 
                     string Numbers = Invoice.NumberDocument;
-                    var Products = productsList
-                        .GroupBy(p => p.NameProduct)
-                        .Select(g => new ProductShowViewModel()
+
+                    var ProductView = productsList
+                        .Select(p => new ProductInvoiceViewModel()
                         {
-                            
-                            NameProduct = g.Key,
-                            CodeProduct = g.FirstOrDefault().InventoryCode,    
-                           Warehouse = g.FirstOrDefault().Warehouse.Name,
-                           Provider = g.FirstOrDefault().Provider.Name,
-                           NumberDoc = Numbers,
-                            TotalCount = g.Count()
+                            NameProduct = p.NameProduct,
+                            CodeProduct = p.InventoryCode,
+                            NumberDoc = Numbers,
+                            Warehouse = p.Warehouse.Name,
+                            Provider = p.Provider.Name
                         }).ToList();
-                    return new BaseResponse<IEnumerable<ProductShowViewModel>>()
+
+
+                    var Products = new ProductShowViewModel()
+                    {
+                        Product = ProductView,
+                        TotalCount = Total
+                    };
+
+
+
+
+                  
+
+                    return new BaseResponse<ProductShowViewModel>()
                     {
                         Data = Products,
                         StatusCode = StatusCode.Ok
                     };
                 }
 
-                return new BaseResponse<IEnumerable<ProductShowViewModel>>()
+                return new BaseResponse<ProductShowViewModel>()
                 {
                     StatusCode = StatusCode.NotFind,
                     Description = "Накладная не найдена",
@@ -165,7 +178,7 @@ namespace HelpSystem.Service.Implementantions
             }
             catch (Exception e)
             {
-                return new BaseResponse<IEnumerable<ProductShowViewModel>>()
+                return new BaseResponse<ProductShowViewModel>()
                 {
                     Description = $"{e.Message}",
                     StatusCode = StatusCode.InternalServerError

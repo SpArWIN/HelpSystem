@@ -260,7 +260,7 @@ namespace HelpSystem.Service.Implementantions
         }
 
         //Получения списка всех товаров, находящихся на этом складе, а также перемещенных товаров на склад
-        public async Task<DataTableResponse> GetProductWarehouse(Guid id)
+        public async Task<BaseResponse<IEnumerable<ProductinWarehouseViewModel>>> GetProductWarehouse(Guid id)
         {
             try
             {
@@ -309,18 +309,34 @@ namespace HelpSystem.Service.Implementantions
 
 
                         // Группируем товары по их наименованию и создаем список ProductinWarehouseViewModel
+
                         var GroupedProducts = productsOnWarehouse
-                            .GroupBy(x => new { x.NameProduct, x.InventoryCode }) 
+                            .GroupBy(x => x.NameProduct)
                             .Select(group => new ProductinWarehouseViewModel()
                             {
-                                NameProduct = group.Key.NameProduct,
-                                CodeProduct = group.Key.InventoryCode,
-                                TotalCountWarehouse = group.Count(),
-                                AvailableCount = group.Count(x => x.UserId == null)
-                            })
-                            .ToList();
+                              TotalCountWarehouse = group.Count(),
+                              NameProduct = group.Key,
+                              WhProducts = group.Select(p=>new ProductListWarehouse()
+                              {
+                                  Id = p.Id,
+                                  NameProduct = p.NameProduct,
+                                  CodeProduct = p.InventoryCode,
+                                  AvailableCount = group.Count(item=>item.UserId == null)
+                              }).ToList(),
+                            }).ToList();
 
-                        return new DataTableResponse()
+                            
+
+
+                        //var Products = productsOnWarehouse
+                        //    .Select(group=>new ProductinWarehouseViewModel()
+                        //    {
+                        //        NameProduct = group.NameProduct,
+                        //        CodeProduct = group.InventoryCode,
+                        //        AvailableCount = 
+                        //    })
+
+                        return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                         {
                             Data = GroupedProducts
                         };
@@ -369,11 +385,16 @@ namespace HelpSystem.Service.Implementantions
                         .Select(group => new ProductinWarehouseViewModel()
                         {
                             NameProduct = group.Key,
-                            CodeProduct = group.First().InventoryCode,
                             TotalCountWarehouse = group.Count(),
-                            AvailableCount = group.Count(x => x.UserId == null)
+                            WhProducts = group.Select(p => new ProductListWarehouse()
+                            {
+                                Id = p.Id,
+                                NameProduct = p.NameProduct,
+                                CodeProduct = p.InventoryCode,
+                                AvailableCount = group.Count(item => item.UserId == null)
+                            }).ToList(),
                         }).ToList();
-                    return new DataTableResponse()
+                    return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                     {
                         Data = groupedProducts
                     };
@@ -385,7 +406,7 @@ namespace HelpSystem.Service.Implementantions
 
                 }
 
-                return new DataTableResponse()
+                return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                 {
                     Data = null
                 };
@@ -394,7 +415,7 @@ namespace HelpSystem.Service.Implementantions
 
             catch (Exception e)
             {
-                return new DataTableResponse()
+                return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                 {
                     Data = null
                 };

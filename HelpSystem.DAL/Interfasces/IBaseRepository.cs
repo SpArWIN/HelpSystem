@@ -1,4 +1,6 @@
-﻿namespace HelpSystem.DAL.Interfasces
+﻿using HelpSystem.Domain.Entity;
+
+namespace HelpSystem.DAL.Interfasces
 {
     public interface IBaseRepository<T>
     {
@@ -8,4 +10,6 @@
 
         Task Delete(T entity);
     }
+    //Реализую ещё один интерфейс, наследуясь от основного, для реализации одной функции для таблицы товаров
+   
 }

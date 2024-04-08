@@ -1,8 +1,13 @@
-﻿namespace HelpSystem.Domain.Entity
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HelpSystem.Domain.Entity
 {
     public class Products
     {
-        public Guid Id { get; set; }
+
+        //  public Guid Id { get; set; }
+        [Key]
+        public int Id { get; set; }
         public string InventoryCode { get; set; } = string.Empty; //Инвертарный код
         //public string Type {get;set;} -если будет нужно, то добавим товару тип
         public string NameProduct { get; set; } = string.Empty;

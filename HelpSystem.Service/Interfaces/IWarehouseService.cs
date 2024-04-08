@@ -43,7 +43,7 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task <DataTableResponse> GetProductWarehouse(Guid id );
+        Task <BaseResponse<IEnumerable<ProductinWarehouseViewModel>>> GetProductWarehouse(Guid id );
             /// <summary>
             /// Метод привязки товара со стороны склада
             /// </summary>

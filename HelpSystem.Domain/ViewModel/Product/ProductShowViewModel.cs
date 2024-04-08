@@ -2,11 +2,12 @@
 {
     public class ProductShowViewModel
     {
-        public string NumberDoc { get; set; } 
-        public string NameProduct { get; set; }
-        public string CodeProduct { get; set; }
-        public string Warehouse { get; set; }
-        public string Provider { get; set; }
+        //public string NumberDoc { get; set; } 
+        //public string NameProduct { get; set; }
+        //public string CodeProduct { get; set; }
+        //public string Warehouse { get; set; }
+        //public string Provider { get; set; }
+        public List<ProductInvoiceViewModel> Product { get; set; }
 
         public int TotalCount { get; set; }
     }

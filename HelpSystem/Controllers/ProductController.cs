@@ -35,7 +35,7 @@ namespace HelpSystem.Controllers
         }
         [HttpPost]
         //Привязка товара к пользователю со стороны заявки
-        public async Task<IActionResult> BindingProduct(Guid StatId, Guid ProductId, string? Comments)
+        public async Task<IActionResult> BindingProduct(Guid StatId, int ProductId, string? Comments)
         {
             var Response = await _productService.BindingProduct(StatId, ProductId,Comments);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)

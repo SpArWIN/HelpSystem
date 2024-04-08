@@ -88,7 +88,8 @@ namespace HelpSystem.Migrations
                 name: "Products",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     InventoryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NameProduct = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Comments = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -175,7 +176,7 @@ namespace HelpSystem.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProductId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
                     SourceWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DestinationWarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MovementDate = table.Column<DateTime>(type: "datetime2", nullable: false)
@@ -204,12 +205,12 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("dfc5eb2d-6733-4f35-b83d-642e279b6ab3"), null, null, null, null, null, new Guid("9df86ce4-3d80-45e8-82be-f0e3fdbefa8b") });
+                values: new object[] { new Guid("621b8e37-3450-47f3-81eb-6b1e73dea4a1"), null, null, null, null, null, new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",
