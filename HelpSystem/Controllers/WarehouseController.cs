@@ -86,10 +86,14 @@ namespace HelpSystem.Controllers
             var Response = await _warehouseService.BindWarehouseProduct(model);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok(new { Response.Data, description = Response.Description });
+                return Ok(new { description = Response.Description });
+            }
+            else
+            {
+                return BadRequest(new { description = Response.Description });
             }
 
-            return BadRequest(new { description = Response.Description });
+           
         }
         //метод получения списка всех складов, кроме текущего местоположения товара
         public async Task<IActionResult> GetProductsDetail(Guid id)

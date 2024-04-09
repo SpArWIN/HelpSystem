@@ -26,16 +26,16 @@
     @if (Model.Any())
     {
         <div class="accordion" id="accordionExample">
-        @foreach (var productGroup in Model.GroupBy(p => new { p.Name, p.Code }))
+        @foreach (var productGroup in Model.GroupBy(p => p.Name))
         {
             var position = 0; // Переменная для хранения номера позиции
             <div class="accordion-item">
-                <h2 class="accordion-header" id="@($"heading{productGroup.Key.Name}-{productGroup.Key.Code}")">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{productGroup.Key.Name.Replace(" ", "-")}-{productGroup.Key.Code}")" aria-expanded="true" aria-controls="@($"collapse{productGroup.Key.Name.Replace(" ", "-")}-{productGroup.Key.Code}")">
-                        @productGroup.Key.Name
+                <h2 class="accordion-header" id="@($"heading{productGroup.Key.Replace(" ", "-")}")">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse{productGroup.Key.Replace(" ", "-")}")" aria-expanded="true" aria-controls="@($"collapse{productGroup.Key.Replace(" ", "-")}")">
+                        @productGroup.Key
                     </button>
                 </h2>
-                <div id="@($"collapse{productGroup.Key.Name.Replace(" ", "-")}-{productGroup.Key.Code}")" class="accordion-collapse collapse" aria-labelledby="@($"heading{productGroup.Key.Name}-{productGroup.Key.Code}")" data-bs-parent="#accordionExample">
+                <div id="@($"collapse{productGroup.Key.Replace(" ", "-")}")" class="accordion-collapse collapse" aria-labelledby="@($"heading{productGroup.Key.Replace(" ", "-")}")" data-bs-parent="#accordionExample">
                     <div class="accordion-body">
                         @foreach (var product in productGroup)
                         {
@@ -61,14 +61,14 @@
                                         }
                                     </select>
                                 </div>
-                                <a id="@($"BtnMoves_{productGroup.Key.Name}_{productGroup.Key.Code}_{position}")" class="btn btn-danger btn-move-product" data-product-id="@product.Id" data-product-name="@product.Name" data-product-code="@product.Code">Переместить</a>
+                                <a id="@($"BtnMoves_{product.Name}_{position}")" class="btn btn-danger btn-move-product" data-product-id="@product.Id">Переместить</a>
                             </div>
                         }
                     </div>
                 </div>
             </div>
         }
-        </div>
+    </div>
 
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingSettings">

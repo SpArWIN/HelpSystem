@@ -6,16 +6,20 @@
 }
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
 <style>
-    .table-container {
+    .table-rounded {
+        border-radius: 15px;
+    }
+
+    /* Выделенные границы ячеек таблицы */
+    .table-bordered th,
+    .table-bordered td {
+        border: 3px solid #888; /* Цвет границы */
      
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        overflow: clip;
-        margin:10px;
-        padding:5px;
-        text-align: center;
-      
+    }
+
+    /* Эффект при наведении на строки таблицы */
+    .table-hover tbody tr:hover {
+        background-color: #ffff99; /* Цвет фона при наведении */
     }
 
     #WarehouseProductTable {
@@ -26,8 +30,13 @@
     .accordion-item {
         margin-bottom: 10px; /* Добавляет внешний отступ снизу каждого элемента аккордеона */
     }
-     
-  
+    /* Резиновая (адаптивная) таблица */
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+ 
 
 </style>
 
@@ -37,30 +46,41 @@
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading-@group.NameProduct.Replace(" ", "-")">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@group.NameProduct.Replace(" ", "-")">
-                        @group.NameProduct (Total: @group.TotalCountWarehouse)
+                        @group.NameProduct (Общее количество: @group.TotalCountWarehouse)
                     </button>
                 </h2>
                 <div id="collapse-@group.NameProduct.Replace(" ", "-")" class="accordion-collapse collapse" aria-labelledby="heading-@group.NameProduct.Replace(" ", "-")">
                     <div class="accordion-body ">
-                    <table id="WarehouseProductTable-@group.NameProduct.Replace(" ", "-")" class="table  table-bordered" style="width:100%" >
-                            <thead>
-                            <tr>
-                                <th>Наименование товара</th>
-                                <th>Инвентарный код</th>
-                                <th>Доступное количество</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @foreach (var product in group.WhProducts)
-                            {
-                                <tr>
-                                    <td>@product.NameProduct</td>
-                                    <td>@product.CodeProduct</td>
-                                    <td>@product.AvailableCount</td>
+                        <div class="table-responsive">
+                        <table id="WarehouseProductTable-@group.NameProduct.Replace(" ", "-")" class="table table-bordered table-rounded table-hover" style="width:100%">
+                                <thead>
+                                <tr style="text-align:center">
+                                    <th style="display:none">Id</th>
+                                    <th>Наименование товара</th>
+                                    <th>Инвентарный код</th>
+                                    <th>Доступное количество</th>
+                                    <th class="text-center">Действия</th>
                                 </tr>
-                            }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                @foreach (var product in group.WhProducts)
+                                {
+                                    <tr style="text-align:center">
+                                        <td style="display:none">@product.Id</td>
+                                        <td class="text-center">@product.NameProduct</td>
+                                        <td class="text-center">@product.CodeProduct</td>
+                                        <td class="text-center">@product.AvailableCount</td>
+                                        <td class="text-center">
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-success" id="attachBtn" data-product-id ="@product.Id" data-warehouse-id="#" type="button">Закрепить</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+
+                    </div>
                     </div>
                 </div>
             </div>
@@ -75,8 +95,7 @@
 
     <script>
         $(document).ready(function() {
-          
-           
+
 
 
             // $("#WarehouseProductTable").DataTable({

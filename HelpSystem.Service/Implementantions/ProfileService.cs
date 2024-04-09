@@ -154,7 +154,7 @@ namespace HelpSystem.Service.Implementantions
                 return new BaseResponse<Dictionary<Guid, string>>()
                 {
                     StatusCode = StatusCode.NotFind,
-                    Description = "Нет ничего"
+                  
                 };
             }
             catch (Exception ex)

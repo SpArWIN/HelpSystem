@@ -377,17 +377,13 @@ $('#BtnBind').click(function () {
 //Привязка данных со стороны склада
 $("#BtnBindWarehouse").click(function () {
 
-    var Name = $("#nameProduct").val();
-    var Code = $("#inventoryCode").val();
-    var Count = $("#countUnbinding").val();
+ 
     var User = $("#UserId").val();
-    
+    var Product = $("#ProductID").val();
     var Data = {
         UserId : User,
-        ProductName: Name,
-        InventoryCode :Code,
-        CountBinding: Count,
-        WarehouseId: currentWarehouseId
+        WarehouseId: currentWarehouseId,
+        ProductId: Product
     }
 
     
@@ -762,6 +758,24 @@ function initializeWarehouseProductTable(warehouseId) {
         }
       
     });
+    $(tableSelector).find('tbody tr').each(function () {
+        var $row = $(this);
+
+        // Находим кнопку "Закрепить" в текущей строке и устанавливаем ей нужный id склада
+        var $attachBtn = $row.find('button.btn-success');
+        $attachBtn.attr('data-warehouse-id', warehouseId);
+        $(document).on('click', '#attachBtn', function () {
+            var $button = $(this); // Получаем ссылку на кнопку "Закрепить", на которую кликнули
+            var productId = $button.data('product-id'); // Получаем ID продукта из атрибута data-product-id кнопки
+          
+
+            var nameProduct = $button.closest('tr').find('td:eq(1)').text();
+
+            var Code = $button.closest('tr').find('td:eq(2)').text();
+            BindingProdWarehouse(productId, nameProduct, Code);
+          
+        });
+    });
 }
 
 
@@ -792,18 +806,18 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события закрепление
-function BindingProdWarehouse() {
+function BindingProdWarehouse(ProductId,Name,Code) {
     // Так как клики многократные, остальные убираем, оставляем текущий
-   
-    $(document).on('click', '.btn-op',  function () {
-        var nameProduct = $(this).closest('tr').find('td:eq(0)').text();
-        var codeProduct = $(this).closest('tr').find('td:eq(1)').text();
-        
+
+    var nameProduct = Name;
+    var codeProduct = Code;
+    var Product = ProductId;
+         $('#ProductID').val(Product);
         $('#nameProduct').val(nameProduct);
         $('#inventoryCode').val(codeProduct);
         $('#ModalBindingProduct').modal('show');
         initializeSelectUser2();
-    });
+   
 }
 
 

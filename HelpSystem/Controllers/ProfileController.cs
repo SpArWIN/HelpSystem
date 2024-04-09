@@ -101,7 +101,7 @@ namespace HelpSystem.Controllers
             {
                 return Json(Response.Data);
             }
-            return Json(Response.Description);
+            return Json(Response.Data);
         }
     }
 }

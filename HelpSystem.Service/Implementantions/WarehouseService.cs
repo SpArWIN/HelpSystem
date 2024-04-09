@@ -321,7 +321,7 @@ namespace HelpSystem.Service.Implementantions
                                   Id = p.Id,
                                   NameProduct = p.NameProduct,
                                   CodeProduct = p.InventoryCode,
-                                  AvailableCount = group.Count(item=>item.UserId == null)
+                                  AvailableCount = (p.UserId == null) ? 1 : 0
                               }).ToList(),
                             }).ToList();
 
@@ -430,292 +430,89 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-                // Получаем список всех товаров на конкретном складе, которые пришли по накладной
-                var availableProducts = await _products.GetAll()
-                    .Where(x => x.NameProduct == model.ProductName &&
-                                x.InventoryCode == model.InventoryCode &&
-                                x.UserId == null &&
-                                x.Warehouse.Id == model.WarehouseId).ToListAsync();
 
-                List<ProductMovement>? movementRecords;
-                List<Products> availableProductsOnWarehouse = new List<Products>();
-                if (!availableProducts.Any())
+
+                //Получаем этот товар, который хотим закрепить
+                // Проверяем наличие товара на текущем складе и его привязку
+                var availableProduct = await _products.GetAll()
+                    .Where(x => x.Id == model.ProductId && x.Warehouse.Id == model.WarehouseId && x.UserId == null)
+                    .FirstOrDefaultAsync();
+
+                if (availableProduct != null)
                 {
-                    // Получаем все записи о перемещении товаров на этот склад
-                    movementRecords = await _productMovementRepository.GetAll()
-                        .Include(p => p.Product)
-                        .Where(x => x.DestinationWarehouseId == model.WarehouseId)
-                        .OrderByDescending(m => m.MovementDate)
-                        .ToListAsync();
+                    // Проверяем наличие пользователя
+                    var user = await _userRepository.GetAll()
+                        .Include(u => u.Profile)
+                        .FirstOrDefaultAsync(u => u.Id == model.UserId);
 
-                    if (!movementRecords.Any())
+                    if (user == null)
                     {
                         return new BaseResponse<Products>()
                         {
-                            Description = "Нет доступного товара на складе.",
-                            StatusCode = StatusCode.NotFind
-                        };
-                    }
-                    //Получаем список товаров, которые пришли на склад
-                    var incomingMovements = await _productMovementRepository.GetAll()
-                        .Include(p => p.Product)
-                        .Where(x => x.DestinationWarehouseId == model.WarehouseId)
-                        .OrderByDescending(m => m.MovementDate)
-                        .ToListAsync();
-
-                    // Получаем записи о перемещениях товаров, которые ушли со склада
-                    var outgoingMovements = await _productMovementRepository.GetAll()
-                        .Include(p => p.Product)
-                        .Where(x => x.SourceWarehouseId == model.WarehouseId)
-                        .OrderByDescending(m => m.MovementDate)
-                        .ToListAsync();
-
-                    foreach (var incomingMovement in incomingMovements)
-                    {
-                        if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
-                        {
-                            availableProductsOnWarehouse.Add(incomingMovement.Product);
-                        }
-                    }
-
-
-
-
-                    // Убираем из списка пришедших товаров те, которые ушли
-                    foreach (var outgoingMovement in outgoingMovements)
-                    {
-                        if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
-                        {
-                            availableProductsOnWarehouse.Remove(outgoingMovement.Product);
-                        }
-                    }
-
-
-                    int CountTakeWarehouse = model.CountBinding;
-                    // Прикрепляем к пользователю оставшийся перемещенный товар
-                    // Проверяем его наличие на складе
-                    if (CountTakeWarehouse <= 0)
-                    {
-                        return new BaseResponse<Products>()
-                        {
-                            Description = "Невозможно привязать товар с количеством, меньшим или равным 0",
-                            StatusCode = StatusCode.NotFind
-                        };
-                    }
-
-                    var Usver = await _userRepository.GetAll()
-                        .Include(p => p.Profile)
-                        .FirstOrDefaultAsync(x => x.Id == model.UserId);
-                    if (Usver != null)
-                    {
-                        if (availableProductsOnWarehouse.Count < CountTakeWarehouse)
-                        {
-                            return new BaseResponse<Products>()
-                            {
-                                StatusCode = StatusCode.NotFind,
-                                Description =
-                                    "Количество доступного товара, который необходимо привязать\n меньше требуемого.",
-                            };
-
-                        }
-
-                        int Counts = 0;
-                        foreach (var incom in availableProductsOnWarehouse)
-                        {
-                            if (incom.UserId != null)
-                            {
-                                return new BaseResponse<Products>()
-                                {
-                                    StatusCode = StatusCode.NotFind,
-                                    Description = $"Нет доступного товара для привязки",
-                                };
-                            }
-                            if (Counts == CountTakeWarehouse)
-                            {
-                                break;    // Если мы достигли нужного количества товаров для привязки, выходим из цикла
-                            }
-
-
-                            incom.UserId= Usver.Id;
-                            await _products.Update(incom);
-                            Counts++;
-
-                        }
-
-                        string description;
-                        int lastDigit = CountTakeWarehouse % 10;
-                        if (CountTakeWarehouse >= 11 && CountTakeWarehouse <= 14) // Исключение для чисел 11-14
-                        {
-                            description =
-                                $"{CountTakeWarehouse} товаров было прикреплено к {Usver.Profile.LastName} {Usver.Profile.Name} {Usver.Profile.Surname}";
-                        }
-                        else if (lastDigit == 1)
-                        {
-                            description =
-                                $"{CountTakeWarehouse} товар был прикреплен к {Usver.Profile.LastName} {Usver.Profile.Name} {Usver.Profile.Surname}";
-                        }
-                        else if (lastDigit >= 2 && lastDigit <= 4)
-                        {
-                            description =
-                                $"{CountTakeWarehouse} товара было прикреплено к {Usver.Profile.LastName} {Usver.Profile.Name} {Usver.Profile.Surname}";
-                        }
-                        else
-                        {
-                            description =
-                                $"{CountTakeWarehouse} товаров было прикреплено к {Usver.Profile.LastName} {Usver.Profile.Name} {Usver.Profile.Surname}";
-                        }
-
-
-                        return new BaseResponse<Products>()
-                        {
-
-                            StatusCode = StatusCode.Ok,
-                            Description = description
-                        };
-
-
-
-
-
-                    }
-                  
-                    return new BaseResponse<Products>()
-                    {
                             Description = $"Пользователь не найден.",
                             StatusCode = StatusCode.NotFind
-                    };
-                    
-                    
-                }
-                else
-                {
-
-
-
-
-                    // Получаем все записи о перемещении товаров на или с этого склада
-                    movementRecords = await _productMovementRepository.GetAll()
-                        .Where(x => x.SourceWarehouseId == model.WarehouseId ||
-                                    x.DestinationWarehouseId == model.WarehouseId)
-                        .OrderByDescending(m => m.MovementDate)
-                        .ToListAsync();
-
-                    // Фильтруем товары, которые уже были перемещены с/на склад
-                    var movedProductIds = movementRecords.Select(m => m.Product);
-
-                    // Фильтруем доступные товары, которые не были перемещены
-
-                    availableProductsOnWarehouse = availableProducts
-                        .Where(p => !movedProductIds.Contains(p))
-                        .ToList();
-
-                    // Если на складе нет нужного количества товаров, 
-                    // добавляем перемещенные товары
-                    if (availableProductsOnWarehouse.Count() < model.CountBinding)
-                    {
-                        var movedProductsCount = movementRecords
-                            .Count(m => m.DestinationWarehouseId == model.WarehouseId &&
-                                        m.MovementDate <= DateTime.Now);
-
-                        // Доступное количество = основные + перемещенные
-                        if (availableProductsOnWarehouse.Count() + movedProductsCount <= model.CountBinding)
-                        {
-                            availableProductsOnWarehouse.AddRange(movementRecords
-                                .Where(m => m.DestinationWarehouseId == model.WarehouseId &&
-                                            m.MovementDate <= DateTime.Now)
-                                .Select(m => m.Product)
-                                .ToList());
-                        }
-                    }
-
-                    //Товары, которые нужно привязать
-                    int CountWarehouseProduct = model.CountBinding;
-                    if (CountWarehouseProduct <= 0)
-                    {
-                        return new BaseResponse<Products>()
-                        {
-                            Description = "Невозможно привязать товар с количеством, меньшим или равным 0",
-                            StatusCode = StatusCode.NotFind
                         };
                     }
 
-                    if (availableProductsOnWarehouse.Count() < CountWarehouseProduct)
-                    {
-                        return new BaseResponse<Products>()
-                        {
-                            Description =
-                                "Количество доступного товара, который необходимо привязать\n меньше требуемого.",
-                            StatusCode = StatusCode.NotFind
-                        };
-                    }
+                    // Привязываем товар к пользователю
+                    availableProduct.UserId = user.Id;
+                    await _products.Update(availableProduct);
 
-
-                    var User = await _userRepository.GetAll()
-                        .Include(p => p.Profile)
-                        .FirstOrDefaultAsync(x => x.Id == model.UserId);
-
-                    if (User != null)
-                    {
-                        int count = 0;
-                        foreach (var product in availableProductsOnWarehouse)
-                        {
-                            if (count == CountWarehouseProduct)
-                            {
-                                break; // Если мы достигли нужного количества товаров для привязки, выходим из цикла
-                            }
-
-                            product.UserId = User.Id;
-                            await _products.Update(product);
-                            count++;
-                        }
-                        //Для более логичного окончания
-
-                        string description;
-                        int lastDigit = CountWarehouseProduct % 10;
-                        if (CountWarehouseProduct >= 11 && CountWarehouseProduct <= 14) // Исключение для чисел 11-14
-                        {
-                            description =
-                                $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
-                        }
-                        else if (lastDigit == 1)
-                        {
-                            description =
-                                $"{CountWarehouseProduct} товар был прикреплен к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
-                        }
-                        else if (lastDigit >= 2 && lastDigit <= 4)
-                        {
-                            description =
-                                $"{CountWarehouseProduct} товара было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
-                        }
-                        else
-                        {
-                            description =
-                                $"{CountWarehouseProduct} товаров было прикреплено к {User.Profile.LastName} {User.Profile.Name} {User.Profile.Surname}";
-                        }
-
-
-                        return new BaseResponse<Products>()
-                        {
-
-                            StatusCode = StatusCode.Ok,
-                            Description = description
-                        };
-
-                    }
+                    string description = $"Товар {availableProduct.NameProduct} был прикреплен к {user.Profile.LastName} {user.Profile.Name} {user.Profile.Surname}";
 
                     return new BaseResponse<Products>()
                     {
-                        Description = $"Пользователь не найден.",
-                        StatusCode = StatusCode.NotFind
+                        StatusCode = StatusCode.Ok,
+                        Description = description,
+                        Data = availableProduct
                     };
                 }
-            }
 
+                // Если товар не найден на текущем складе, проверяем последнее перемещение
+                var lastMovement = await _productMovementRepository.GetAll()
+                    .OrderByDescending(m => m.MovementDate)
+                    .FirstOrDefaultAsync(m => m.Product.Id == model.ProductId);
+
+                if (lastMovement != null && lastMovement.SourceWarehouseId != model.WarehouseId)
+                {
+                    var user = await _userRepository.GetAll()
+                        .Include(u => u.Profile)
+                        .FirstOrDefaultAsync(u => u.Id == model.UserId);
+                    if (user == null)
+                    {
+                        return new BaseResponse<Products>()
+                        {
+                            Description = $"Пользователь не найден.",
+                            StatusCode = StatusCode.NotFind
+                        };
+                    }
+                    var Product = lastMovement.Product;
+                    if (Product.UserId == null)
+                    {
+                        Product.UserId = user.Id;
+                        await _products.Update(Product);
+                    }
+                    else
+                    {
+                        return new BaseResponse<Products>()
+                        {
+                            Description = $"Товар недоступен для привязки",
+                            StatusCode = StatusCode.UnChanched
+                        };
+                    }
+                }
+
+                return new BaseResponse<Products>()
+                {
+                    Description = "Товар не доступен на указанном складе для привязки.",
+                    StatusCode = StatusCode.NotFind
+                };
+            }
             catch (Exception ex)
             {
                 return new BaseResponse<Products>()
                 {
-                    Description = $"{ex.Message}",
+                    Description = $"Ошибка при привязке товара: {ex.Message}",
                     StatusCode = StatusCode.InternalServerError
                 };
             }
@@ -723,15 +520,9 @@ namespace HelpSystem.Service.Implementantions
     
 
 
-
-
-
-
-
-
-    //Тут мы получим все товары, не группируя их, тогда можно будет перемещать каждый товар по отдельности
+        //Тут мы получим все товары, не группируя их, тогда можно будет перемещать каждый товар по отдельности
             public async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
-        {
+            {
             try
             {
                 var Warehouse = await _warehouseRepository.GetAll()
@@ -780,7 +571,9 @@ namespace HelpSystem.Service.Implementantions
 
 
                         // Формируем список деталей товара для аккордеона
-                        var productDetails = productsOnWarehouse.Select(p => new TransferProductViewModel
+                        var productDetails = productsOnWarehouse
+                            .Select(p => new TransferProductViewModel
+                                
                         {
                             Id = p.Id,
                             Name = p.NameProduct,
