@@ -26,19 +26,20 @@ namespace HelpSystem.Service.Implementantions
             {
                 //В профиль также закинем список товаров связанных с этим пользователем
                 //Цепляем id, чтобы его потом можно было открепить от юзверя
+
+
                 var Product = await _productsRepository.GetAll()
-                    .Where(x => x.User.Id == Guid)
-                    .GroupBy(x=> new {x.InventoryCode,  x.NameProduct} )
-                    .Select(g=> new
+                    .Where(x => x.UserId == Guid)
+                    .Select(g => new BindingProductViewModel()
                     {
-                        NameProduct = g.Key,
-                        Code = g.Key.InventoryCode,
-                        Count = g.Count()
-                    })
-                    .ToListAsync();
+                        Id = g.Id,
+                        InventoryCod = g.InventoryCode,
+                        NameProduct = g.NameProduct,
+                        TotalCount = 1
+                    }).ToListAsync();
+                int sumTotalProducts = Product.Sum(p => p.TotalCount);
 
                 var Profile = await _profileRepository.GetAll()
-                    
                     .Select(x => new ProfileViewModel()
                     {
                         Id = x.UserId,
@@ -47,16 +48,12 @@ namespace HelpSystem.Service.Implementantions
                         Surname = x.Surname,
                         LastName = x.LastName,
                         Name = x.Name,
-                        UserPdocut = Product.Select(p => new BindingProductViewModel()
-                        {
-                            
-                            NameProduct = p.NameProduct.NameProduct,
-                            InventoryCod = p.NameProduct.InventoryCode,
-                            TotalCount= p.Count
-                        }).ToList()
+                        UserPdocut = Product,
+                        SumTotalProducts = sumTotalProducts
+                    }).FirstOrDefaultAsync(x=>x.Id == Guid);
 
-                    })
-                    .FirstOrDefaultAsync(x => x.Id == Guid);
+
+
                 return new BaseResponse<ProfileViewModel>()
                 {
                     Data = Profile,

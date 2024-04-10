@@ -10,7 +10,7 @@ namespace HelpSystem.Domain.ViewModel.Users
 {
     public class UserInfoViewModel
     {
-        //Модель для пользователя, собирательная инфа
+        //Модель для пользователя, собирательная инфа на отчётность
         public string Login { get; set; }
         public string? Name { get; set; }
         public string? LastName { get; set; }

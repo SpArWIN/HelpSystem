@@ -391,7 +391,7 @@ namespace HelpSystem.Service.Implementantions
                                 Id = p.Id,
                                 NameProduct = p.NameProduct,
                                 CodeProduct = p.InventoryCode,
-                                AvailableCount = group.Count(item => item.UserId == null)
+                                AvailableCount = (p.UserId == null) ? 1 : 0
                             }).ToList(),
                         }).ToList();
                     return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
@@ -471,6 +471,7 @@ namespace HelpSystem.Service.Implementantions
                 // Если товар не найден на текущем складе, проверяем последнее перемещение
                 var lastMovement = await _productMovementRepository.GetAll()
                     .OrderByDescending(m => m.MovementDate)
+                    .Include(p=>p.Product)
                     .FirstOrDefaultAsync(m => m.Product.Id == model.ProductId);
 
                 if (lastMovement != null && lastMovement.SourceWarehouseId != model.WarehouseId)
@@ -491,6 +492,13 @@ namespace HelpSystem.Service.Implementantions
                     {
                         Product.UserId = user.Id;
                         await _products.Update(Product);
+                        return new BaseResponse<Products>()
+                        {
+                            Description =
+                                $"{lastMovement.Product.NameProduct} {lastMovement.Product.InventoryCode} был прикреплён к {user.Profile.LastName} {user.Profile.Name} {user.Profile.Surname}",
+                            StatusCode = StatusCode.Ok,
+                            Data = Product
+                        };
                     }
                     else
                     {
@@ -555,7 +563,11 @@ namespace HelpSystem.Service.Implementantions
                         {
                             if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
                             {
-                                productsOnWarehouse.Add(incomingMovement.Product);
+
+                                if (incomingMovement.Product.UserId == null)
+                                {
+                                    productsOnWarehouse.Add(incomingMovement.Product);
+                                }
                             }
                         }
 
@@ -564,7 +576,11 @@ namespace HelpSystem.Service.Implementantions
                         {
                             if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
                             {
-                                productsOnWarehouse.Remove(outgoingMovement.Product);
+
+                                if (outgoingMovement.Product.UserId != null)
+                                {
+                                    productsOnWarehouse.Remove(outgoingMovement.Product);
+                                }
                             }
                         }
 

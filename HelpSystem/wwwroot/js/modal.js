@@ -483,7 +483,7 @@ function BindProduct(hiddenId, productsId,Com) {
     });
 }
 //Метод на открепления товара от пользователя, передача в контроллер
-function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
+function UnbindingProduct(ProfileId, productsToUnbind) {
     Swal.fire({
         title: 'Открепление товара',
         html: 'Пожалуйста, подождите...',
@@ -495,12 +495,11 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
         }
 
     });
-
+    // Формируем массив объектов в ожидаемом формате
+ 
     var data = {
         ProfileId: ProfileId,
-        NameProduct: NameProduct,
-        Code: Code,
-        CountUnbinding: CountUnbinding
+        model: productsToUnbind
     };
 
     $.ajax({
@@ -537,7 +536,60 @@ function UnbindingProduct(ProfileId, NameProduct, Code, CountUnbinding) {
         }
     });
 }
+//Тут будет функция обработки клика поиска товара
 
+
+
+
+//напишу ещё одну функцию поиска ВСЕЙ ДОСТУПНОЙ ИНФОРМАЦИИ О ТОВАРЕ - это функция будет вызываться
+//Когда администратору нужно будет найти товар и вытащить всю доступную информаицю о нём
+
+function initialiseFindProduct() {
+    $('#ProductId').select2({
+        placeholder: "Начните искать товар",
+        minimumInputLength: 4,
+        allowClear: true,
+        tags: true,
+        dropdownParent: $('#FindProducts'),
+        language: {
+            inputTooShort: function(args) {
+                var remainingChars = args.minimum - args.input.length;
+                return "Пожалуйста, введите не менее " + remainingChars + " символов";
+            },
+            "noResults": function() {
+                return "Результаты не найдены";
+            },
+            "searching": function() {
+                return "Поиск...";
+            }
+        },
+
+        ajax: {
+            type: 'POST',
+            url: '/Product/GetProduct',
+            dataType: 'json',
+            data: function (params) {
+                return {
+                    term: params.term
+                };
+            },
+            processResults: function (response) {
+                // Преобразование данных словаря в формат, ожидаемый select2
+                var data = $.map(response,
+                    function (value, key) {
+                        return { id: key, text: value };
+                    });
+
+                // Возвращаем результаты для select2
+                return {
+                    results: data
+                };
+
+            }
+        }
+        
+    });
+}
 //Метод для отчёта с поиском пользователя
 //Разница в том, что один в привязке товара находится, а другой в отчётности
 function initialiseUserReport() {

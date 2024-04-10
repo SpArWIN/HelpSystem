@@ -18,7 +18,11 @@ namespace HelpSystem.Controllers
             _warehouseService = warehouse;
         }
 
-        
+        //Метод получения всей доступной информации о товаре 
+        public async Task<IActionResult> GetAllInfoProduct(int Id)
+        {
+
+        }
         //Метод когда получаем товары, пользователь то уже есть
         public async Task<IActionResult> GetProduct(string term)
         {
@@ -50,9 +54,9 @@ namespace HelpSystem.Controllers
         
         //Снятие с пользователя товара
         [HttpPost]
-        public async Task<IActionResult> UnbindingProduct(UnbindingProductViewModel model)
+        public async Task<IActionResult> UnbindingProduct(List<UnbindingProductViewModel> model, Guid ProfileId )
         {
-            var Response = await _productService.UnBindingProduct(model);
+            var Response = await _productService.UnBindingProduct(model,  ProfileId);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return Ok(new { Response.Data, description = Response.Description });

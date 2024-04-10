@@ -1,6 +1,7 @@
 ﻿using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Product.ProductAllInfo;
 
 namespace HelpSystem.Service.Interfaces
 {
@@ -31,8 +32,15 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct(UnbindingProductViewModel  product);
-      
+        Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct( List<UnbindingProductViewModel>   product, Guid ProfileId);
+
+
+        /// <summary>
+        /// Метод получения всей доступной информации о товаре
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<IBaseResponse<MainProductInfo>> GetMainProductInfo(int id);
       
     }
 }

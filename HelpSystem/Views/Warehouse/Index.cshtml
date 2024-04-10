@@ -21,6 +21,12 @@
             <li><a class="dropdown-item" id="WarehouseAdd" href="#"  >Добавить склад</a></li>
         </ul>
     </li>
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="FindProductId" role="button" data-bs-toggle="dropdown" aria-expanded="false">Поиск товара</a>
+        <ul class="dropdown-menu" aria-labelledby="navBarReferences">
+            <li><a class="dropdown-item" id="FindProduct" href="#">Найти товар</a></li>
+        </ul>
+    </li>
 </ul>
 @if (Model != null && Model.Any())
 {
@@ -100,7 +106,12 @@ else
                     CreateWarehouse(WarehouseNmae);
                 }
             });
-        
+            $('#FindProduct').on('click', function() {
+                    $('#FindProducts').modal('show');
+                    initialiseFindProduct();
+
+            });
+
         });
       
 

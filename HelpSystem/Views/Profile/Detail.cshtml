@@ -16,16 +16,33 @@
     .table-container {
         border: 3px solid #ccc; 
         border-radius: 5px; 
-        overflow: hidden; 
+        overflow - x: auto;
+        overflow-y: auto;
+        max-height: 300px;
+        margin-bottom:20px;
     }
     .table {
         width: 100%; 
         border-collapse: collapse; /* Слияние границ ячеек */
     }
+
+    .table-scroll {
+        width: 100%; /* Занимаем всю доступную ширину */
+        padding: 8px;
+    }
+
+        .table-scroll thead th,
+        .table-scroll tbody td {
+            white-space: nowrap; /* Предотвращаем перенос текста */
+        }
+
+       .table-scroll tbody tr:hover{
+           background-color:#fff999;
+       }
 </style>
 <input type="hidden" id="profileId" value="@Model.Id" />
 <br/>
-<div class="card border-warning mb-3" style="margin:10px; max-width: 100%;">
+<div class="card border-warning mb-3" style="margin:5px; max-width: 100%;">
     <div class="row g-0">
         <div class="col-md-12">
             <h5 class="card-header text-center">Профиль</h5>
@@ -59,34 +76,41 @@
     <p class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
     @if (User.IsInRole("3"))
     {
-
-
         <div class="table-container">
 
 
-            <table id="BindingProductId" class="table">
+            <table id="BindingProductId" class="table table-bordered table-scroll">
                 <thead>
-                    <tr>
-                        <th>Наименование</th>
-                        <th>Инвентарный код</th>
-                        <th>Количество</th>
-                        <th>Действия</th>
-                    </tr>
+                <tr>
+                    <th style="display:none">id</th>
+                    <th>Наименование</th>
+                    <th>Инвентарный код</th>
+                    <th>Количество</th>
+                    <th>Действия</th>
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var product in Model.UserPdocut)
-                    {
-                        <tr>
-                            <td>@product.NameProduct</td>
-                            <td>@product.InventoryCod</td>
-                            <td>@product.TotalCount</td>
-                            <td>
-                                <button id="unbinding" class="btn btn-success btn-sm " >Открепить</button>
-                            </td>
-                        </tr>
-                    }
+                @foreach (var product in Model.UserPdocut)
+                {
+                    <tr>
+                        <td style="display:none">@product.Id</td>
+                        <td>@product.NameProduct</td>
+                        <td>@product.InventoryCod</td>
+                        <td>@product.TotalCount</td>
+                        <td>
+                            <div class="d-grid gap-2">
+                                <button id="unbinding" class="btn btn-success btn-sm ">Открепить</button>
+                            </div>
+                        </td>
+
+                    </tr>
+                }
                 </tbody>
+              
             </table>
+        </div>
+        <div style="background-color: #ffff99;" class="text-center mt-3">
+            <strong>Общее количество прикрепленных товаров: @Model.SumTotalProducts</strong>
         </div>
     }
     else
@@ -94,29 +118,36 @@
         <div class="table-container">
 
 
-            <table id="BindingProductId" class="table">
+            <table id="BindingProductId" class="table table-bordered table-scroll">
                 <thead>
-                    <tr>
-                        <th>Наименование</th>
-                        <th>Инвентарный код</th>
-                        <th>Количество</th>
-                     
-                    </tr>
+                <tr>
+                    <th style="display:none">id</th>
+                    <th>Наименование</th>
+                    <th>Инвентарный код</th>
+                    <th>Количество</th>
+
+                </tr>
                 </thead>
                 <tbody>
-                    @foreach (var product in Model.UserPdocut)
-                    {
-                        <tr>
-                            <td>@product.NameProduct</td>
-                            <td>@product.InventoryCod</td>
-                            <td>@product.TotalCount</td>
-                       
-                        </tr>
-                    }
+                @foreach (var product in Model.UserPdocut)
+                {
+                    <tr>
+                        <td style="display:none">@product.Id</td>
+                        <td>@product.NameProduct</td>
+                        <td>@product.InventoryCod</td>
+                        <td>@product.TotalCount</td>
+
+                    </tr>
+                }
                 </tbody>
+              
             </table>
         </div>
+        <div style="background-color: #ffff99;" class="text-center mt-3">
+            <strong>Общее количество прикрепленных товаров: @Model.SumTotalProducts</strong>
+        </div>
     }
+ 
 
 }
 
@@ -136,35 +167,26 @@
                 $('#BindingProductId').on('click', '#unbinding', function() {
                     // Находим родительскую строку tr
                     var row = $(this).closest('tr');
-                    var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
-                    var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
+                    var id = row.find('td:eq(0)').text(); // Получаем Id товара из скрытой ячейки
+
+                    var nameProduct = row.find('td:eq(1)').text(); // Наименование товара
+                    var inventoryCode = row.find('td:eq(2)').text(); // Инвентарный код
                     var ProfileId = $('#profileId').val();
 
-                    //Через SwetAlert передадим все необходимые данные без модального окна
+                    // Показываем подтверждающее уведомление без запроса количества
                     Swal.fire({
-                        title: 'Введите необходимое количество товара, которое нужно отвязать',
-                        html: `
-                <input id="nameProduct" class="swal2-input" value="${nameProduct}" readonly>
-                <input id="inventoryCode" class="swal2-input" value="${inventoryCode}" readonly>
-                <input id="Bindc" class="swal2-input" placeholder="Введите количество">
-            `,
-                        focusConfirm: false,
+                        title: `Вы действительно хотите отвязать товар "${nameProduct}"  "${inventoryCode}"?`,
+                        icon: 'warning',
                         showCancelButton: true,
-                        confirmButtonText: 'Отвязать',
-                        cancelButtonText: 'Отмена',
-                        preConfirm: () => {
-                        var countUnbinding = document.getElementById('Bindc').value;
-                            return {
-                                ProfileId: ProfileId,
-                                NameProduct: nameProduct,
-                                Code: inventoryCode,
-                            CountUnbinding: countUnbinding
-                            };
-                        }
+                        confirmButtonText: 'Да, отвязать',
+                        cancelButtonText: 'Отмена'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            var countBind = result.value;
-                        UnbindingProduct(countBind.ProfileId, countBind.NameProduct, countBind.Code, countBind.CountUnbinding);
+                            var productsToUnbind = [{
+                            ProductId: id
+                            }];
+                            // Вызываем функцию отвязки товара, передавая Id товара
+                        UnbindingProduct(ProfileId, productsToUnbind);
                         }
                     });
                 });

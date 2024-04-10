@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HelpSystem.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/Card.css" asp-append-version="true" />
+    <link href="~/css/select2.css" rel="stylesheet" />
     <link href="~/css/modalcss.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
@@ -243,13 +244,37 @@
            </div>
        </div>
    </div>
+   @*Модальное окно для нахождения товара*@
+   <div class="modal fade " id="FindProducts" tabindex="-1" role="dialog">
+        <div class=" modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Поиск товара</h5>
+                </div>
+                <div class="modal-body">
+                    <label style="margin:2px;" for="ProductId">Начните вбивать товар или инвентарный код:</label>
+                    <select  style="margin:5px;" class="form-control small-select" id="ProductId" name="pr"></select>
+                    <div style="margin:8px; display:none" class="row">
+                        <div  class="col-md-6">
+                            <textarea id="ProductInfoTextAreaLeft" class="form-control" rows="10" readonly></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea id="ProductInfoTextAreaRight" class="form-control" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="BtnFindInfoProducts" style="width: 100%;" class="btn btn-success"> Найти товар</button>
+                </div>
+            </div>
+       </div>
+   </div>
 
-
-   <footer style="margin-top:10px;" class="border-top footer text-muted">
+  @*  <footer style="margin-top:10px;" class="border-top footer text-muted">
     <div class="container">
         &copy; 2024 - HelpSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
     </div>
-</footer>
+</footer> *@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>

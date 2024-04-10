@@ -1,0 +1,9 @@
+﻿.select2-container .select2-selection--single .select2-selection__rendered {
+   
+    width: 300px;
+}
+
+.select2-container .select2-search__field {
+   
+    width: 100%;
+}

@@ -16,6 +16,8 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public string? Description { get; set; }
         public string? Name { get; set; }
         public List<BindingProductViewModel>? UserPdocut { get; set; }
+        //Тут возьмем подсчёт общего количества товаров, закреплённых за юзверем
+        public int SumTotalProducts { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
