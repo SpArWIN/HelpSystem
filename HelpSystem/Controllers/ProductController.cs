@@ -21,12 +21,29 @@ namespace HelpSystem.Controllers
         //Метод получения всей доступной информации о товаре 
         public async Task<IActionResult> GetAllInfoProduct(int Id)
         {
+            var Response = await _productService.GetMainProductInfo(Id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { data = Response.Data, description = Response.Description });
+            }
 
+            return BadRequest(new { description = Response.Description });
         }
-        //Метод когда получаем товары, пользователь то уже есть
+        //Метод когда получаем товары, пользователь то уже есть - будет искать товары, которые не привязаны к юзверю
         public async Task<IActionResult> GetProduct(string term)
         {
-            var Response = await _productService.GetProduct(term);
+            var Response = await _productService.GetProductNotUser(term);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(Response.Data);
+            }
+            return Json(Response.Description);
+        }
+
+
+        public async Task<IActionResult> GetAllproducts(string term)
+        {
+            var Response = await _productService.GetAllProductsWith(term);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return Json(Response.Data);

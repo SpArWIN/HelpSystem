@@ -13,9 +13,13 @@ namespace HelpSystem.Service.Interfaces
         /// <returns></returns>
         //Task<BaseResponse<IEnumerable<Products>>> GetPartialProduct(Guid id);
 
-        Task<BaseResponse<Dictionary<int, string>>> GetProduct(string term);
-
-      
+        Task<BaseResponse<Dictionary<int, string>>> GetProductNotUser(string term);
+        /// <summary>
+        /// Метод получает список товаров, включая привязанных 
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        Task<BaseResponse<Dictionary<int, string>>> GetAllProductsWith(string term);
         Task<BaseResponse<IEnumerable<Products>>> CreateProduct(List<ProductViewModel> positions);
 
         /// <summary>

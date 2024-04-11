@@ -537,8 +537,59 @@ function UnbindingProduct(ProfileId, productsToUnbind) {
     });
 }
 //Тут будет функция обработки клика поиска товара
+$('#BtnFindInfoProducts').click(function() {
+    // Получаем выбранный ID товара из элемента <select>
+    var selectedProductId = $('#ProductId').val();
 
+    FindProduct(selectedProductId);
+});
 
+function FindProduct(Id) {
+    Swal.fire({
+        title: 'Поиск товара',
+        html: 'Пожалуйста, подождите...',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+
+    });
+    $.ajax({
+        type: 'GET',
+        url: '/Product/GetAllInfoProduct',
+        data: { id: Id },
+        success:function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Информация о товаре',
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Отлично'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        //Тут будет функция заполнения данными
+                        const data = response.data;
+                        console.log(data);
+                    }
+                });
+            },1000);
+        },
+        error:function(response) {
+            setTimeout(function() {
+                Swal.close();
+                Swal.fire({
+                    title: 'Что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Окей'
+                });
+            },1000);
+        }
+    });
+}
 
 
 //напишу ещё одну функцию поиска ВСЕЙ ДОСТУПНОЙ ИНФОРМАЦИИ О ТОВАРЕ - это функция будет вызываться
@@ -566,7 +617,7 @@ function initialiseFindProduct() {
 
         ajax: {
             type: 'POST',
-            url: '/Product/GetProduct',
+            url: '/Product/GetAllproducts',
             dataType: 'json',
             data: function (params) {
                 return {
