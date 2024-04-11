@@ -573,6 +573,9 @@ function FindProduct(Id) {
                         //Тут будет функция заполнения данными
                         const data = response.data;
                         console.log(data);
+                        ProductInfo(data);
+
+
                     }
                 });
             },1000);
@@ -590,8 +593,55 @@ function FindProduct(Id) {
         }
     });
 }
+// Функция для отображения маршрутизации товара
+function GenerateRoute(transfers) {
+    const $infoContainer = $('#routeInfoContainer');
+
+    if (!Array.isArray(transfers) || transfers.length === 0) {
+        $infoContainer.html('Нет информации о перемещениях товара.');
+        return;
+    }
+
+    let infoHtml = '';
+
+    transfers.forEach((transfer, index) => {
+        const color = index === 0 ? 'green' : (index === transfers.length - 1 ? 'orange' : 'gray');
+        const transferInfo = `<div style="border: 4px solid ${color}; padding: 5px; margin: 4px;">`
+            + `Перемещение ${index + 1}:`
+            + `<br>Отправная точка: ${transfer.sourceWarehouseName || 'Неизвестно'}`
+            + `<br>Конечная точка:<strong>${transfer.destinationWarehouseName || 'Неизвестно'}</strong>`
+            + `<br>Дата прибытия: ${transfer.dateTimeIncoming || 'Неизвестно'}`
+            + `<br> Дата отправления: ${transfer.dateTimeOutgoing || 'Неизвестно'}`
+            + `<br>Комментарии: ${transfer.comments || 'Нет комментариев'}`
+            + `</div>`;
+
+        infoHtml += transferInfo;
+    });
+
+    $infoContainer.html(infoHtml);
+}
 
 
+
+//Функция отображения информации
+
+function ProductInfo(data) {
+    var textFieldsContainer = $('#ProductRowInfo');
+
+    if (textFieldsContainer.is(':visible')) {
+        // Если контейнер видим, просто обновляем информацию внутри него
+        textFieldsContainer.slideUp('slow', function () {
+            // По завершении анимации скрытия, обновляем информацию и снова отображаем контейнер
+            GenerateRoute(data.allTransfersProducts);
+            textFieldsContainer.slideDown('slow');
+        });
+
+    } else {
+        // Если контейнер скрыт, заполняем его новой информацией и показываем с анимацией
+        GenerateRoute(data.allTransfersProducts);
+        textFieldsContainer.slideDown('slow');
+    }
+}
 //напишу ещё одну функцию поиска ВСЕЙ ДОСТУПНОЙ ИНФОРМАЦИИ О ТОВАРЕ - это функция будет вызываться
 //Когда администратору нужно будет найти товар и вытащить всю доступную информаицю о нём
 
@@ -803,7 +853,7 @@ function initializeSelect2() {
             }
         });
         $.ajax({
-            url: '/Invoice/CreateInvoiceProducts', // URL для отправки данных формы
+            url: '/Invoice/CreateInvoiceProducts', 
             type: 'POST',
             data: formData,
             success: function(response) {
