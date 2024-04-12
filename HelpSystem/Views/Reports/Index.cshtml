@@ -148,8 +148,11 @@
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    const startDate = $('#startDate').val();
-                    const endDate = $('#endDate').val();
+                    const startDateStr = $('#startDate').val();
+                    const endDateStr = $('#endDate').val();
+
+                    const startDate = new Date(startDateStr.split('.').reverse().join('-'));
+                    const endDate = new Date(endDateStr.split('.').reverse().join('-'));
 
                     // Проверяем, если конечная дата меньше начальной, выдаем ошибку
                     if (startDate > endDate) {
@@ -160,7 +163,7 @@
                         });
                     } else {
                         // Всё в порядке, передаем даты в функцию ReportsWarehouse
-                        ReportsWarehouse(startDate, endDate);
+                            ReportsWarehouse(startDateStr, endDateStr);
                     }
                 }
             });

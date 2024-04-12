@@ -279,14 +279,14 @@ namespace HelpSystem.Service.Implementantions
                         var incomingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.DestinationWarehouseId == warehouse.Id)
-                            .OrderByDescending(m=>m.MovementDate)
+                           
                             .ToListAsync();
 
                         // Получаем записи о перемещениях товаров, которые ушли со склада
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.SourceWarehouseId == warehouse.Id)
-                            .OrderByDescending(m=>m.MovementDate)
+                           
                             .ToListAsync();
 
                         foreach (var incomingMovement in incomingMovements)
@@ -322,7 +322,8 @@ namespace HelpSystem.Service.Implementantions
                                   NameProduct = p.NameProduct,
                                   CodeProduct = p.InventoryCode,
                                   AvailableCount = (p.UserId == null) ? 1 : 0
-                              }).ToList(),
+                              })
+                              .ToList(),
                             }).ToList();
 
                             
@@ -559,16 +560,29 @@ namespace HelpSystem.Service.Implementantions
                         var NotCurrentWarehouse = await _warehouseRepository.GetAll()
                             .Where(x => x.Id != WhId)
                             .ToListAsync();
+
                         foreach (var incomingMovement in incomingMovements)
                         {
+                            // Проверяем, вернулся ли товар на тот же склад после последнего исходящего перемещения
+
+                            bool returnedToSameWarehouse = outgoingMovements.Any(x =>
+                                x.Product.Id == incomingMovement.Product.Id &&
+                                x.SourceWarehouseId == WhId &&
+                                x.MovementDate > incomingMovement.MovementDate);
                             if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
                             {
-
-                                if (incomingMovement.Product.UserId == null)
+                                
+                                if (incomingMovement.Product.UserId == null )
                                 {
                                     productsOnWarehouse.Add(incomingMovement.Product);
                                 }
+
+                                if (returnedToSameWarehouse)
+                                {
+                                    productsOnWarehouse.Remove(incomingMovement.Product);
+                                }
                             }
+
                         }
 
                         // Перебираем только что ушедшие товары и удаляем их со склада, если последнее перемещение из склада было после последнего перемещения на него
@@ -577,10 +591,9 @@ namespace HelpSystem.Service.Implementantions
                             if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
                             {
 
-                                if (outgoingMovement.Product.UserId != null)
-                                {
+                               
                                     productsOnWarehouse.Remove(outgoingMovement.Product);
-                                }
+                                
                             }
                         }
 

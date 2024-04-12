@@ -547,7 +547,7 @@ $('#BtnFindInfoProducts').click(function() {
 function FindProduct(Id) {
     Swal.fire({
         title: 'Поиск товара',
-        html: 'Пожалуйста, подождите...',
+        html:'<img src="/myIcon/icons8-find.gif" alt="Custom Icon"><p>Поиск товара, пожалуйста подождите...</p>',
         timerProgressBar: true,
         showConfirmButton: false,
         allowOutsideClick: false,
@@ -578,7 +578,7 @@ function FindProduct(Id) {
 
                     }
                 });
-            },1000);
+            },2000);
         },
         error:function(response) {
             setTimeout(function() {
@@ -593,6 +593,44 @@ function FindProduct(Id) {
         }
     });
 }
+//Функция для отображения профиля 
+function ProductUserFunction(data) {
+    const $ProfileContainer = $('#ProfileProduct');
+    if (!data.usver) {
+        let message = 'Товар ни за кем не закреплён';
+
+        if (data.comments) {
+            message += `<br>Комментарий к товару: ${data.comments}`;
+        }
+
+        $ProfileContainer.html(message);
+    } else {
+
+
+        let userId = data.usver.userId;
+
+        // Формируем URL-адрес для перехода на страницу профиля
+        let profileUrl = `/Profile/Detail/${userId}`;
+        let Profile = `
+    <div class="card-profile">
+        <div class="card-body">
+            <h5 class="card-title">Владелец товара: ${data.usver.login}</h5>
+            <p class="card-text">Фамилия: ${data.usver.lastName || 'Неизвестно'}</p>
+            <p class="card-text">Имя: ${data.usver.name || 'Неизвестно'}</p>
+            <p class="card-text">Отчество: ${data.usver.surname || 'Неизвестно'}</p>
+        </div>
+        <div class="card-footer">
+        <div class="d-grid gap-2">
+        <a  href="${profileUrl}" class="btn btn-primary">Перейти в профиль </a>
+        </div>
+   
+        </div>
+    </div>
+`;
+        $ProfileContainer.html(Profile);
+    }
+}
+
 // Функция для отображения маршрутизации товара
 function GenerateRoute(transfers) {
     const $infoContainer = $('#routeInfoContainer');
@@ -602,17 +640,36 @@ function GenerateRoute(transfers) {
         return;
     }
 
-    let infoHtml = '';
+    let infoHtml = '<div style="font-weight: bold; font-size: 18px; margin-bottom: 10px;">Все перемещения товара</div>';
 
     transfers.forEach((transfer, index) => {
-        const color = index === 0 ? 'green' : (index === transfers.length - 1 ? 'orange' : 'gray');
+        let color = '';
+
+        if (transfers.length === 1) {
+            // Если перемещение одно (только начальная и конечная точка)
+            color = 'orange'; // Оранжевый цвет для единственного перемещения
+        } else {
+            // Если перемещений больше одного
+            if (index === 0) {
+                // Первое перемещение
+                color = 'green'; // Зелёный цвет для первого перемещения
+            } else if (index === transfers.length - 1) {
+                // Последнее перемещение
+                color = 'orange'; // Оранжевый цвет для последнего перемещения
+            } else {
+                // Промежуточные перемещения
+                color = 'gray'; 
+            }
+        }
+
+
         const transferInfo = `<div style="border: 4px solid ${color}; padding: 5px; margin: 4px;">`
             + `Перемещение ${index + 1}:`
             + `<br>Отправная точка: ${transfer.sourceWarehouseName || 'Неизвестно'}`
             + `<br>Конечная точка:<strong>${transfer.destinationWarehouseName || 'Неизвестно'}</strong>`
             + `<br>Дата прибытия: ${transfer.dateTimeIncoming || 'Неизвестно'}`
             + `<br> Дата отправления: ${transfer.dateTimeOutgoing || 'Неизвестно'}`
-            + `<br>Комментарии: ${transfer.comments || 'Нет комментариев'}`
+            + `<br>Комментарии: ${transfer.comments || 'Нет комментариев'}` // Сделать с бека комментарии при перемещении
             + `</div>`;
 
         infoHtml += transferInfo;
@@ -620,8 +677,33 @@ function GenerateRoute(transfers) {
 
     $infoContainer.html(infoHtml);
 }
+//Функция выводящая информация о товаре
+function BaseInfo(data) {
+    const $infoProduct = $('#BaseProductInfo');
+
+    if (!data.nameProduct || !data.inventoryCode) {
+        $infoProduct.html('Недостаточно информации о товаре.');
+        return;
+    }
+    // Определяем текущее местоположение товара
+    let currentLocation = data.currentWarehouseName || data.originalWarehouse || 'Неизвестно';
+
+    var InfoProduct = `Наименование товара: ${data.nameProduct} `;
+    InfoProduct += ` <br>Инвентарный код: ${data.inventoryCode}`;
+    InfoProduct += `<br>Изначальное поступление на склад <strong> ${data.originalWarehouse} </strong>`;
+    InfoProduct += `<br> Накладная :<strong> ${data.numberDocument} </strong> `;
+    InfoProduct += `<br>Дата : ${data.dateInvouce} `;
+
+    InfoProduct += `<br>Текущее местоположение: ${currentLocation}`;
 
 
+    $infoProduct.html(InfoProduct);
+    $infoProduct.css({
+        'border': '3px solid #e97a0c',  
+        'padding': '10px',             
+        'margin': '10px'              
+    });
+}
 
 //Функция отображения информации
 
@@ -633,12 +715,16 @@ function ProductInfo(data) {
         textFieldsContainer.slideUp('slow', function () {
             // По завершении анимации скрытия, обновляем информацию и снова отображаем контейнер
             GenerateRoute(data.allTransfersProducts);
+            BaseInfo(data);
+            ProductUserFunction(data)
             textFieldsContainer.slideDown('slow');
         });
 
     } else {
         // Если контейнер скрыт, заполняем его новой информацией и показываем с анимацией
         GenerateRoute(data.allTransfersProducts);
+        BaseInfo(data);
+        ProductUserFunction(data)
         textFieldsContainer.slideDown('slow');
     }
 }
@@ -1216,7 +1302,7 @@ function UserReports(user) {
                             });
                             reportHtml += '<tfoot>';
                             reportHtml += '<tr>';
-                            reportHtml += '<td colspan="4" class="text-center font-weight-bold"> <strong>Итого </strong> прикреплённых товаров: ' + '<strong>' + response.data[0].totalCount + '  </strong> </td>';
+                            reportHtml += '<td colspan="4" class="text-center font-weight-bold" style="background-color: #fc6;"> <strong>Итого </strong> прикреплённых товаров: ' + '<strong>' + response.data[0].totalCount + '  </strong> </td>';
                             reportHtml += '</tr>';
                             reportHtml += '</tfoot>';
                             reportHtml += '</tbody>';

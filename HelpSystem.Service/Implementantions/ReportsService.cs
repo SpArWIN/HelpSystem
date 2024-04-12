@@ -107,14 +107,15 @@ namespace HelpSystem.Service.Implementantions
                     //Рассчитываем перемещённые товары
                     //var movedProducts = outgoingMovements.Select(x => x.Product).Distinct().Count();
                     var ProductInfo = productsOnWarehouse
-                        .GroupBy(p => p.NameProduct)
+                       
                         .Select(x => new ProductsInfo()
                         {
-                            ProductName = x.Key,
-                            InventoryCode = x.First().InventoryCode,
-                            QuantityOnWarehouse = x.Count(),
-                            AvailableQuantity = x.Count(x => x.UserId == null),
-                        }).ToList();
+                            ProductName = x.NameProduct,
+                            InventoryCode = x.InventoryCode,
+                            QuantityOnWarehouse = 1, //товар выводится по штучно, всегда 1
+                            AvailableQuantity = x.UserId == null ? 1 : 0 //ну или он доступен или нет
+                        }).OrderBy(g=>g.ProductName)
+                        .ToList();
 
                     //Берем все количество 
                     var TotalQuantity = ProductInfo.Sum(p => p.QuantityOnWarehouse);
@@ -161,26 +162,18 @@ namespace HelpSystem.Service.Implementantions
                     .FirstOrDefaultAsync();
 
 
-                var groupedProducts = products
-                    .GroupBy(p => new { p.NameProduct, p.InventoryCode })
-                    .Select(g => new UserReportViewModel
-                    {
-                        Name = Profile.Name,
-                        LastName = Profile.LastName,
-                        SurName = Profile.Surname,
-                        FullName = $"{Profile.LastName} {Profile.Name} {Profile.Surname}",
-                        ProductName = g.Key.NameProduct,
-                        Code = g.Key.InventoryCode,
-                        Quantity = g.Count(),
-
-                    })
-                    .ToList();
-                var TotalQuantity = groupedProducts.Sum(x => x.Quantity);
-
-                foreach (var total in groupedProducts)
+                var groupedProducts = products.Select(p => new UserReportViewModel
                 {
-                    total.TotalCount = TotalQuantity;
-                }
+                    Name = Profile.Name,
+                    LastName = Profile.LastName,
+                    SurName = Profile.Surname,
+                    FullName = $"{Profile.LastName} {Profile.Name} {Profile.Surname}",
+                    ProductName = p.NameProduct,
+                    Code = p.InventoryCode,
+                    Quantity = 1, // Каждая запись считается как отдельный товар
+                    TotalCount = products.Count() // Общее количество равно общему числу записей
+                }).OrderBy(x=>x.ProductName)
+                .ToList();
 
                 if (groupedProducts.Any())
                 {

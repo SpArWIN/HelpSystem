@@ -17,7 +17,7 @@
 }
 .infoHtml {
     display: flex;
-    border: 2px solid green; /* Цвет границы по умолчанию */
+    border: 2px solid orange; /* Цвет границы по умолчанию */
     padding: 5px;
     margin: 3px;
 }

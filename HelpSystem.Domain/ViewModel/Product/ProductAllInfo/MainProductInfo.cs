@@ -21,7 +21,8 @@ namespace HelpSystem.Domain.ViewModel.Product.ProductAllInfo
 
         public UsersViewModel?  Usver { get; set; } // По товару определим пользователя и запишем
         public List<TransferFindInfo>?  AllTransfersProducts { get; set; } //Все перемещения товара 
-
+        public string DateInvouce { get; set; } // Дата поступления товара по накладной 
+        public string NumberDocument { get; set;  } //Номер документа по которому поступил товар
 
     }
 }

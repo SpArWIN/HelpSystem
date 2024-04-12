@@ -41,3 +41,17 @@
 .card:hover .card-img-gif {
     opacity: 1;
 }
+/*Для модального окна с */
+.card-profile {
+    box-shadow: 1px 2px 2px 3px #e97042; /* Тень */
+    font-family: monospace; /* Шрифт */
+    font-size: 16px;
+    margin-bottom: 10px; /* Нижний отступ */
+    transition: none;
+    transform: none;
+    width: 18rem;
+    margin: 5px;
+    margin-left :350px;
+    justify-content: center;
+    align-items: center;
+}

@@ -537,7 +537,8 @@ namespace HelpSystem.Service.Implementantions
                             Login = x.User.Login,
                             Name = x.User.Profile.Name,
                             LastName = x.User.Profile.LastName,
-                            Surname = x.User.Profile.Surname
+                            Surname = x.User.Profile.Surname,
+                            UserId = x.UserId
                         }).FirstOrDefaultAsync();
 
                     //Если пользователь есть, то вместе с пользователеем будем возвращать все остальное
@@ -574,6 +575,8 @@ namespace HelpSystem.Service.Implementantions
                                 CurrentWarehouseName = WarehouseName?.Name,
                                 Usver = FindUser,
                                 AllTransfersProducts = allTransfersProducts,
+                                NumberDocument = InvoiceProduct.NumberDocument,
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
 
                             };
                             return new BaseResponse<MainProductInfo>()
@@ -596,7 +599,9 @@ namespace HelpSystem.Service.Implementantions
                                 OriginalWarehouse = Product.Warehouse.Name,
                                 CurrentWarehouseName = null,
                                 AllTransfersProducts = null,
-                                Usver = FindUser
+                                Usver = FindUser,
+                                NumberDocument = InvoiceProduct.NumberDocument,
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
                             };
                             return new BaseResponse<MainProductInfo>()
                             {
@@ -630,6 +635,8 @@ namespace HelpSystem.Service.Implementantions
                                 CurrentWarehouseName = WarehouseName?.Name,
                                 Usver = null,
                                 AllTransfersProducts = allTransfersProducts,
+                                NumberDocument = InvoiceProduct.NumberDocument,
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
 
                             };
                             return new BaseResponse<MainProductInfo>()
@@ -651,7 +658,9 @@ namespace HelpSystem.Service.Implementantions
                                 OriginalWarehouse = Product.Warehouse.Name,
                                 CurrentWarehouseName = null,
                                 AllTransfersProducts = null,
-                                Usver = null
+                                Usver = null,
+                                NumberDocument = InvoiceProduct.NumberDocument,
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
                             };
                             return new BaseResponse<MainProductInfo>()
                             {
