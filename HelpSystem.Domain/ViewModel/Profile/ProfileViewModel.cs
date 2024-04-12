@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Product.Role;
 
 namespace HelpSystem.Domain.ViewModel.Profile
 {
@@ -19,6 +20,11 @@ namespace HelpSystem.Domain.ViewModel.Profile
         //Тут возьмем подсчёт общего количества товаров, закреплённых за юзверем
         public int SumTotalProducts { get; set; }
 
+        //Роль пользоавателя 
+        public string?  RoleName { get; set; }
+        //id Роли
+        public int ?RoleId { get; set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Age.HasValue && Age < 0)
@@ -26,6 +32,8 @@ namespace HelpSystem.Domain.ViewModel.Profile
                 yield return new ValidationResult("Возраст не может быть отрицательным.", new[] { nameof(Age) });
             }
         }
+        //Для роли пользователя 
+        public List<RoleViewModel>?  Roles { get; set; }
     }
 
 }

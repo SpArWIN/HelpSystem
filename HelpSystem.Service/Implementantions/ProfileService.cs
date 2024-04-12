@@ -1,8 +1,10 @@
 ﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
+using HelpSystem.Domain.Extension;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
+using HelpSystem.Domain.ViewModel.Product.Role;
 using HelpSystem.Domain.ViewModel.Profile;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +16,14 @@ namespace HelpSystem.Service.Implementantions
         private readonly IBaseRepository<Profile> _profileRepository;
         //Добавлю репозиторий товаров, чтобы вынуть связанные товары
         private readonly IBaseRepository<Products> _productsRepository;
-        public ProfileService(IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository)
+
+       //Подгружаем сервис профиля с ролями
+        private readonly IUserRoleService _profileService;
+        public ProfileService(IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository, IUserRoleService profileService)
         {
             _profileRepository = profileRepository;
             _productsRepository = productsRepository;
+            _profileService = profileService;
         }
 
         public async Task<BaseResponse<ProfileViewModel>> GetProfile(Guid Guid)
@@ -39,26 +45,47 @@ namespace HelpSystem.Service.Implementantions
                     }).ToListAsync();
                 int sumTotalProducts = Product.Sum(p => p.TotalCount);
 
-                var Profile = await _profileRepository.GetAll()
-                    .Select(x => new ProfileViewModel()
+
+                //Получаем все роли 
+               var AllRoles = await _profileService.GetAllRoles();
+                if (AllRoles.StatusCode == StatusCode.Ok)
+                {
+                    var allRoles = AllRoles.Data.ToList();
+
+                    var Profile = await _profileRepository.GetAll()
+                        .Include(u => u.User)
+                        .Select(x => new ProfileViewModel
+                        {
+                            Id = x.UserId,
+                            Description = x.Description,
+                            Age = x.Age,
+                            Surname = x.Surname,
+                            LastName = x.LastName,
+                            Name = x.Name,
+                            UserPdocut = Product,
+                            SumTotalProducts = sumTotalProducts,
+                            RoleName = x.User.Roles.RoleType.GetDisplayName(),
+                            Roles =allRoles,
+                            RoleId = x.User.RoleId
+                            
+
+                        }).FirstOrDefaultAsync(x => x.Id == Guid);
+                    return new BaseResponse<ProfileViewModel>()
                     {
-                        Id = x.UserId,
-                        Description = x.Description,
-                        Age = x.Age,
-                        Surname = x.Surname,
-                        LastName = x.LastName,
-                        Name = x.Name,
-                        UserPdocut = Product,
-                        SumTotalProducts = sumTotalProducts
-                    }).FirstOrDefaultAsync(x=>x.Id == Guid);
-
-
+                        Data = Profile,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
 
                 return new BaseResponse<ProfileViewModel>()
                 {
-                    Data = Profile,
-                    StatusCode = StatusCode.Ok
+                    StatusCode = StatusCode.NotFind
                 };
+
+
+
+
+
 
             }
             catch (Exception ex)
