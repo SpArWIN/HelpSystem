@@ -42,24 +42,29 @@ function openModal(parameters) {
         }
     });
 };
-$('#SaveChanBtn').on('click', function () {
-    // Получаем контекст из кнопки
-    var context = $(this).data('context');
 
-    if (context === 'profile') {
-        // Выполняем соответствующее действие для профиля
-        var id = $('#hiddenId').val();
-        var lastName = $('#lastName').val();
-        var Name = $('#firstName').val();
-        var Surname = $('#patronymic').val();
-        var age = $('#age').val();
+$('#SaveChanBtn').on('click',
+    function() {
+        // Получаем контекст из кнопки
+        var context = $(this).data('context');
+
+        if (context === 'profile') {
+            // Выполняем соответствующее действие для профиля
+            var id = $('#hiddenId').val();
+            var lastName = $('#lastName').val();
+            var Name = $('#firstName').val();
+            var Surname = $('#patronymic').val();
+            var age = $('#age').val();
+            var Role = $('#roleSelect').val();
 
         var profileData = {
             Id: id,
             Age: age,
             Surname: Surname,
             LastName: lastName,
-            Name: Name
+            Name: Name,
+            RoleId: Role
+
         };
         MassUpdate('/Profile/Save', profileData, 'Обновление профиля', 'Изменение профиля');
     } else if (context === 'provider') {
@@ -111,7 +116,7 @@ function SaveProfile() {
           
                 Swal.fire({
                     title: 'Успешное изменение данных',
-                    text: response.message,
+                    text: response.description,
                     icon: 'success',
                     confirmButtonText: 'Ок'
                 }).then((result) => {
@@ -127,7 +132,7 @@ function SaveProfile() {
                 Swal.close();
                 Swal.fire({
                     title: 'Ошибка изменения данных',
-                    text: response.responseJSON.message,
+                    text: response.responseJSON.description,
                     icon: 'error',
                     confirmButtonText: 'Ок'
                 }).then((result) => {
@@ -610,6 +615,7 @@ function ProductUserFunction(data) {
         let userId = data.usver.userId;
 
         // Формируем URL-адрес для перехода на страницу профиля
+
         let profileUrl = `/Profile/Detail/${userId}`;
         let Profile = `
     <div class="card-profile">
@@ -630,6 +636,8 @@ function ProductUserFunction(data) {
         $ProfileContainer.html(Profile);
     }
 }
+
+
 
 // Функция для отображения маршрутизации товара
 function GenerateRoute(transfers) {

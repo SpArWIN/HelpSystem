@@ -17,13 +17,15 @@ namespace HelpSystem.Service.Implementantions
         //Добавлю репозиторий товаров, чтобы вынуть связанные товары
         private readonly IBaseRepository<Products> _productsRepository;
 
+        private readonly IBaseRepository<User> _userRepository;
        //Подгружаем сервис профиля с ролями
         private readonly IUserRoleService _profileService;
-        public ProfileService(IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository, IUserRoleService profileService)
+        public ProfileService(IBaseRepository<User> user,IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository, IUserRoleService profileService)
         {
             _profileRepository = profileRepository;
             _productsRepository = productsRepository;
             _profileService = profileService;
+            _userRepository = user;
         }
 
         public async Task<BaseResponse<ProfileViewModel>> GetProfile(Guid Guid)
@@ -104,6 +106,7 @@ namespace HelpSystem.Service.Implementantions
             try
             {
                 var profile = _profileRepository.GetAll()
+                    .Include(u=>u.User)
                     .FirstOrDefault(x => x.UserId == model.Id);
 
 
@@ -119,16 +122,42 @@ namespace HelpSystem.Service.Implementantions
                     profile.Description = model.Description;
                     profile.Name = model.Name;
                     await _profileRepository.Update(profile);
+
+
+                    if (profile.User.RoleId != model.RoleId)
+                    {
+                        var usVer = await _userRepository.GetAll()
+                            .FirstOrDefaultAsync(x => x.Profile == profile);
+
+                        usVer.Roles.RoleType = UserRoleType.Moder;
+                        await _userRepository.Update(usVer);
+
+                    }
                     return new BaseResponse<Profile>()
                     {
-                        Data = profile,
+                       
                         Description = "Данные были успешно изменены",
                         StatusCode = StatusCode.Ok
                     };
 
                 }
-                else
+                else 
                 {
+                    if (profile.User.RoleId != model.RoleId)
+                    {
+                        var usVer = await _userRepository.GetAll()
+                            .Include(r=>r.Roles)
+                            .FirstOrDefaultAsync(x => x.Profile == profile);
+
+                        usVer.RoleId = model.RoleId;
+                        await _userRepository.Update(usVer);
+                        return new BaseResponse<Profile>()
+                        {
+                         
+                            Description = "Роль успешно изменена",
+                            StatusCode = StatusCode.Ok
+                        };
+                    }
                     return new BaseResponse<Profile>()
                     {
                         StatusCode = StatusCode.UnChanched,
@@ -156,7 +185,6 @@ namespace HelpSystem.Service.Implementantions
 
                 var Response = await _profileRepository.GetAll()
                     .Include(u => u.User)
-                    .Where(u=>u.User.RoleId ==1)
                     .Where(x => EF.Functions.Like(x.Name, $"%{term}%") || EF.Functions.Like(x.LastName, $"%{term}%") ||
                                 EF.Functions.Like(x.Surname, $"%{term}%") ||
                                 EF.Functions.Like(x.User.Login, $"%{term}%"))

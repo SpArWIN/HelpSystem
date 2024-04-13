@@ -88,12 +88,17 @@ namespace HelpSystem.Controllers
 
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok(new { Response.Data, description = Response.Description });
+              
+                return Ok(new { description = Response.Description });
             }
-
-            //  return Json(new { message = Response.Description });
-            return BadRequest(new { description = Response.Description });
+            else
+            {
+                return BadRequest(new { description = Response.Description });
+            }
         }
+
+          
+           
         [HttpPost]
         public async Task<IActionResult> GetUsers(string term)
         {

@@ -38,7 +38,7 @@
                         <td>@Us.Age</td>
                         <td>
                             <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Us.UserId" class="btn btn-outline-info">Профиль</a>
-                            <a  class="btn btn-outline-secondary">Изменить</a>
+                            <a onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Us.UserId', context: 'profile'})" class="btn btn-outline-secondary">Изменить</a>
                         </td>
                     </tr>
                 }

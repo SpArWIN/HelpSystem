@@ -105,7 +105,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     return new BaseResponse<ClaimsIdentity>()
                     {
-                        Description = "Неверный логин иили пароль",
+                        Description = "Неверный логин или пароль",
                         StatusCode = StatusCode.NotFind
                     };
 

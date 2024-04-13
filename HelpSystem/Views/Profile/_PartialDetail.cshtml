@@ -28,12 +28,12 @@
 @if (!User.IsInRole("1"))
 {
     <div class="form-group">
-        <label for="">Текущая роль: @Model.RoleName</label>
+        <label  class="mb-2">Текущая роль: <span class="fw-bold">@Model.RoleName</span></label>
     </div>
 
     <div class="form-group">
-        <label for="roleSelect">Установите  роль:</label>
-        <select id="roleSelect" class="form-control">
+        <label for="roleSelect" class="form-label">Установите роль:</label>
+        <select id="roleSelect" class="form-select">
             @foreach (var role in Model.Roles)
             {
                 @if (role.Id == Model.RoleId)
@@ -48,5 +48,4 @@
         </select>
     </div>
 }
-
 

@@ -8,8 +8,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
     public class ProfileViewModel
     {
         public Guid Id { get; set; }
-        [Required(ErrorMessage = "Укажите возраст")]
-        [Range(0, 150, ErrorMessage = "Диапазон возраста должен быть от 0 до 150")]
+       
         public byte? Age { get; set; }
         public string? Surname { get; set; }
         //Отчество
@@ -23,7 +22,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
         //Роль пользоавателя 
         public string?  RoleName { get; set; }
         //id Роли
-        public int ?RoleId { get; set; }
+        public int RoleId { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
