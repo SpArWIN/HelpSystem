@@ -128,6 +128,15 @@ namespace HelpSystem.Service.Implementantions
                     {
                         var usVer = await _userRepository.GetAll()
                             .FirstOrDefaultAsync(x => x.Profile == profile);
+                        if (usVer.RoleId == 3)
+                        {
+                            return new BaseResponse<Profile>()
+                            {
+                                Description =
+                                    $"Вы были назначены администратором, так не снимайте с себя эту ответственность!",
+                                StatusCode = StatusCode.UnChanched
+                            };
+                        }
 
                         usVer.Roles.RoleType = UserRoleType.Moder;
                         await _userRepository.Update(usVer);
@@ -149,8 +158,19 @@ namespace HelpSystem.Service.Implementantions
                             .Include(r=>r.Roles)
                             .FirstOrDefaultAsync(x => x.Profile == profile);
 
+
+                        if (usVer.RoleId == 3)
+                        {
+                            return new BaseResponse<Profile>()
+                            {
+                                Description =
+                                    $"Вы были назначены администратором, так не снимайте с себя эту ответственность!",
+                                StatusCode = StatusCode.UnChanched
+                            };
+                        }
                         usVer.RoleId = model.RoleId;
                         await _userRepository.Update(usVer);
+
                         return new BaseResponse<Profile>()
                         {
                          

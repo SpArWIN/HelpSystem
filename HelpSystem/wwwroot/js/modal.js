@@ -1067,14 +1067,64 @@ function BindingProdWarehouse(ProductId,Name,Code) {
    
 }
 
+//Метод массового перемещения товара, будет уходить по тому же url, только сразу списком
+//titl - Когда загрузка, res - при ответе
+function MassMovedProduct(products,titl,res) {
+    //Вот как раз тут перед отправкой закинем текущий склад
+    products.forEach(function (product) {
+        product.SourceWarehouseId = currentWarehouseId;
+    });
+    //Пошли фигачить ajax :)
+    Swal.fire({
+        title: titl,
+        html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    $.ajax({
+        type: 'POST',
+        url: '/Transfer/AddTransfer',
+        data: { model: products },
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: res,
+                    text: response.description,
+                    icon: 'success',
+                    confirmButtonText: 'Окей',
+
+                }).then((result) => {
+                    location.reload();
+                });
+
+            },1000)
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Упс..что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Понятно',
+                })
+            },1000)
+           
+        }
+    });
+
+}
 
 //Метод одиночгого перемещения товара
-function SingleMoveProduct(productId, productName, productCode, warehouseId) {
+function SingleMoveProduct(productId,  warehouseId) {
     var products = [];
     var Product = {
         Id: productId,
-        NameProduct: productName,
-        CodeProduct: productCode,
         SourceWarehouseId: currentWarehouseId,
         DestinationWarehouseId: warehouseId,
         CountTransfer: 1
@@ -1171,6 +1221,9 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '<div class="table-responsive">';
                             reportHtml += '<table class="table table-bordered">';
                             reportHtml += '<thead>';
+                            reportHtml += '<tr>';
+                            reportHtml += '<th colspan="3" style="display:none" class="text-center">СКЛАД ' + warehouseReport.warehouseName + '</th>';
+                            reportHtml += '</tr>';
                             reportHtml += '<tr>';
                             reportHtml += '<th>Наименование товара</th>';
                             reportHtml += ' <th>Инвентарный код </th>';
@@ -1293,6 +1346,9 @@ function UserReports(user) {
                             reportHtml += '<table class="table table-bordered">';
                             reportHtml += '<thead>';
                             reportHtml += '<tr>';
+                            reportHtml += '<th colspan="3" style="display:none" class="text-center">Пользователь:' + response.data[0].fullName + '</th>';
+                            reportHtml += '</tr>';
+                            reportHtml += '<tr>';
                             reportHtml += '<th>Наименование товара</th>';
                             reportHtml += '<th>Инвентарный код</th>';
                             reportHtml += '<th>Количество</th>';
@@ -1386,6 +1442,9 @@ function UsersReports() {
                                     ReportUser += '<table class="table table-bordered">';
                                     ReportUser += '<thead>';
                                     ReportUser += '<tr>';
+                                    ReportUser += '<th colspan="3" style="display:none" class="text-center">Пользователь: ' + user.fullName + '(' + user.login + ')' + '</th>';
+                                    ReportUser += '</tr>';
+                                    ReportUser += '<tr>';
                                     ReportUser += '<th>Наименование товара</th>';
                                     ReportUser += '<th>Инвентарный код</th>';
                                     ReportUser += '<th>Количество</th>';
@@ -1429,6 +1488,7 @@ function UsersReports() {
                         $('#reportContainer').fadeIn();
                         // Вставляем HTML-код отчета в контейнер
                         $('#reportContainer').html(ReportUser);
+
                     }
                 });
 
@@ -1436,18 +1496,39 @@ function UsersReports() {
         },
         error:function(response) {
             setTimeout(function() {
-                Swal.close();
+                    Swal.close();
 
-                Swal.fire({
-                    title: 'Упс,что-то пошло не так',
-                    text: response.responseJSON.description,
-                    icon: 'error',
-                });
-            },1000)
+                    Swal.fire({
+                        title: 'Упс,что-то пошло не так',
+                        text: response.responseJSON.description,
+                        icon: 'error'
+                    });
+                },
+                1000);
         }
     });
 }
-//Функция экспорта в csv
+
+// Функция для создания и стилизации таблицы
 $(document).on('click',"#ExportBtn",function() {
-  
+
+    var h3Elements = $('#reportContainer').find('h3');
+    var fileName = '';
+
+    if (h3Elements.length === 1) {
+        fileName = h3Elements.first().text().trim();
+    } else if (h3Elements.length > 1) {
+        
+        fileName = 'Отчёт по пользователям';
+    } else {
+        // Если не найдено ни одного элемента <h3>, устанавливаем стандартное имя файла
+        fileName = 'Report';
+    }
+    $('#reportContainer').tableExport({
+        type: 'xlsx', 
+        escape: 'false', 
+        fileName: fileName,
+        bootstrap: true
+     
+    });
 });

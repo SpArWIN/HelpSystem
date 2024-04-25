@@ -6,17 +6,16 @@
 }
 
     <style>
-        #massMoveFooter {
-            display: block;
-            height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: height 0.3s ease, opacity 0.3s ease;
-        }
+    #massMoveFooter {
+        display: block;
+        height: auto;
+        opacity: 0;
+        transition: opacity 0.3s ease; 
+        overflow: hidden; 
+    }
 
-       #massMoveFooter.show {
-                height: auto;
-                opacity: 1;
+        #massMoveFooter.show {
+            opacity: 1;
         }
     </style>
 
@@ -40,7 +39,7 @@
                         @foreach (var product in productGroup)
                         {
                             position++; // Увеличиваем номер позиции для каждого элемента
-                            <div style="border: 2px solid gray; padding: 10px; margin-bottom: 10px; box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);">
+                            <div style="border: 2px solid gray; padding: 10px; margin-top:25px; margin-bottom: 13px; box-shadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.4);">
                                 <p>Позиция: @position</p>
                                 <p id="ProductID_@position" style="display:none">Id: @product.Id</p>
                                 <p id="nameProduct_@position">Наименование: @product.Name</p>
@@ -104,49 +103,123 @@
     
 
 <script>
-    $(document).ready(function() {
-
-        $('.btn-move-product').on('click', function() { 
+    $(document).ready(function () {
+        var massMoveProducts = [];
+        $(document).on('click', '.btn-move-product', function () {
             var productId = $(this).data('product-id');
-            var productName = $(this).data('product-name');
-            var productCode = $(this).data('product-code');
             var warehouseId = $(this).closest('div').find('select').val();
-           
-            SingleMoveProduct(productId, productName, productCode, warehouseId);
-        });
-            // Вызываем функцию для перемещения товара
-           
-      
 
-        // Обработчик изменения состояния переключателя
-        $('#flexSwitchCheckDefault').change(function() {
+            // SingleMoveProduct(productId, warehouseId);
+            var product = {
+                Id:productId,
+                SourceWarehouseId: null,
+                DestinationWarehouseId: warehouseId,
+
+            }
+           massMoveProducts.push(product);
+            MassMovedProduct(massMoveProducts, 'Перемещение товара','Перемещение товара');
+
+        });
+       
+       
+        //Функция добавления товара в список массового перемещения
+        function addToMassMove(productId, warehouseId) {
+            var product = {
+                Id: productId,
+                SourceWarehouseId: null,
+                DestinationWarehouseId: warehouseId,
+                CountTransfer: 1 
+            };
+            massMoveProducts.push(product);
+        }
+
+        $('#flexSwitchCheckDefault').change(function () {
             if ($(this).prop('checked')) {
-                $('.accordion-button').removeClass('collapsed');
-                $('.accordion-button').attr('aria-expanded', 'true');
+                // Режим массового перемещения включен
                 $('.accordion-collapse').addClass('show');
-                $('.accordion-body  #SelectWarehouse').css('display', 'none');
-                $('#massMoveFooter').css('display', 'block');
-                $('.accordion-body #WareLabel').css('display', 'none');
+                $('.accordion-body select').fadeOut(400);
+                $('.accordion-body #WareLabel').fadeOut(400);
                 $('#massMoveFooter').addClass('show');
-                //отключаем кнопки, включаем checkbox
-                $('.accordion-body #BtnMoves').fadeOut(400, function() {
-                    $(this).replaceWith('<div class="form-check"><input class="form-check-input" type="checkbox" id="flexSwitchMove"><label class="form-check-label" for="flexSwitchMove">Переместить</label></div>');
-                }).fadeIn();
-               
+                $('.btn-move-product').each(function () {
+                    var productId = $(this).data('product-id');
+                    var checkboxHtml = '<div class="form-check">' +
+                        '<input class="form-check-input" type="checkbox" data-product-id="' + productId + '" id="flexSwitchMove_' + productId + '">' +
+                        '<label class="form-check-label" for="flexSwitchMove_' + productId + '">Переместить</label>' +
+                        '</div>';
+                    $(this).fadeOut(400, function () {
+                        $(this).replaceWith(checkboxHtml).fadeIn();
+                    });
+                });
+                //Если в списке больше двух товаров, то активируем кнопку
+
+                $('#massMoveFooter').fadeIn();
+
+                
+           
+
             } else {
-                $('.accordion-button').addClass('collapsed');
-                $('.accordion-button').attr('aria-expanded', 'false');
+                // Режим массового перемещения выключен
                 $('.accordion-collapse').removeClass('show');
-                $('#massMoveFooter').css('display', 'block');
-                $('.accordion-body  #SelectWarehouse').css('display', 'block');
-                $('.accordion-body #WareLabel').css('display', 'none');
-                $('.accordion-body .form-check').fadeOut(400, function () {
-                    $(this).replaceWith('<div id="BtnMoves" class="d-grid-gap-2"><a class="btn btn-danger">Переместить</a></div>');
-                }).fadeIn();
-              
+                $('.accordion-body select').fadeIn(400);
+                $('.accordion-body #WareLabel').fadeIn(400);
+                $('.form-check').each(function () {
+                    var productId = $(this).find('input[type="checkbox"]').attr('id').split('_')[1];
+                    var buttonHtml = '<a class="btn btn-danger btn-move-product" data-product-id="' + productId + '">Переместить</a>';
+                    $(this).fadeOut(400, function () {
+                        $(this).replaceWith(buttonHtml).fadeIn();
+                    });
+                });
+                massMoveProducts = [];
+                $('#massMoveFooter').fadeOut();
             }
         });
 
+        $('#BtnMassMove').on('click', function () {
+          
+                console.log('Перемещение массовое');
+                var warehouseId = $('#SelectMassWarehouse').val();
+                console.log('Склад:', warehouseId);
+
+                var selectedProducts = [];
+                //Вызываем массовое перемещение и передаем
+                $('.form-check input[type="checkbox"]:checked').each(function () {
+                    var productId = $(this).data('product-id');
+                    var warehouseId = $('#SelectMassWarehouse').val();
+
+                    // Создаем объект товара для массового перемещения
+                    var product = {
+                        Id: productId,
+                        SourceWarehouseId: null,  // Добавим текущий склад при отправке на сервер
+                        DestinationWarehouseId: warehouseId,
+                        CountTransfer: 1
+                    };
+
+                    // Добавляем товар в список выбранных товаров
+                    selectedProducts.push(product);
+                });
+
+                massMoveProducts = selectedProducts;
+
+            if (massMoveProducts.length < 2) {
+                Swal.fire({
+                    title: 'Упс, что-то пошло не так',
+                    text: 'Отмечено меньше двух позиций',
+                    icon: 'error',
+                    confirmButtonText: 'Окей'
+                });
+
+            } else {
+                console.log('Перемещение массовое');
+                console.log('Выбранные товары для массового перемещения:', massMoveProducts);
+
+              
+                MassMovedProduct(massMoveProducts, 'Массовое перемещение товаров', 'Перемещение товаров');
+            }
+        });
+
+                
+            
+       
     });
 </script>
 

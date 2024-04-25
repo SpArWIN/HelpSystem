@@ -1,4 +1,5 @@
-﻿using HelpSystem.Service.Interfaces;
+﻿using HelpSystem.Domain.ViewModel.Report;
+using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpSystem.Controllers
@@ -60,5 +61,7 @@ namespace HelpSystem.Controllers
 
             return Json(Response.Description);
         }
+
+    
     }
 }

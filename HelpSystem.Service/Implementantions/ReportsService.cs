@@ -215,7 +215,6 @@ namespace HelpSystem.Service.Implementantions
 
                 var Users = await _userRepository.GetAll()
                     .Include(p => p.Profile)
-                    .Where(x => x.RoleId != 3)
                     .ToListAsync();
                 var ReportData = new ReportUSERSViewModel();
 
@@ -293,6 +292,7 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-
+        
+        
     }
 }

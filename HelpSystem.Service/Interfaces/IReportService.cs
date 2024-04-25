@@ -23,5 +23,6 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<IBaseResponse<ReportUSERSViewModel>> GetUsersReports();
+    
     }
 }

@@ -24,7 +24,7 @@ namespace HelpSystem.Service.Implementantions
             _productsRepository = productsRepository;
             _warehouseRepository = warehouse;
         }
-        //todo ПРИЕХАТЬ И ДОПИСАТЬ МЕТОД, СО СКЛАДОМ, ЧТОБЫ БЫЛА КОЛЛЕЦИЯ
+       
         public async Task<BaseResponse<IEnumerable<ProductMovement>>> AddTransferService(List<TransferViewModel> model)
         {
             try
@@ -140,10 +140,10 @@ namespace HelpSystem.Service.Implementantions
                 foreach (var transfer in model)
                 {
                     var transferCount = transfer.CountTransfer; // Количество перемещаемых товаров из текущей модели
-                    var productName = transfer.NameProduct; // Наименование товара из текущей модели
-
+                    // Наименование товара из текущей модели
+                    var TransferId = transfer.Id;
                     // Получаем список товаров для текущей модели
-                    var productsToTransfer = products.Where(p => p.NameProduct == productName).Take(transferCount);
+                    var productsToTransfer = products.Where(p => p.Id == TransferId);
 
                     foreach (var product in productsToTransfer)
                     {
@@ -173,7 +173,15 @@ namespace HelpSystem.Service.Implementantions
                 }
 
                 // Составляем описание операции перемещения
-                string destinationWarehouseName = ""; // Вставьте наименование целевого склада
+                //Склад на который переместили
+                //Вот такие небольшие запросики :)
+                var NameWarehouse = await _warehouseRepository.GetAll()
+                    .Where(x => x.Id == destinationWarehouseId)
+                    .Select(x => x.Name)
+                    .FirstOrDefaultAsync();
+                  
+
+                string destinationWarehouseName = NameWarehouse; // Вставьте наименование целевого склада
                 int lastDigit = totalTransferCount % 10;
                 string description;
                 if (totalTransferCount >= 11 && totalTransferCount <= 14)
