@@ -18,5 +18,6 @@ namespace HelpSystem.Domain.ViewModel.Transfer
        public Guid DestinationWarehouseId { get; set; } //На какой склад перемещаем
        //Какое количество товара перемещаем
        public int CountTransfer { get; set; }
+        public string? Comments { get; set; }
     }
 }

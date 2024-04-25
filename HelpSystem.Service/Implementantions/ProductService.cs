@@ -705,14 +705,15 @@ namespace HelpSystem.Service.Implementantions
                 var destinationWarehouse = await _warehouseRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == currentMovement.DestinationWarehouseId);
                 var destinationWarehouseName = destinationWarehouse?.Name ?? "Склад получателя не найден";
-
+                var Comment = currentMovement.Comments;
                 // Создаем объект TransferFindInfo для текущего перемещения
                 var transInfo = new TransferFindInfo
                 {
                     DateTimeIncoming = currentMovement.MovementDate.ToString("g"),
                     DateTimeOutgoing = "", // Будет заполнено при необходимости
                     SourceWarehouseName = sourceWarehouseName,
-                    DestinationWarehouseName = destinationWarehouseName
+                    DestinationWarehouseName = destinationWarehouseName,
+                    Comments = Comment
                 };
 
                 // Добавляем информацию о текущем перемещении в список allTransfersProducts
@@ -735,4 +736,18 @@ namespace HelpSystem.Service.Implementantions
             return allTransfersProducts;
         }
     }
+
+    //Вместо skip можно ещё вот так
+    /*
+     * for(int j = i+1;j<movement.Count;j++)
+     * {
+     * if(movement[j].ProductId = currentMovement.ProductId)
+     * {
+     * Нашли следующее перемещение
+     * var NextMovement = movement[j];
+     * transferinfo.DateTimeOutgoing = nextMovement.MovementDate.ToString("g");
+     * break;
+     * }
+     * }
+     */
 }

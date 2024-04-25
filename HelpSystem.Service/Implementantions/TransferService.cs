@@ -40,63 +40,8 @@ namespace HelpSystem.Service.Implementantions
                 }
 
 
-                if (model.Count == 1)
-                {
-                    int productId = model.First().Id;
-                    
-                    //Находим товар в бд
-                    var ProductMove = await _productsRepository.GetAll()
-                        .Include(w=>w.Warehouse)
-                        .FirstOrDefaultAsync(x => x.Id == productId);
-                    if (ProductMove == null)
-                    {
-                        return new BaseResponse<IEnumerable<ProductMovement>>()
-                        {
-                            Description = "Внутренняя ошибка",
-                            StatusCode = StatusCode.NotFind,
-                        };
-                    }
-
-                    // Получение текущего склада, исходя из информации о перемещениях товара
-                    var currentPositionResponse = await GetCurrentPositionProduct(ProductMove.Id);
-                    Guid sourceWarehouseId;
-                    if (currentPositionResponse.StatusCode == StatusCode.Ok)
-                    {
-                        // Если информация о перемещениях товара доступна, берем его текущий склад назначения
-                        sourceWarehouseId = currentPositionResponse.Data.DestinationWarehouseId;
-                    }
-                    else
-                    {
-                        sourceWarehouseId = ProductMove.Warehouse.Id;
-                    }
-                    Guid DestinationWarehouseId = model.First().DestinationWarehouseId;
-                    var movement = new ProductMovement()
-                    {
-                        ProductId = ProductMove.Id,
-                        SourceWarehouseId = sourceWarehouseId,
-                        DestinationWarehouseId = DestinationWarehouseId,
-                        MovementDate = DateTime.Now,
-                        Product = ProductMove
-                    };
-                    //Найдём по id Наименование склада на какой 
-                    var FindName = await _warehouseRepository.GetAll()
-                        .Where(x => x.Id == DestinationWarehouseId)
-                        .Select(n => n.Name)
-                        .FirstOrDefaultAsync();
-                    //Найдем по id наименованиею склада, откуда 
-                    var FindGetName = await _warehouseRepository.GetAll()
-                        .Where(x=>x.Id == sourceWarehouseId)
-                        .Select(x=>x.Name)
-                        .FirstOrDefaultAsync();
-
-                    await _transBaseRepository.Create(movement);
-                    return new BaseResponse<IEnumerable<ProductMovement>>()
-                    {
-                        Description = $"{ProductMove.NameProduct} перемещён с \n {FindGetName} на {FindName}  ",
-                        StatusCode = StatusCode.Ok
-                    };
-                }
-                //В противном случае, когда там целая коллекция товаров
+              //Неважно одно это перемещение или множественное, на вход всё равно подается список
+              //если там 1 товар, то он и будет один записан, а если там больше одного, так так и будет
 
                 var products = new List<Products>(); // Создаем список товаров для перемещения
 
@@ -134,8 +79,9 @@ namespace HelpSystem.Service.Implementantions
                     };
                 }
 
-                Guid destinationWarehouseId = model.First().DestinationWarehouseId; // Получаем id целевого склада
-
+                // Получаем id целевого склада
+                Guid destinationWarehouseId = model.First().DestinationWarehouseId;
+                Guid SourceWarehouseID = model.First().SourceWarehouseId;
                 // Выполняем операцию перемещения для указанного количества товаров
                 foreach (var transfer in model)
                 {
@@ -154,19 +100,21 @@ namespace HelpSystem.Service.Implementantions
                         if (currentPositionResponse.StatusCode == StatusCode.Ok)
                         {
                             sourceWarehouseId = currentPositionResponse.Data.DestinationWarehouseId;
+                            SourceWarehouseID = sourceWarehouseId;
                         }
                         else
                         {
                             sourceWarehouseId = product.Warehouse.Id; // Если информация о перемещениях отсутствует, берем исходный склад
                         }
-
+                       
                         // Создаем запись о перемещении товара
                         var movement = new ProductMovement()
                         {
                             ProductId = product.Id,
                             SourceWarehouseId = sourceWarehouseId,
                             DestinationWarehouseId = destinationWarehouseId,
-                            MovementDate = DateTime.Now
+                            MovementDate = DateTime.Now,
+                            Comments = transfer.Comments
                         };
                         await _transBaseRepository.Create(movement);
                     }
@@ -174,32 +122,39 @@ namespace HelpSystem.Service.Implementantions
 
                 // Составляем описание операции перемещения
                 //Склад на который переместили
+
                 //Вот такие небольшие запросики :)
                 var NameWarehouse = await _warehouseRepository.GetAll()
                     .Where(x => x.Id == destinationWarehouseId)
                     .Select(x => x.Name)
                     .FirstOrDefaultAsync();
-                  
+
+                  //Склад с которого, когда указывал изначальные, я забыл о том, что я запросом вытягиваю их положение изначально
+
+                  var SourceName = await _warehouseRepository.GetAll()
+                    .Where(x=>x.Id== SourceWarehouseID)
+                    .Select(x => x.Name)
+                    .FirstOrDefaultAsync();
 
                 string destinationWarehouseName = NameWarehouse; // Вставьте наименование целевого склада
                 int lastDigit = totalTransferCount % 10;
                 string description;
                 if (totalTransferCount >= 11 && totalTransferCount <= 14)
                 {
-                    description = $"{totalTransferCount} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товаров было перемещено с {SourceName} на {destinationWarehouseName}";
                 }
                 else if (lastDigit == 1)
                 {
-                    description = $"{totalTransferCount} товар был перемещён с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товар был перемещён с {SourceName} на {destinationWarehouseName}";
                 }
                 else if (lastDigit >= 2 && lastDigit <= 4)
                 {
-                    description = $"{totalTransferCount} товара было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
+                    description = $"{totalTransferCount} товара было перемещено с {SourceName} на {destinationWarehouseName}";
                 }
                 else
                 {
-                    description = $"{totalTransferCount} товаров было перемещено с {products[0].Warehouse.Name} на {destinationWarehouseName}";
-                }
+                    description = $"{totalTransferCount} товаров было перемещено с {SourceName} на {destinationWarehouseName}";
+                }   
 
                 return new BaseResponse<IEnumerable<ProductMovement>>()
                 {

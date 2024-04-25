@@ -46,6 +46,10 @@ namespace HelpSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("DestinationWarehouseId")
                         .HasColumnType("uniqueidentifier");
 
@@ -143,8 +147,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("621b8e37-3450-47f3-81eb-6b1e73dea4a1"),
-                            UserId = new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901")
+                            Id = new Guid("8ada6c6a-7084-4300-a170-3832d6b0839a"),
+                            UserId = new Guid("0f86ed13-e491-437f-8737-08cadb4ca0fd")
                         });
                 });
 
@@ -264,7 +268,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d6037001-82d6-4759-9ffa-7b4bfac7a901"),
+                            Id = new Guid("0f86ed13-e491-437f-8737-08cadb4ca0fd"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

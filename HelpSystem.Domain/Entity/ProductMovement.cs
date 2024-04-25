@@ -15,6 +15,7 @@ namespace HelpSystem.Domain.Entity
         public Guid DestinationWarehouseId { get; set; } // ID целевого склада
         public DateTime MovementDate { get; set; } // Дата перемещения
 
+        public string? Comments { get; set; } 
     
         public virtual Products Product { get; set; } // Перемещаемый товар
        

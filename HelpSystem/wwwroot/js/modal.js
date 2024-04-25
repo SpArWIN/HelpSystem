@@ -677,7 +677,7 @@ function GenerateRoute(transfers) {
             + `<br>Конечная точка:<strong>${transfer.destinationWarehouseName || 'Неизвестно'}</strong>`
             + `<br>Дата прибытия: ${transfer.dateTimeIncoming || 'Неизвестно'}`
             + `<br> Дата отправления: ${transfer.dateTimeOutgoing || 'Неизвестно'}`
-            + `<br>Комментарии: ${transfer.comments || 'Нет комментариев'}` // Сделать с бека комментарии при перемещении
+            + `<br>Комментарий при перемещении: ${transfer.comments || 'Нет комментариев'}` // Сделать с бека комментарии при перемещении
             + `</div>`;
 
         infoHtml += transferInfo;
@@ -701,7 +701,6 @@ function BaseInfo(data) {
     InfoProduct += `<br>Изначальное поступление на склад <strong> ${data.originalWarehouse} </strong>`;
     InfoProduct += `<br> Накладная :<strong> ${data.numberDocument} </strong> `;
     InfoProduct += `<br>Дата : ${data.dateInvouce} `;
-
     InfoProduct += `<br>Текущее местоположение: ${currentLocation}`;
 
 
@@ -1120,62 +1119,7 @@ function MassMovedProduct(products,titl,res) {
 
 }
 
-//Метод одиночгого перемещения товара
-function SingleMoveProduct(productId,  warehouseId) {
-    var products = [];
-    var Product = {
-        Id: productId,
-        SourceWarehouseId: currentWarehouseId,
-        DestinationWarehouseId: warehouseId,
-        CountTransfer: 1
-    };
-    products.push(Product);
-    var transferData = { model: products };  // Объект с полем "model", содержащим список товаров
-    Swal.fire({
-        title: 'Перемещение товара',
-        html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/Transfer/AddTransfer',
-        data: transferData,
-        success: function (response) {
-            setTimeout(function () {
-                    Swal.close();
-                    Swal.fire({
-                        title: 'Перемещение  товара',
-                        text: response.description,
-                        icon: 'success',
-                        confirmButtonText: 'Окей',
 
-                    }).then((result) => {
-                        location.reload();
-                    });
-                },
-                2000);
-        },
-        error: function(response) {
-            setTimeout(function () {
-                    Swal.close();
-                    Swal.fire({
-                        title: 'Упс, что-то пошло не так',
-                        text: response.responseJSON.description,
-                        icon: 'error',
-                        confirmButtonText: 'Окей'
-                    });
-                },
-                2000);
-            
-        }
-    });
-
-}
 
 function ReportsWarehouse(StartDate,EndDate) {
     Swal.fire({

@@ -14,6 +14,7 @@ namespace HelpSystem.Domain.ViewModel.Transfer
         public string DateTimeOutgoing { get; set; } //Дата перемещения товара со склада
         public string SourceWarehouseName { get; set; } //Склад на которой пришло 
         public string DestinationWarehouseName { get; set; } //Склад с которого ушёл
+        public string ?Comments  { get; set; } //Комментарий при перемещении товара
 
     }
 }

@@ -17,6 +17,10 @@
         #massMoveFooter.show {
             opacity: 1;
         }
+
+  
+
+
     </style>
 
 
@@ -61,6 +65,10 @@
                                     </select>
                                 </div>
                                 <a id="@($"BtnMoves_{product.Name}_{position}")" class="btn btn-danger btn-move-product" data-product-id="@product.Id">Переместить</a>
+                                <div class="form-floating">
+                                    <textarea class="form-control" placeholder="Тут комментарий" id="@($"floatingTextarea_{product.Name}_{position}")" style="max-height:159px ;  min-height:10px; margin-top:5px" ></textarea>
+                                    <label for="floatingTextarea">Введите комментарий (необязательное поле)</label>
+                                </div>
                             </div>
                         }
                     </div>
@@ -106,15 +114,18 @@
     $(document).ready(function () {
         var massMoveProducts = [];
         $(document).on('click', '.btn-move-product', function () {
+            massMoveProducts 
             var productId = $(this).data('product-id');
             var warehouseId = $(this).closest('div').find('select').val();
-
-            // SingleMoveProduct(productId, warehouseId);
+            var Comment = $(this).closest('div').find('textarea').val();
+            massMoveProducts = [];
+           
             var product = {
                 Id:productId,
                 SourceWarehouseId: null,
                 DestinationWarehouseId: warehouseId,
-
+                CountTransfer:1,
+                Comments:Comment
             }
            massMoveProducts.push(product);
             MassMovedProduct(massMoveProducts, 'Перемещение товара','Перемещение товара');
@@ -123,54 +134,54 @@
        
        
         //Функция добавления товара в список массового перемещения
-        function addToMassMove(productId, warehouseId) {
-            var product = {
-                Id: productId,
-                SourceWarehouseId: null,
-                DestinationWarehouseId: warehouseId,
-                CountTransfer: 1 
-            };
-            massMoveProducts.push(product);
-        }
+       
 
         $('#flexSwitchCheckDefault').change(function () {
             if ($(this).prop('checked')) {
                 // Режим массового перемещения включен
                 $('.accordion-collapse').addClass('show');
-                $('.accordion-body select').fadeOut(400);
-                $('.accordion-body #WareLabel').fadeOut(400);
                 $('#massMoveFooter').addClass('show');
+                $('.accordion-body .form-floating').fadeOut(500);
+
                 $('.btn-move-product').each(function () {
                     var productId = $(this).data('product-id');
                     var checkboxHtml = '<div class="form-check">' +
                         '<input class="form-check-input" type="checkbox" data-product-id="' + productId + '" id="flexSwitchMove_' + productId + '">' +
                         '<label class="form-check-label" for="flexSwitchMove_' + productId + '">Переместить</label>' +
                         '</div>';
-                    $(this).fadeOut(400, function () {
-                        $(this).replaceWith(checkboxHtml).fadeIn();
-                    });
+
+                    $(this).fadeOut(600);
+                   
+                    $(this).replaceWith(checkboxHtml).fadeIn(500);
                 });
-                //Если в списке больше двух товаров, то активируем кнопку
+                //активируем кнопку
 
-                $('#massMoveFooter').fadeIn();
-
+                $('#massMoveFooter').fadeIn(700);
+                $('.accordion-body select, .accordion-body #WareLabel').fadeOut(700);
                 
            
 
             } else {
                 // Режим массового перемещения выключен
-                $('.accordion-collapse').removeClass('show');
-                $('.accordion-body select').fadeIn(400);
-                $('.accordion-body #WareLabel').fadeIn(400);
+
                 $('.form-check').each(function () {
                     var productId = $(this).find('input[type="checkbox"]').attr('id').split('_')[1];
                     var buttonHtml = '<a class="btn btn-danger btn-move-product" data-product-id="' + productId + '">Переместить</a>';
-                    $(this).fadeOut(400, function () {
-                        $(this).replaceWith(buttonHtml).fadeIn();
+                   
+
+                    $(this).fadeOut(500, function () {
+                        $(this).replaceWith(buttonHtml).fadeIn(500);
                     });
                 });
+                $('.accordion-body .form-floating').fadeIn(500);
+                // Плавно показываем элементы формы
+                $('.accordion-body select, .accordion-body #WareLabel').fadeIn(700);
+
+                // Плавно скрываем элементы аккордеона и футера массового перемещения
+             
+                $('#massMoveFooter').fadeOut(700);
+                $('.accordion-collapse').removeClass('show');
                 massMoveProducts = [];
-                $('#massMoveFooter').fadeOut();
             }
         });
 
