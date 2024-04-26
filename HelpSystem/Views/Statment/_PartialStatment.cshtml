@@ -21,7 +21,7 @@
     <label for="Reason">Тема</label>
     <input type="text" class="form-control" id="Reason" value="@Model.Reason" readonly />
     <label for="Description">Описание</label>
-    <textarea type="text" class="form-control" id="Description" readonly>@Model.Description </textarea>
+    <textarea style="max-height:100px;" type="text" class="form-control" id="Description" readonly>@Model.Description </textarea>
 
 <div class="row" style="margin:20px; display:none">
        <div class="col">
@@ -33,17 +33,19 @@
                     <a id="BdButton" class="btn btn-danger btn-block" onclick="BindClick()">Привязать</a>
                </div>
            </div>
-          
-               <label for="Comment">Комментарий</label>
-               <small class="text-muted">Необязательное поле</small>
-           <textarea type="text" class="form-control-lg" style="width: 100%;" id="Comment"></textarea>
-          
+          <div class="form-floating">
+                <textarea type="text" class="form-control" placeholder="Тут комментарий" style=" max-height:100px; min-height:10px; margin-top:10px;" id="Comment"></textarea>
+                <label style="margin-left:5px;" for="Comment">Введите комментарий(необязательное поле)</label>
+          </div>
+           
        </div>
 </div>
 
+    <div class="form-floating">
+        <textarea style="max-height:150px; margin-top:12px; min-height:20px;" placeholder="" id="AnID" name="Answer" class="form-control" required minlength="10"></textarea>
+        <label for="AnID">Ответ  на заявку (обязательное поле)</label>
+    </div>
     
-    <label >Ответ на заявку</label>
-    <textarea id="AnID" name="Answer" class="form-control" required minlength="10"></textarea>
 </div>
 @section Scripts
 {
