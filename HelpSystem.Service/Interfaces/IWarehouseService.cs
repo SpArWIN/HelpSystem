@@ -15,11 +15,21 @@ namespace HelpSystem.Service.Interfaces
         /// <returns></returns>
         Task<BaseResponse<Warehouse>> CreateWarehouse(WarehouseViewModel model);
         /// <summary>
-        /// Удаление склада
+        /// Заморозка склада
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<BaseResponse<Warehouse>> DeleteWarehouse(Guid id);
+        Task<BaseResponse<Warehouse>> FreezeWarehouse(Guid id);
+
+        /// <summary>
+        /// Метод разморозки склада
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<BaseResponse<Warehouse>>UNFreezeWarehouse(Guid id);
+
+
+
         /// <summary>
         /// Все склады
         /// </summary>

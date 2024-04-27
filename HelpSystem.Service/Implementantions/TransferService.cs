@@ -136,7 +136,7 @@ namespace HelpSystem.Service.Implementantions
                     .Select(x => x.Name)
                     .FirstOrDefaultAsync();
 
-                string destinationWarehouseName = NameWarehouse; // Вставьте наименование целевого склада
+                string destinationWarehouseName = NameWarehouse; 
                 int lastDigit = totalTransferCount % 10;
                 string description;
                 if (totalTransferCount >= 11 && totalTransferCount <= 14)

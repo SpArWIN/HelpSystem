@@ -1476,3 +1476,56 @@ $(document).on('click',"#ExportBtn",function() {
      
     });
 });
+//Функция заморозки склада или поставщика 
+function FreeZing(Url, NameTitle, ResponseTitle,Id) {
+    Swal.fire({
+        title: NameTitle,
+        html: '<img src="/myIcon/freeze.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        color:'#black',
+  
+        didOpen: () => {
+            
+            $('.frozen-background').fadeIn();
+            Swal.showLoading();
+        },
+        willClose: () => {
+            $('.frozen-background').fadeOut(400);
+        }
+
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: Url,
+        data: Id,
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: ResponseTitle,
+                    icon: 'success',
+                    text: response.description,
+                    confirmButtonText: 'Отлично',
+
+                }).then((result) => {
+                    location.reload();
+                })
+            },3000)
+            
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Упс..что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Понятно'
+                })
+            },3000)
+        }
+    })
+}

@@ -47,7 +47,6 @@ namespace HelpSystem.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Comments")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("DestinationWarehouseId")
@@ -147,8 +146,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8ada6c6a-7084-4300-a170-3832d6b0839a"),
-                            UserId = new Guid("0f86ed13-e491-437f-8737-08cadb4ca0fd")
+                            Id = new Guid("dd3b68b9-a2ce-495c-a646-2e157b1808d1"),
+                            UserId = new Guid("0ce3a5ef-dadb-467e-a296-630d288e28e9")
                         });
                 });
 
@@ -157,6 +156,9 @@ namespace HelpSystem.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsFreeZing")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -268,7 +270,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0f86ed13-e491-437f-8737-08cadb4ca0fd"),
+                            Id = new Guid("0ce3a5ef-dadb-467e-a296-630d288e28e9"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -281,6 +283,9 @@ namespace HelpSystem.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsFreeZing")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

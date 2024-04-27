@@ -118,5 +118,26 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+        //Метод заморозки склада
+        public async Task<IActionResult> FreezeWh(Guid Id)
+        {
+            var Response = await _warehouseService.FreezeWarehouse(Id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = Response.Description });
+            }
+            return BadRequest(new { description = Response.Description });
+        }
+
+        //Разморозка склада
+        public async Task<IActionResult> UnFreeze(Guid id)
+        {
+            var Response = await _warehouseService.UNFreezeWarehouse(id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = Response.Description });
+            }
+            return BadRequest(new { description = Response.Description });
+        }
     }
 }

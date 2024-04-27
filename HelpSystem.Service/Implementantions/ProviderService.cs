@@ -28,7 +28,8 @@ namespace HelpSystem.Service.Implementantions
                 {
                     var NewProvider = new Provider()
                     {
-                        Name = model.ProviderName
+                        Name = model.ProviderName,
+                        IsFreeZing = false
                     };
                     await _Providerrepository.Create(NewProvider);
                     return new BaseResponse<Provider>()

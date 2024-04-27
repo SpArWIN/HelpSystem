@@ -42,7 +42,8 @@ namespace HelpSystem.Service.Implementantions
                 {
                     var NewWarehouse = new Warehouse()
                     {
-                        Name = model.WarehouseName
+                        Name = model.WarehouseName,
+                        IsFreeZing = false
                     };
                     await _warehouseRepository.Create(NewWarehouse);
                     return new BaseResponse<Warehouse>()
@@ -73,15 +74,15 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        public async Task<BaseResponse<Warehouse>> DeleteWarehouse(Guid id)
+        public async Task<BaseResponse<Warehouse>> FreezeWarehouse(Guid id)
         {
             try
             {
 
 
-                var DelWarehouse = await _warehouseRepository.GetAll()
+                var FreeseHouse = await _warehouseRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == id);
-                if (DelWarehouse == null)
+                if (FreeseHouse == null)
                 {
                     return new BaseResponse<Warehouse>()
                     {
@@ -90,10 +91,12 @@ namespace HelpSystem.Service.Implementantions
                     };
                 }
 
-                await _warehouseRepository.Delete(DelWarehouse);
+
+                FreeseHouse.IsFreeZing = true;
+                await _warehouseRepository.Update(FreeseHouse);
                 return new BaseResponse<Warehouse>()
                 {
-                    Description = "Склад успешно удалён",
+                    Description = $"Склад {FreeseHouse.Name} заморожен\nВсе последующие операции приостановлены",
                     StatusCode = StatusCode.Ok
                 };
             }
@@ -106,7 +109,40 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+        public async Task<BaseResponse<Warehouse>> UNFreezeWarehouse(Guid id)
+        {
+            try
+            {
+                var UnFreezeWarehouse = await _warehouseRepository.GetAll()
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+                if(UnFreezeWarehouse == null)
+                {
+                    return new BaseResponse<Warehouse>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Склад не найден"
+                    };
+                }
+                UnFreezeWarehouse.IsFreeZing = false;
+                await _warehouseRepository.Update(UnFreezeWarehouse);
+                return new BaseResponse<Warehouse>()
+                {
+                    StatusCode = StatusCode.Ok,
+                    Description = $"Склад {UnFreezeWarehouse.Name} разморожен. \nВсе последующие операции возобновлены."
 
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse<Warehouse>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
         public async Task<BaseResponse<IEnumerable<WarehouseViewModel>>> GetAllWarehouse()
         {
             try
@@ -722,5 +758,7 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+       
     }
 }

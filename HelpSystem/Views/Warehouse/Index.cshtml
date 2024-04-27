@@ -12,6 +12,13 @@
       border-radius: 5px; /* Для скругления углов */
       padding: 5px; /* Добавляем немного отступа внутри границы */
     }
+
+   
+
+
+
+
+
   </style>
 
 <ul  class="nav nav-pills">
@@ -35,7 +42,7 @@
     <div class="row">
         @foreach (var Warehouse in Model)
         {
-            <div class="col-md-3 mb-3">
+            <div class="col-md-4 mb-4">
                 <div class="card user-animation mt-3">
                     <div class="card-header">
                         <p class="card-title">Склад</p>
@@ -48,9 +55,23 @@
                             <p class="text-muted">Количество товара на складе: @Warehouse.TotalCountWarehouse</p>
                         </div>
                         <div class="d-grid-gap-2">
-                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({ modalId: 'modal', url: '/Warehouse/GetCurrentWarehouse', data: '@Warehouse.Id' , context: 'warehouse' }) ">Изменить</a>
-                            <a class="btn btn-outline-danger" onclick="openModal({modalId: 'ModalMove', url:'/Warehouse/GetProductsDetail', data: '@Warehouse.Id' , context: 'MoveProductWarehouse'}) ">Переместить товар</a>
-                            <a type="button" style="margin:5px;" class="btn btn-outline-info" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetProductsWarehouse', data: '@Warehouse.Id' , context: 'ListWarehouse'})  ">Список товаров</a>
+                            <div class="row"> 
+                                <div class="col-sm-6">
+                                    <a style="margin:3px;" class="btn btn-outline-info" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetProductsWarehouse', data: '@Warehouse.Id' , context: 'ListWarehouse'})  ">Список товаров</a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <a style="margin:3px;" class="btn btn-outline-danger" onclick="openModal({modalId: 'ModalMove', url:'/Warehouse/GetProductsDetail', data: '@Warehouse.Id' , context: 'MoveProductWarehouse'}) ">Переместить товар</a>
+                                </div>
+                            </div>
+                            <div class="row"> 
+                                <div class="col-sm-6">
+                                    <a style="margin:3px;" id="BtnChange" class="btn btn-outline-primary" onclick="openModal({ modalId: 'modal', url: '/Warehouse/GetCurrentWarehouse', data: '@Warehouse.Id' , context: 'warehouse' }) ">Изменить</a>
+                                </div>
+                                <div class="col-sm-6">
+                                    <a style="margin:3px;" class="btn btn-outline-primary BtnFreeZing" data-id="@Warehouse.Id" data-name="@Warehouse.WarehouseName">Заморозить склад</a>
+                                </div>
+                            </div>
+
                         </div>
                         
                     </div>
@@ -64,7 +85,8 @@ else
     <p>Список складов пуст</p>
 }
 
-
+<!-- Фоновый затемнитель -->
+<div class="frozen-background"></div>
 
 
 
@@ -109,7 +131,28 @@ else
             });
 
         });
-      
+
+        $('.BtnFreeZing').on('click', function () {
+            var warehouseName = $(this).data('name');
+            //Разберись с передачей id
+            var Id = $(this).data('id'); 
+            Swal.fire({
+                title: 'Вы действительно хотите заморозить склад ' + warehouseName + '?\n Это приостановит всевозможные поступления и перемещения на него.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Да, заморозить',
+                cancelButtonText: 'Отменить заморозку',
+                background: " url(/myIcon/FreeZingS.png)",
+                color: "#fff",
+                
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    console.log(warehouseName);
+                    console.log(Id);
+                    FreeZing('/Warehouse/FreezeWh', 'Заморозка склада', Id);
+                }
+            });
+        });
 
 
     </script>
