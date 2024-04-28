@@ -1,6 +1,5 @@
 ﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
-using Microsoft.EntityFrameworkCore;
 
 namespace HelpSystem.DAL.Implementantions
 {
@@ -36,6 +35,6 @@ namespace HelpSystem.DAL.Implementantions
             await _appDbContext.SaveChangesAsync();
         }
 
-       
+
     }
 }

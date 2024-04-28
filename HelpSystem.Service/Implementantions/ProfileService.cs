@@ -4,7 +4,6 @@ using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Extension;
 using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Product;
-using HelpSystem.Domain.ViewModel.Product.Role;
 using HelpSystem.Domain.ViewModel.Profile;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -18,9 +17,9 @@ namespace HelpSystem.Service.Implementantions
         private readonly IBaseRepository<Products> _productsRepository;
 
         private readonly IBaseRepository<User> _userRepository;
-       //Подгружаем сервис профиля с ролями
+        //Подгружаем сервис профиля с ролями
         private readonly IUserRoleService _profileService;
-        public ProfileService(IBaseRepository<User> user,IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository, IUserRoleService profileService)
+        public ProfileService(IBaseRepository<User> user, IBaseRepository<Profile> profileRepository, IBaseRepository<Products> productsRepository, IUserRoleService profileService)
         {
             _profileRepository = profileRepository;
             _productsRepository = productsRepository;
@@ -49,7 +48,7 @@ namespace HelpSystem.Service.Implementantions
 
 
                 //Получаем все роли 
-               var AllRoles = await _profileService.GetAllRoles();
+                var AllRoles = await _profileService.GetAllRoles();
                 if (AllRoles.StatusCode == StatusCode.Ok)
                 {
                     var allRoles = AllRoles.Data.ToList();
@@ -67,9 +66,9 @@ namespace HelpSystem.Service.Implementantions
                             UserPdocut = Product,
                             SumTotalProducts = sumTotalProducts,
                             RoleName = x.User.Roles.RoleType.GetDisplayName(),
-                            Roles =allRoles,
+                            Roles = allRoles,
                             RoleId = x.User.RoleId
-                            
+
 
                         }).FirstOrDefaultAsync(x => x.Id == Guid);
                     return new BaseResponse<ProfileViewModel>()
@@ -106,7 +105,7 @@ namespace HelpSystem.Service.Implementantions
             try
             {
                 var profile = _profileRepository.GetAll()
-                    .Include(u=>u.User)
+                    .Include(u => u.User)
                     .FirstOrDefault(x => x.UserId == model.Id);
 
 
@@ -144,18 +143,18 @@ namespace HelpSystem.Service.Implementantions
                     }
                     return new BaseResponse<Profile>()
                     {
-                       
+
                         Description = "Данные были успешно изменены",
                         StatusCode = StatusCode.Ok
                     };
 
                 }
-                else 
+                else
                 {
                     if (profile.User.RoleId != model.RoleId)
                     {
                         var usVer = await _userRepository.GetAll()
-                            .Include(r=>r.Roles)
+                            .Include(r => r.Roles)
                             .FirstOrDefaultAsync(x => x.Profile == profile);
 
 
@@ -173,7 +172,7 @@ namespace HelpSystem.Service.Implementantions
 
                         return new BaseResponse<Profile>()
                         {
-                         
+
                             Description = "Роль успешно изменена",
                             StatusCode = StatusCode.Ok
                         };
@@ -213,7 +212,7 @@ namespace HelpSystem.Service.Implementantions
                 if (Response.Any())
                 {
                     var usersDictionary = Response.ToDictionary(
-                        x => x.UserId, 
+                        x => x.UserId,
                         x => $"{x.LastName} {x.Name} {x.Surname} ({x.User.Login})" // Value: Full Name + Login
                     );
                     return new BaseResponse<Dictionary<Guid, string>>()
@@ -226,7 +225,7 @@ namespace HelpSystem.Service.Implementantions
                 return new BaseResponse<Dictionary<Guid, string>>()
                 {
                     StatusCode = StatusCode.NotFind,
-                  
+
                 };
             }
             catch (Exception ex)

@@ -71,7 +71,7 @@ namespace HelpSystem.Controllers
             return View();
         }
 
-      
+
 
 
         [HttpPost]
@@ -88,7 +88,7 @@ namespace HelpSystem.Controllers
 
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-              
+
                 return Ok(new { description = Response.Description });
             }
             else
@@ -97,8 +97,8 @@ namespace HelpSystem.Controllers
             }
         }
 
-          
-           
+
+
         [HttpPost]
         public async Task<IActionResult> GetUsers(string term)
         {

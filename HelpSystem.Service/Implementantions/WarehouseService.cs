@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HelpSystem.DAL.Implementantions;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
@@ -9,9 +7,6 @@ using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.Json;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -116,7 +111,7 @@ namespace HelpSystem.Service.Implementantions
                 var UnFreezeWarehouse = await _warehouseRepository.GetAll()
                     .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
-                if(UnFreezeWarehouse == null)
+                if (UnFreezeWarehouse == null)
                 {
                     return new BaseResponse<Warehouse>()
                     {
@@ -152,7 +147,8 @@ namespace HelpSystem.Service.Implementantions
                     {
                         Id = x.Id,
                         WarehouseName = x.Name,
-                        TotalCountWarehouse = x.Products.Count()
+                        TotalCountWarehouse = x.Products.Count(),
+                        isFreesing = x.IsFreeZing
                     })
                     .ToListAsync();
                 if (AllWarehouse.Count == 0)
@@ -308,21 +304,21 @@ namespace HelpSystem.Service.Implementantions
                         .Where(x => x.Warehouse == warehouse)
                         .ToListAsync();
 
-                        
+
 
                     if (productsOnWarehouse.Any())
                     {
                         var incomingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.DestinationWarehouseId == warehouse.Id)
-                           
+
                             .ToListAsync();
 
                         // Получаем записи о перемещениях товаров, которые ушли со склада
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.SourceWarehouseId == warehouse.Id)
-                           
+
                             .ToListAsync();
 
                         foreach (var incomingMovement in incomingMovements)
@@ -350,19 +346,19 @@ namespace HelpSystem.Service.Implementantions
                             .GroupBy(x => x.NameProduct)
                             .Select(group => new ProductinWarehouseViewModel()
                             {
-                              TotalCountWarehouse = group.Count(),
-                              NameProduct = group.Key,
-                              WhProducts = group.Select(p=>new ProductListWarehouse()
-                              {
-                                  Id = p.Id,
-                                  NameProduct = p.NameProduct,
-                                  CodeProduct = p.InventoryCode,
-                                  AvailableCount = (p.UserId == null) ? 1 : 0
-                              })
+                                TotalCountWarehouse = group.Count(),
+                                NameProduct = group.Key,
+                                WhProducts = group.Select(p => new ProductListWarehouse()
+                                {
+                                    Id = p.Id,
+                                    NameProduct = p.NameProduct,
+                                    CodeProduct = p.InventoryCode,
+                                    AvailableCount = (p.UserId == null) ? 1 : 0
+                                })
                               .ToList(),
                             }).ToList();
 
-                            
+
 
 
                         //var Products = productsOnWarehouse
@@ -508,7 +504,7 @@ namespace HelpSystem.Service.Implementantions
                 // Если товар не найден на текущем складе, проверяем последнее перемещение
                 var lastMovement = await _productMovementRepository.GetAll()
                     .OrderByDescending(m => m.MovementDate)
-                    .Include(p=>p.Product)
+                    .Include(p => p.Product)
                     .FirstOrDefaultAsync(m => m.Product.Id == model.ProductId);
 
                 if (lastMovement != null && lastMovement.SourceWarehouseId != model.WarehouseId)
@@ -562,12 +558,12 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-    
+
 
 
         //Тут мы получим все товары, не группируя их, тогда можно будет перемещать каждый товар по отдельности
-            public async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
-            {
+        public async Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId)
+        {
             try
             {
                 var Warehouse = await _warehouseRepository.GetAll()
@@ -607,8 +603,8 @@ namespace HelpSystem.Service.Implementantions
                                 x.MovementDate > incomingMovement.MovementDate);
                             if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
                             {
-                                
-                                if (incomingMovement.Product.UserId == null )
+
+                                if (incomingMovement.Product.UserId == null)
                                 {
                                     productsOnWarehouse.Add(incomingMovement.Product);
                                 }
@@ -627,9 +623,9 @@ namespace HelpSystem.Service.Implementantions
                             if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
                             {
 
-                               
-                                    productsOnWarehouse.Remove(outgoingMovement.Product);
-                                
+
+                                productsOnWarehouse.Remove(outgoingMovement.Product);
+
                             }
                         }
 
@@ -638,13 +634,13 @@ namespace HelpSystem.Service.Implementantions
                         // Формируем список деталей товара для аккордеона
                         var productDetails = productsOnWarehouse
                             .Select(p => new TransferProductViewModel
-                                
-                        {
-                            Id = p.Id,
-                            Name = p.NameProduct,
-                            Code = p.InventoryCode,
-                            Warehouses = NotCurrentWarehouse
-                        }).ToList();
+
+                            {
+                                Id = p.Id,
+                                Name = p.NameProduct,
+                                Code = p.InventoryCode,
+                                Warehouses = NotCurrentWarehouse
+                            }).ToList();
 
                         return new BaseResponse<IEnumerable<TransferProductViewModel>>
                         {
@@ -661,7 +657,7 @@ namespace HelpSystem.Service.Implementantions
                         // Получаем список товаров, которые пришли на этот склад
                         var incomingProducts = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
-                            .OrderByDescending(m=>m.MovementDate)
+                            .OrderByDescending(m => m.MovementDate)
                             .Where(m => m.DestinationWarehouseId == Warehouse.Id && m.Product.UserId == null)
                             .ToListAsync();
 
@@ -733,7 +729,7 @@ namespace HelpSystem.Service.Implementantions
             {
                 //Сразу же передадим список складов, кроме текущего.
                 var NotCurrentWarehouse = await _warehouseRepository.GetAll()
-                    .Where(x => x.Id != idGuid)
+                    .Where(x => x.Id != idGuid && x.IsFreeZing == false)
                     .ToListAsync();
                 if (NotCurrentWarehouse.Any())
                 {
@@ -759,6 +755,6 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-       
+
     }
 }

@@ -1035,7 +1035,7 @@ function MassInputWarehouse(id) {
         type: 'GET',
         data: { id: id }, // Передаем идентификатор склада как параметр запроса
         success: function (response) {
-            if (response && response.data) {
+            if (response && response.data && response.data.length >0) {
                 var warehouses = response.data;
                 var selectMassWarehouse = $('#SelectMassWarehouse');
                 selectMassWarehouse.empty(); // Очищаем список перед добавлением новых элементов
@@ -1043,7 +1043,9 @@ function MassInputWarehouse(id) {
                     selectMassWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
                 });
             } else {
-                console.error('Ошибка при получении списка складов');
+                var selectMassWarehouse = $('#SelectMassWarehouse');
+                selectMassWarehouse.append('<option disabled="">Доступные склады не найдены</option>'); // Добавляем сообщение
+               
             }
         },
         error: function (xhr, status, error) {
@@ -1477,7 +1479,7 @@ $(document).on('click',"#ExportBtn",function() {
     });
 });
 //Функция заморозки склада или поставщика 
-function FreeZing(Url, NameTitle, ResponseTitle,Id) {
+function FreeZing(Url, NameTitle,Id) {
     Swal.fire({
         title: NameTitle,
         html: '<img src="/myIcon/freeze.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
@@ -1492,7 +1494,7 @@ function FreeZing(Url, NameTitle, ResponseTitle,Id) {
             Swal.showLoading();
         },
         willClose: () => {
-            $('.frozen-background').fadeOut(400);
+            $('.frozen-background').fadeOut(1400);
         }
 
     });
@@ -1500,7 +1502,60 @@ function FreeZing(Url, NameTitle, ResponseTitle,Id) {
     $.ajax({
         type: 'POST',
         url: Url,
-        data: Id,
+        data: { Id: Id },
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: NameTitle,
+                    icon: 'success',
+                    text: response.description,
+                    confirmButtonText: 'Отлично',
+
+                }).then((result) => {
+                    location.reload();
+                })
+            }, 3000)
+
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Упс..что-то пошло не так',
+                    text: response.responseJSON.description,
+                    icon: 'error',
+                    confirmButtonText: 'Понятно'
+                })
+            }, 3000)
+        }
+    });
+}
+//Метод разморозки
+function UnFreezing(Url, ResponseTitle, Id) {
+    Swal.fire({
+        title: ResponseTitle,
+        html: '<img src="/myIcon/spring.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        color: '#black',
+
+        didOpen: () => {
+
+            $('.unfrozen-background').fadeIn();
+            Swal.showLoading();
+        },
+        willClose: () => {
+            $('.unfrozen-background').fadeOut(1400);
+        }
+
+    });
+
+    $.ajax({
+        type: 'POST',
+        url: Url,
+        data: { Id: Id },
         success: function (response) {
             setTimeout(function () {
                 Swal.close();
@@ -1513,8 +1568,8 @@ function FreeZing(Url, NameTitle, ResponseTitle,Id) {
                 }).then((result) => {
                     location.reload();
                 })
-            },3000)
-            
+            }, 3000)
+
         },
         error: function (response) {
             setTimeout(function () {
@@ -1525,7 +1580,7 @@ function FreeZing(Url, NameTitle, ResponseTitle,Id) {
                     icon: 'error',
                     confirmButtonText: 'Понятно'
                 })
-            },3000)
+            }, 3000)
         }
-    })
+    });
 }

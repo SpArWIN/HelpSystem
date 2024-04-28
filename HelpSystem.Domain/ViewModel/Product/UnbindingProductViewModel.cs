@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HelpSystem.Domain.ViewModel.Product
+﻿namespace HelpSystem.Domain.ViewModel.Product
 {
     public class UnbindingProductViewModel
     {
-         public int ProductId { get; set; }
+        public int ProductId { get; set; }
     }
 }

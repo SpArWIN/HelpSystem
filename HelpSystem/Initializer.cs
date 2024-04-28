@@ -21,7 +21,7 @@ namespace HelpSystem
 
             services.AddScoped<IBaseRepository<Invoice>, InvoiceRepository>();
             services.AddScoped<IBaseRepository<ProductMovement>, ProductMovementRepository>();
-            
+
 
             //TODO Незабудь добавить сервисы
         }

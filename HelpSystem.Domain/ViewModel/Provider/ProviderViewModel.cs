@@ -7,5 +7,7 @@ namespace HelpSystem.Domain.ViewModel.Provider
         public Guid? ProviderId { get; set; }
         [Required(ErrorMessage = "Укажите наименование поставщика")]
         public string ProviderName { get; set; }
+
+        public bool IsFreeze { get; set; }
     }
 }

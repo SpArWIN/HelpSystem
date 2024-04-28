@@ -30,13 +30,13 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="ProductId"></param>
         /// <param name="Comments"></param>
         /// <returns>Привязанный товар</returns>
-        Task<BaseResponse<Products>> BindingProduct(Guid StatId,int ProductId,string?  Comments);
+        Task<BaseResponse<Products>> BindingProduct(Guid StatId, int ProductId, string? Comments);
         /// <summary>
         /// Метод отвязки товара от пользователя
         /// </summary>
         /// <param name="product"></param>
         /// <returns></returns>
-        Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct( List<UnbindingProductViewModel>   product, Guid ProfileId);
+        Task<BaseResponse<IEnumerable<Products>>> UnBindingProduct(List<UnbindingProductViewModel> product, Guid ProfileId);
 
 
         /// <summary>
@@ -45,6 +45,6 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<IBaseResponse<MainProductInfo>> GetMainProductInfo(int id);
-      
+
     }
 }

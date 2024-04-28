@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.Domain.Response;
+﻿using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Report;
 
 namespace HelpSystem.Service.Interfaces
@@ -17,12 +12,12 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="userid"></param>
         /// <returns></returns>
-        Task <BaseResponse<IEnumerable<UserReportViewModel>>> GetUserReports(Guid userid);
+        Task<BaseResponse<IEnumerable<UserReportViewModel>>> GetUserReports(Guid userid);
         /// <summary>
         /// Получение информации о прикреплённых товаров всех юзверей
         /// </summary>
         /// <returns></returns>
         Task<IBaseResponse<ReportUSERSViewModel>> GetUsersReports();
-    
+
     }
 }

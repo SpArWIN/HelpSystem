@@ -7,7 +7,9 @@
     box-shadow: 1px 2px 2px 3px #e97042;
   
 }
-
+.card-freeze {
+    box-shadow: 1px 2px 2px 3px #7684d6;
+}
 .card-title {
     font-family: monospace;
     font-size: 25px;

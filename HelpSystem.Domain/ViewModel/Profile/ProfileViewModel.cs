@@ -1,14 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using HelpSystem.Domain.Entity;
-using HelpSystem.Domain.ViewModel.Product;
+﻿using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Product.Role;
+using System.ComponentModel.DataAnnotations;
 
 namespace HelpSystem.Domain.ViewModel.Profile
 {
     public class ProfileViewModel
     {
         public Guid Id { get; set; }
-       
+
         public byte? Age { get; set; }
         public string? Surname { get; set; }
         //Отчество
@@ -20,7 +19,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public int SumTotalProducts { get; set; }
 
         //Роль пользоавателя 
-        public string?  RoleName { get; set; }
+        public string? RoleName { get; set; }
         //id Роли
         public int RoleId { get; set; }
 
@@ -32,7 +31,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
             }
         }
         //Для роли пользователя 
-        public List<RoleViewModel>?  Roles { get; set; }
+        public List<RoleViewModel>? Roles { get; set; }
     }
 
 }

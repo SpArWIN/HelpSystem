@@ -97,16 +97,20 @@
             <div class="form-group">
                 <label for="Provider">Выберите поставщика</label>
             <select class="form-control" id="Provider" name="ProviderID">
-                    @if (Model.Providers != null)
+                    @if (Model.Providers != null && Model.Providers.Any(x=>!x.IsFreeze))
                     {
                         @foreach (var provider in Model.Providers)
                         {
+                            if (!provider.IsFreeze)
+                            {
                             <option value="@provider.ProviderId">@provider.ProviderName</option>
+                            }
+                       
                         }
                     }
                     else
                     {
-                        <option>Нет поставщиков</option>
+                        <option disabled>Нет  поставщиков</option>
                     }
                     
                 </select>
@@ -115,17 +119,21 @@
             <div class="form-group">
                 <label for="Warehouse">Укажите склад</label>
             <select class="form-control" id="Warehouse" name="WarehouseId">
-                    @if (Model.Warehouses != null)
+                    @if (Model.Warehouses != null  && Model.Warehouses.Any(x=>!x.isFreesing))
                     {
-                        foreach (var  Ware in Model.Warehouses)
+                    foreach (var Ware in Model.Warehouses)
+                    {
+                        if (!Ware.isFreesing)
                         {
                             <option value="@Ware.Id">@Ware.WarehouseName</option>
                         }
                     }
-                    else
-                    {
-                        <option>Нет складов</option>
-                    }
+                }
+                else
+                {
+                    <option disabled>Нет доступных складов</option>
+                }
+                
                 </select>
             </div>
             <!-- Поле для указания количества позиций -->

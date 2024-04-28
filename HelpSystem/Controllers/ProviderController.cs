@@ -33,7 +33,7 @@ namespace HelpSystem.Controllers
 
             if (CurProvider.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return PartialView( "_PartialProvider", CurProvider.Data);
+                return PartialView("_PartialProvider", CurProvider.Data);
             }
 
             return PartialView("_PartialProvider");
@@ -79,5 +79,26 @@ namespace HelpSystem.Controllers
         }
         //Метод для получения списка всез поставщиков  для отображения при  создании товара
 
+
+        //Метод морозки поставщика
+        public async Task<IActionResult> FreezePh(Guid Id)
+        {
+            var Response = await _providerService.FreezeProvider(Id);
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new {  description = Response.Description });
+            }
+            return BadRequest(new { description = Response.Description });
+        }
+        public async Task<IActionResult> UnFreezePh(Guid Id)
+        {
+            var Response = await _providerService.UnFreezeProvider(Id);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = Response.Description });
+            }
+            return BadRequest(new { description = Response.Description });
+
+        }
     }
 }

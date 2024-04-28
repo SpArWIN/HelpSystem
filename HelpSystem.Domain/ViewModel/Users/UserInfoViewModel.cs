@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.Domain.ViewModel.Product;
+﻿using HelpSystem.Domain.ViewModel.Product;
 
 
 namespace HelpSystem.Domain.ViewModel.Users
@@ -21,7 +16,7 @@ namespace HelpSystem.Domain.ViewModel.Users
             get => $"{LastName} {Name} {SurName}";
             set { }
         }
-        public List<BindingProductViewModel> ? UserProducts { get; set; }
+        public List<BindingProductViewModel>? UserProducts { get; set; }
 
         public int TotalProducts { get; set; }
     }

@@ -26,9 +26,13 @@
 
         @foreach (var Us in Model)
         {
+            if (!Us.IsFreeze)
+            {
 
-            <div class="col-md-3 mb-3">
-                <div class="card user-animation" style="  width: 100%; margin:15px; ">
+
+
+                <div class="col-md-3 mb-3">
+                    <div class="card user-animation" style="  width: 100%; margin:15px; ">
                     <div class="card-header">
                         <p class="card-title">Поставщик</p>
                     </div>
@@ -37,19 +41,45 @@
                     </div>
                     <div class="card-footer">
                         <div class="d-grid-gap-2">
-                            <a id="BtnChange" class="btn btn-outline-primary" onclick="openModal({modalId: 'modal', url:'/Provider/GetCurrentProvider', data: '@Us.ProviderId' , context: 'provider'})  ">Изменить</a>
-                            <a class="btn btn-outline-danger">Удалить</a>
+
+
+
+                            <a id="BtnChange" class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Provider/GetCurrentProvider', data: '@Us.ProviderId' , context: 'provider'})  ">Изменить</a>
+
+                            <a style="margin:5px;" class="btn btn-outline-primary ProvFreeze" data-name="@Us.ProviderName" data-id="@Us.ProviderId">Заморозить поставщика</a>
                         </div>
                     </div>
                 </div>
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card user-animation card-freeze mt-3">
+                        <div class="card-header">
+                            <img src="/myIcon/Provider.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
+                            <p style="font-family:'Cascadia Mono'" class="card-title">Поставщик - @Us.ProviderName</p>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a data-name="@Us.ProviderName" data-id="@Us.ProviderId" class="btn btn-outline-success BtnUnFreeze">Разморозить поставщика </a>
+                            </div>
+                        </div>
+                      
+                    </div>
+                </div>
+            }
         }
     </div>
 }
 else
 {
-    <p>Список поставщиков пуст</p>
+    <p style="text-align : center; font-size:24px;">Список поставщиков пуст</p>
 }
+<!-- Фоновый затемнитель -->
+<div class="frozen-background"></div>
+
+<div class="unfrozen-background "></div>
 
 
 
@@ -65,7 +95,7 @@ else
         $(document).ready(function () {
 
             $('.user-animation').addClass('show');
-
+            
             $('#ProviderAdd').on('click', async function () {
                 const { value: providerName } = await Swal.fire({
                     title: 'Укажите наименование поставщика',
@@ -82,7 +112,54 @@ else
                     CreateProvider(providerName);
                 }
             });
-           
+            //Заморозка поставщика
+
+            $('.ProvFreeze').on('click', function () {
+                var ProviderName = $(this).data('name');
+                var Id = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Вы действительно хотите заморозить поставщика ' + ProviderName + '?\n Это приостановит возможность  указания импортёра в качестве поставщика.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Да, заморозить',
+                    cancelButtonText: 'Отменить заморозку',
+                    background: " url(/myIcon/FreeZingS.png)",
+                    color: "#fff",
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        FreeZing('/Provider/FreezePh', 'Заморозка поставщика  ', Id);
+
+                    }
+                });
+
+
+
+            });
+            //Разморозка 
+            $('.BtnUnFreeze').on('click', function () {
+                var ProviderName = $(this).data('name');
+                var Id = $(this).data('id');
+
+                Swal.fire({
+                    title: 'Вы действительно хотите разморозить поставщика ' + ProviderName + '?\n Это возобновит возможность  указания импортёра в качестве поставщика.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Да, разморозить',
+                    cancelButtonText: 'Отменить разморозку',
+                    background: " url(/myIcon/Vesna.png)",
+                    color: "#fff",
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        UnFreezing('/Provider/UnFreezePh', 'Разморозка поставщика  ', Id);
+
+                    }
+                });
+            })
 
         });
 

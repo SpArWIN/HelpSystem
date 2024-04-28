@@ -3,7 +3,6 @@ using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Extension;
 using HelpSystem.Domain.Response;
-using HelpSystem.Domain.ViewModel.Product.Role;
 using HelpSystem.Domain.ViewModel.Users;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +12,11 @@ namespace HelpSystem.Service.Implementantions
     public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _accountUseRepository;
-   
+
         public UserService(IBaseRepository<User> repository, IBaseRepository<Role> roleRepository)
         {
             _accountUseRepository = repository;
-          
+
         }
         public async Task<BaseResponse<IEnumerable<UsersViewModel>>> GetAllUsers()
         {
@@ -53,7 +52,7 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-       
-        
+
+
     }
 }

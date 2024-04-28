@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-using HelpSystem.Domain.ViewModel.Product;
-using HelpSystem.Domain.ViewModel.Warehouse;
+﻿using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +56,7 @@ namespace HelpSystem.Controllers
         //Привязка товара к пользователю со стороны заявки
         public async Task<IActionResult> BindingProduct(Guid StatId, int ProductId, string? Comments)
         {
-            var Response = await _productService.BindingProduct(StatId, ProductId,Comments);
+            var Response = await _productService.BindingProduct(StatId, ProductId, Comments);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return Ok(new { Response.Data, description = Response.Description });
@@ -68,12 +66,12 @@ namespace HelpSystem.Controllers
             return BadRequest(new { description = Response.Description });
         }
 
-        
+
         //Снятие с пользователя товара
         [HttpPost]
-        public async Task<IActionResult> UnbindingProduct(List<UnbindingProductViewModel> model, Guid ProfileId )
+        public async Task<IActionResult> UnbindingProduct(List<UnbindingProductViewModel> model, Guid ProfileId)
         {
-            var Response = await _productService.UnBindingProduct(model,  ProfileId);
+            var Response = await _productService.UnBindingProduct(model, ProfileId);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return Ok(new { Response.Data, description = Response.Description });
@@ -82,6 +80,6 @@ namespace HelpSystem.Controllers
             return BadRequest(new { description = Response.Description });
         }
 
-     
+
     }
 }

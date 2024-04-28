@@ -1,6 +1,4 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using HelpSystem.DAL.Implementantions;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
@@ -10,7 +8,6 @@ using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Users;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -728,9 +725,9 @@ namespace HelpSystem.Service.Implementantions
                 {
                     // Если следующее перемещение возвращает товар на тот же склад, устанавливаем время ухода
                     transInfo.DateTimeOutgoing = nextMovement.MovementDate.ToString("g");
-                   
+
                 }
-              
+
             }
 
             return allTransfersProducts;

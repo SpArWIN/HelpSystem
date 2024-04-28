@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.Domain.ViewModel.Users;
+﻿using HelpSystem.Domain.ViewModel.Users;
 
 namespace HelpSystem.Domain.ViewModel.Report
 {
@@ -14,7 +9,7 @@ namespace HelpSystem.Domain.ViewModel.Report
             Users = new List<UserInfoViewModel>();
         }
         //Подсчёт всех товаров прикреплённых к юзверю
-        
+
 
         public List<UserInfoViewModel>? Users { get; set; }
     }

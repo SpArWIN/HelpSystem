@@ -10,7 +10,7 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public virtual List<Products>? Products { get; set; }
-        public bool IsFreeZing { get; set; } 
+        public bool IsFreeZing { get; set; }
 
     }
 }

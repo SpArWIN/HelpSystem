@@ -55,7 +55,14 @@
                                         {
                                             foreach (var warehouse in product.Warehouses)
                                             {
-                                                <option value="@warehouse.Id">@warehouse.Name</option>
+                                                if (!warehouse.IsFreeZing)
+                                                {
+                                                    <option value="@warehouse.Id">@warehouse.Name</option>
+                                                }
+                                                else
+                                                {
+                                                    <option disabled>Нет доступных складов</option>
+                                                }
                                             }
                                         }
                                         else

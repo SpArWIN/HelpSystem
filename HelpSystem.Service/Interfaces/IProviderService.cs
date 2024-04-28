@@ -12,5 +12,9 @@ namespace HelpSystem.Service.Interfaces
         Task<BaseResponse<ProviderViewModel>> GetProviderCurrent(Guid id);
 
         Task<BaseResponse<Provider>> SaveProvider(ProviderViewModel model);
+        //Методы заморозки и разморозки поставщика
+        Task<BaseResponse<Provider>> FreezeProvider(Guid id);
+        Task<BaseResponse<Provider>> UnFreezeProvider(Guid id);
+
     }
 }

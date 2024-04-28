@@ -1,10 +1,4 @@
-﻿using HelpSystem.Domain.Entity;
-using HelpSystem.Domain.ViewModel.Warehouse;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using HelpSystem.Domain.ViewModel.Warehouse;
 
 namespace HelpSystem.Domain.ViewModel.Report
 {
@@ -16,7 +10,7 @@ namespace HelpSystem.Domain.ViewModel.Report
         {
             WarehousesReports = new List<WarehouseReports>();
         }
-        public string StartTime { get; set; } 
+        public string StartTime { get; set; }
         public string EndTime { get; set; }
         public List<WarehouseReports> WarehousesReports { get; set; }
 

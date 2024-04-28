@@ -1,7 +1,5 @@
-﻿using System.Linq.Expressions;
-using HelpSystem.Domain.ViewModel.Product;
+﻿using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Warehouse;
-using HelpSystem.Service.Implementantions;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -70,9 +68,9 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> GetProductsWarehouse(Guid id)
         {
             var Response = await _warehouseService.GetProductWarehouse(id);
-          
-            return PartialView("_ProductWarehouse",Response.Data);
-       
+
+            return PartialView("_ProductWarehouse", Response.Data);
+
         }
         //Метод получения таблицы товаров на складе в JSON формате
         //public async Task<IActionResult> GetJSONWarehouse(Guid id)
@@ -93,7 +91,7 @@ namespace HelpSystem.Controllers
                 return BadRequest(new { description = Response.Description });
             }
 
-           
+
         }
         //метод получения списка всех складов, кроме текущего местоположения товара
         public async Task<IActionResult> GetProductsDetail(Guid id)

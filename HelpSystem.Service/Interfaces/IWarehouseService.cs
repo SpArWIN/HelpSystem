@@ -26,7 +26,7 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<BaseResponse<Warehouse>>UNFreezeWarehouse(Guid id);
+        Task<BaseResponse<Warehouse>> UNFreezeWarehouse(Guid id);
 
 
 
@@ -53,16 +53,21 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task <BaseResponse<IEnumerable<ProductinWarehouseViewModel>>> GetProductWarehouse(Guid id );
-            /// <summary>
-            /// Метод привязки товара со стороны склада
-            /// </summary>
-            /// <param name="model"></param>
-            /// <returns></returns>
+        Task<BaseResponse<IEnumerable<ProductinWarehouseViewModel>>> GetProductWarehouse(Guid id);
+        /// <summary>
+        /// Метод привязки товара со стороны склада
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
         Task<BaseResponse<Products>> BindWarehouseProduct(BindingProductWarehouse model);
 
         //Метод, который получит детали товаров, т.е не по группировке, а все товары.
         Task<BaseResponse<IEnumerable<TransferProductViewModel>>> GetProductsDetails(Guid WhId);
+        /// <summary>
+        /// Получения всех складов, кроме текущего
+        /// </summary>
+        /// <param name="idGuid"></param>
+        /// <returns></returns>
         Task<IBaseResponse<IEnumerable<Warehouse>>> GetNotCurrentWH(Guid idGuid);
     }
 }

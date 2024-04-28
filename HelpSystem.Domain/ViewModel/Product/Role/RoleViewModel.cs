@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.Domain.Enum;
+﻿using HelpSystem.Domain.Enum;
 
 namespace HelpSystem.Domain.ViewModel.Product.Role
 {
@@ -12,7 +7,7 @@ namespace HelpSystem.Domain.ViewModel.Product.Role
     {
         public int Id { get; set; }
         public UserRoleType RoleType { get; set; }
-        public string?  RoleName {get; set; }
+        public string? RoleName { get; set; }
 
-}
+    }
 }

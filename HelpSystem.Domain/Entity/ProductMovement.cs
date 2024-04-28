@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HelpSystem.Domain.Entity
+﻿namespace HelpSystem.Domain.Entity
 {
     //Таблица для перемещения товара по складу
     public class ProductMovement
@@ -15,9 +9,9 @@ namespace HelpSystem.Domain.Entity
         public Guid DestinationWarehouseId { get; set; } // ID целевого склада
         public DateTime MovementDate { get; set; } // Дата перемещения
 
-        public string? Comments { get; set; } 
-    
+        public string? Comments { get; set; }
+
         public virtual Products Product { get; set; } // Перемещаемый товар
-       
+
     }
 }

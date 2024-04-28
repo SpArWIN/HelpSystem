@@ -42,8 +42,13 @@
     <div class="row">
         @foreach (var Warehouse in Model)
         {
-            <div class="col-md-4 mb-4">
-                <div class="card user-animation mt-3">
+            //Если склад не заморожен, отображаем как есть
+            if (!Warehouse.isFreesing)
+            {
+
+
+                <div class="col-md-4 mb-4">
+                    <div class="card user-animation mt-3">
                     <div class="card-header">
                         <p class="card-title">Склад</p>
                     </div>
@@ -76,9 +81,31 @@
                         
                     </div>
                 </div>
-            </div>
+                </div>
+            }
+            else
+            {
+                <div class="col-md-3 mb-3">
+                    <div class="card user-animation card-freeze mt-3">
+                        <div class="card-header">
+                            <img src="/myIcon/CoolWarehouse.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
+                            <p style="font-family:'Cascadia Mono'" class="card-title">Склад - @Warehouse.WarehouseName</p>
+                        </div>
+                        <div class ="card-body">
+                            <div class="d-grid gap-2">
+                                <a data-name="@Warehouse.WarehouseName" data-id = "@Warehouse.Id"    class ="btn btn-outline-success BtnUnFreeze" data-id="@Warehouse.Id">Разморозить склад </a>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                         <p class="card-text">Количество товаров, оставшихся на складе:@Warehouse.TotalCountWarehouse</p>    
+                        </div>
+                    </div>
+                    
+               </div>
+            }
         }
     </div>
+    
 }
 else
 {
@@ -88,6 +115,7 @@ else
 <!-- Фоновый затемнитель -->
 <div class="frozen-background"></div>
 
+<div class="unfrozen-background "></div>
 
 
 
@@ -147,13 +175,37 @@ else
                 
             }).then((result) => {
                 if (result.isConfirmed) {
-                    console.log(warehouseName);
-                    console.log(Id);
-                    FreeZing('/Warehouse/FreezeWh', 'Заморозка склада', Id);
+              
+                 
+                    FreeZing('/Warehouse/FreezeWh', 'Заморозка склада  ', Id);
+                   
                 }
             });
         });
 
+        //Разморозка склада
+        $('.BtnUnFreeze').on('click',function(){
+            var WarehouseName = $(this).data('name');
+            var Id = $(this).data('id');
+            Swal.fire({
+                title: 'Вы действительно хотите разморозить склад ' + WarehouseName + '?\n Это возобновит всевозможные поступления и перемещения на него.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Да, разморозить',
+                cancelButtonText: 'Отменить разморозку',
+                background: " url(/myIcon/Vesna.png)",
+                color: "#fff",
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+
+                    UnFreezing('/Warehouse/UnFreeze', 'Разморозка склада', Id);
+
+                }
+            });
+
+        })
 
     </script>
 }

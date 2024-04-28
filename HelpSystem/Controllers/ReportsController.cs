@@ -1,5 +1,4 @@
-﻿using HelpSystem.Domain.ViewModel.Report;
-using HelpSystem.Service.Interfaces;
+﻿using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpSystem.Controllers
@@ -43,7 +42,7 @@ namespace HelpSystem.Controllers
             var Response = await _reportService.GetUserReports(UserId);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json( new {data = Response.Data, description = Response.Description});
+                return Json(new { data = Response.Data, description = Response.Description });
             }
 
             return Json(Response.Description);
@@ -62,6 +61,6 @@ namespace HelpSystem.Controllers
             return Json(Response.Description);
         }
 
-    
+
     }
 }

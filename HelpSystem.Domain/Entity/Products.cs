@@ -17,12 +17,12 @@ namespace HelpSystem.Domain.Entity
         public virtual Provider? Provider { get; set; } //Поставщик
         ////Внешний ключ Склада
         //public Guid WarehouseID { get; set; }
-        public virtual Warehouse?  Warehouse { get; set; } //На какой склад закидываем
+        public virtual Warehouse? Warehouse { get; set; } //На какой склад закидываем
         // Внешний ключ
         public Guid? UserId { get; set; }
         public virtual User? User { get; set; } //К какому пользователю привязываем в случае чего
-      
-       
+
+
 
 
     }

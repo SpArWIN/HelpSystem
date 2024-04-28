@@ -22,3 +22,27 @@
         background-position: 50% 40%
     }
 }
+.unfrozen-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+    background: linear-gradient(rgba(0, 0, 125, 0.2), rgba(0, 0, 255, 0.4)), url('/myIcon/Main-reverse.gif');
+    display: none;
+    animation: unfreezeEffect 5s forwards;
+    
+
+}
+@keyframes unfreezeEffect {
+    0% {
+        opacity: 0.9;
+        background-position: 50% 40%; 
+    }
+
+    100% {
+        opacity: 0.6;
+        background-position: 10% 10%; 
+    }
+}

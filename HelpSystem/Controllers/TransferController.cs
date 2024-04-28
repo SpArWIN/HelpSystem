@@ -24,7 +24,7 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
-       
+
         public IActionResult Index()
         {
             return View();

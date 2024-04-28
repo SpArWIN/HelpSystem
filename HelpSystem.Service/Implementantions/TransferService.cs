@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
@@ -13,24 +8,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpSystem.Service.Implementantions
 {
-    public class TransferService :ITransferService
+    public class TransferService : ITransferService
     {
         private readonly IBaseRepository<ProductMovement> _transBaseRepository;
         private readonly IBaseRepository<Products> _productsRepository;
         private readonly IBaseRepository<Warehouse> _warehouseRepository;
-        public TransferService(IBaseRepository<ProductMovement> movement, IBaseRepository<Products> productsRepository,IBaseRepository<Warehouse> warehouse)
+        public TransferService(IBaseRepository<ProductMovement> movement, IBaseRepository<Products> productsRepository, IBaseRepository<Warehouse> warehouse)
         {
             _transBaseRepository = movement;
             _productsRepository = productsRepository;
             _warehouseRepository = warehouse;
         }
-       
+
         public async Task<BaseResponse<IEnumerable<ProductMovement>>> AddTransferService(List<TransferViewModel> model)
         {
             try
             {
                 // Проверяем, что список model не является пустым
-                if ( model.Count == 0)
+                if (model.Count == 0)
                 {
                     return new BaseResponse<IEnumerable<ProductMovement>>()
                     {
@@ -40,8 +35,8 @@ namespace HelpSystem.Service.Implementantions
                 }
 
 
-              //Неважно одно это перемещение или множественное, на вход всё равно подается список
-              //если там 1 товар, то он и будет один записан, а если там больше одного, так так и будет
+                //Неважно одно это перемещение или множественное, на вход всё равно подается список
+                //если там 1 товар, то он и будет один записан, а если там больше одного, так так и будет
 
                 var products = new List<Products>(); // Создаем список товаров для перемещения
 
@@ -50,7 +45,7 @@ namespace HelpSystem.Service.Implementantions
                     // Получаем товары по наименованию и инвентарному коду
                     var productList = await _productsRepository.GetAll()
                         .Include(w => w.Warehouse)
-                        .Where(x =>x.Id == prod.Id)
+                        .Where(x => x.Id == prod.Id)
                         .Where(x => x.UserId == null)
                         .ToListAsync();
 
@@ -81,6 +76,16 @@ namespace HelpSystem.Service.Implementantions
 
                 // Получаем id целевого склада
                 Guid destinationWarehouseId = model.First().DestinationWarehouseId;
+                if(destinationWarehouseId == Guid.Empty)
+                {
+                    return new BaseResponse<IEnumerable<ProductMovement>>
+                    {
+                        Description = "Перемещаемый склад не найден.",
+                        StatusCode = StatusCode.NotFind,
+                    };
+                }
+
+
                 Guid SourceWarehouseID = model.First().SourceWarehouseId;
                 // Выполняем операцию перемещения для указанного количества товаров
                 foreach (var transfer in model)
@@ -106,7 +111,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             sourceWarehouseId = product.Warehouse.Id; // Если информация о перемещениях отсутствует, берем исходный склад
                         }
-                       
+
                         // Создаем запись о перемещении товара
                         var movement = new ProductMovement()
                         {
@@ -129,14 +134,14 @@ namespace HelpSystem.Service.Implementantions
                     .Select(x => x.Name)
                     .FirstOrDefaultAsync();
 
-                  //Склад с которого, когда указывал изначальные, я забыл о том, что я запросом вытягиваю их положение изначально
+                //Склад с которого, когда указывал изначальные, я забыл о том, что я запросом вытягиваю их положение изначально
 
-                  var SourceName = await _warehouseRepository.GetAll()
-                    .Where(x=>x.Id== SourceWarehouseID)
-                    .Select(x => x.Name)
-                    .FirstOrDefaultAsync();
+                var SourceName = await _warehouseRepository.GetAll()
+                  .Where(x => x.Id == SourceWarehouseID)
+                  .Select(x => x.Name)
+                  .FirstOrDefaultAsync();
 
-                string destinationWarehouseName = NameWarehouse; 
+                string destinationWarehouseName = NameWarehouse;
                 int lastDigit = totalTransferCount % 10;
                 string description;
                 if (totalTransferCount >= 11 && totalTransferCount <= 14)
@@ -154,7 +159,7 @@ namespace HelpSystem.Service.Implementantions
                 else
                 {
                     description = $"{totalTransferCount} товаров было перемещено с {SourceName} на {destinationWarehouseName}";
-                }   
+                }
 
                 return new BaseResponse<IEnumerable<ProductMovement>>()
                 {
@@ -210,7 +215,7 @@ namespace HelpSystem.Service.Implementantions
                     StatusCode = StatusCode.InternalServerError
                 };
             }
-         
+
         }
     }
 }

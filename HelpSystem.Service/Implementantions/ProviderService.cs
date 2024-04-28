@@ -89,6 +89,76 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
+        public async Task<BaseResponse<Provider>> FreezeProvider(Guid id)
+        {
+            try
+            {
+                var Provider = await _Providerrepository.GetAll()
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+                if(Provider == null)
+                {
+                    return new BaseResponse<Provider>()
+                    {
+                        Description = "Поставщик не найден",
+                        StatusCode = StatusCode.NotFind
+                    };
+                }
+
+                Provider.IsFreeZing = true;
+                await _Providerrepository.Update(Provider);
+                return new BaseResponse<Provider>()
+                {
+                    Description = $"Поставщик {Provider.Name} успешно заморожен.",
+                    StatusCode = StatusCode.Ok
+                };
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse<Provider>()
+                {
+                    Description = ex.Message,
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+           
+        }
+        public async Task<BaseResponse<Provider>> UnFreezeProvider(Guid id)
+        {
+            try
+            {
+                var UnFreezeProvider = await _Providerrepository.GetAll()
+                    .Where(x => x.Id == id)
+                    .FirstOrDefaultAsync();
+                if(UnFreezeProvider == null)
+                {
+                    return new BaseResponse<Provider>()
+                    {
+                        Description = "Поставщик не найден",
+                        StatusCode = StatusCode.NotFind
+                    };
+                }
+                UnFreezeProvider.IsFreeZing = false;
+
+                await _Providerrepository.Update(UnFreezeProvider);
+
+                return new BaseResponse<Provider>()
+                {
+                    Description = $"Поставщик {UnFreezeProvider.Name} успешно разморожен.",
+                    StatusCode = StatusCode.Ok
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Provider>()
+                {
+                    Description = ex.Message,
+                    StatusCode = StatusCode.InternalServerError
+                };
+            }
+        }
+
         public async Task<BaseResponse<IEnumerable<ProviderViewModel>>> GetAllProvider()
         {
             try
@@ -97,7 +167,8 @@ namespace HelpSystem.Service.Implementantions
                     .Select(x => new ProviderViewModel()
                     {
                         ProviderName = x.Name,
-                        ProviderId = x.Id
+                        ProviderId = x.Id,
+                        IsFreeze = x.IsFreeZing
                     })
                     .ToListAsync();
 
@@ -170,7 +241,7 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-              
+
 
                 var UpdateProvider = await _Providerrepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == model.ProviderId);
@@ -217,5 +288,7 @@ namespace HelpSystem.Service.Implementantions
 
             }
         }
+
+        
     }
 }

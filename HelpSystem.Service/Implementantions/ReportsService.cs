@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Response;
@@ -107,14 +102,14 @@ namespace HelpSystem.Service.Implementantions
                     //Рассчитываем перемещённые товары
                     //var movedProducts = outgoingMovements.Select(x => x.Product).Distinct().Count();
                     var ProductInfo = productsOnWarehouse
-                       
+
                         .Select(x => new ProductsInfo()
                         {
                             ProductName = x.NameProduct,
                             InventoryCode = x.InventoryCode,
                             QuantityOnWarehouse = 1, //товар выводится по штучно, всегда 1
                             AvailableQuantity = x.UserId == null ? 1 : 0 //ну или он доступен или нет
-                        }).OrderBy(g=>g.ProductName)
+                        }).OrderBy(g => g.ProductName)
                         .ToList();
 
                     //Берем все количество 
@@ -172,7 +167,7 @@ namespace HelpSystem.Service.Implementantions
                     Code = p.InventoryCode,
                     Quantity = 1, // Каждая запись считается как отдельный товар
                     TotalCount = products.Count() // Общее количество равно общему числу записей
-                }).OrderBy(x=>x.ProductName)
+                }).OrderBy(x => x.ProductName)
                 .ToList();
 
                 if (groupedProducts.Any())
@@ -251,7 +246,7 @@ namespace HelpSystem.Service.Implementantions
                             UserProducts = GroupedProducts
                         };
                         ReportData.Users.Add(UserInfoViewModel);
-                     
+
 
                     }
                     else
@@ -268,12 +263,12 @@ namespace HelpSystem.Service.Implementantions
                             Message = $"У пользователя {user.Profile.LastName} {user.Profile.Name} {user.Profile.Surname} нет закрепленных товаров."
                         });
                     }
-                    
-                
-                    
-                   
 
-                   
+
+
+
+
+
                 }
                 return new BaseResponse<ReportUSERSViewModel>()
                 {
@@ -292,7 +287,7 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
-        
-        
+
+
     }
 }

@@ -1,11 +1,4 @@
-﻿using HelpSystem.Domain.ViewModel.Warehouse;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HelpSystem.Domain.ViewModel.Transfer
+﻿namespace HelpSystem.Domain.ViewModel.Transfer
 {
     //Будет использоваться для окна с перемещением, точнее для отображения товара 
     public class TransferProductViewModel
