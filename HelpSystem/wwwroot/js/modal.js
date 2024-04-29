@@ -385,10 +385,12 @@ $("#BtnBindWarehouse").click(function () {
  
     var User = $("#UserId").val();
     var Product = $("#ProductID").val();
+    var Com = $('#BindingComent').val();
     var Data = {
         UserId : User,
         WarehouseId: currentWarehouseId,
-        ProductId: Product
+        ProductId: Product,
+        Comments:Com
     }
 
     
@@ -601,12 +603,14 @@ function FindProduct(Id) {
 //Функция для отображения профиля 
 function ProductUserFunction(data) {
     const $ProfileContainer = $('#ProfileProduct');
+    let message;
     if (!data.usver) {
-        let message = 'Товар ни за кем не закреплён';
+        let message  = 'Товар ни за кем не закреплён';
 
         if (data.comments) {
             message += `<br>Комментарий к товару: ${data.comments}`;
         }
+
 
         $ProfileContainer.html(message);
     } else {
@@ -631,8 +635,11 @@ function ProductUserFunction(data) {
         </div>
    
         </div>
+
     </div>
 `;
+     let   msg = `<br>Комментарий к товару: ${data.comments}`;
+        Profile += msg;
         $ProfileContainer.html(Profile);
     }
 }
@@ -987,6 +994,8 @@ function initializeSelect2() {
         });
     }
 
+
+
 //Загрузка таблицы списка товаров на складе через ajax
 
 
@@ -1018,6 +1027,7 @@ function initializeWarehouseProductTable(warehouseId) {
             var nameProduct = $button.closest('tr').find('td:eq(1)').text();
 
             var Code = $button.closest('tr').find('td:eq(2)').text();
+            //Привязка со стороны склада
             BindingProdWarehouse(productId, nameProduct, Code);
           
         });

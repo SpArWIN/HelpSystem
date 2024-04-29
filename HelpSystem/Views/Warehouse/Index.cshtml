@@ -38,7 +38,7 @@
 @if (Model != null && Model.Any())
 {
 
-
+    //Два цикла вывода организовано для того, чтобы сначала выводились активные склады, а затем в самый конец те, что заморожены
     <div class="row">
         @foreach (var Warehouse in Model)
         {
@@ -46,8 +46,7 @@
             if (!Warehouse.isFreesing)
             {
 
-
-                <div class="col-md-4 mb-4">
+                <div class="col-md-4 mb-6 ">
                     <div class="card user-animation mt-3">
                     <div class="card-header">
                         <p class="card-title">Склад</p>
@@ -83,27 +82,32 @@
                 </div>
                 </div>
             }
-            else
-            {
-                <div class="col-md-3 mb-3">
-                    <div class="card user-animation card-freeze mt-3">
-                        <div class="card-header">
-                            <img src="/myIcon/CoolWarehouse.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
-                            <p style="font-family:'Cascadia Mono'" class="card-title">Склад - @Warehouse.WarehouseName</p>
-                        </div>
-                        <div class ="card-body">
-                            <div class="d-grid gap-2">
-                                <a data-name="@Warehouse.WarehouseName" data-id = "@Warehouse.Id"    class ="btn btn-outline-success BtnUnFreeze" data-id="@Warehouse.Id">Разморозить склад </a>
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                         <p class="card-text">Количество товаров, оставшихся на складе:@Warehouse.TotalCountWarehouse</p>    
-                        </div>
-                    </div>
-                    
-               </div>
-            }
         }
+                @foreach(var wh in Model)
+                {
+                    if (wh.isFreesing)
+                    {
+                        <div class="col-md-3 mb-3">
+                            <div class="card user-animation card-freeze mt-3">
+                                <div class="card-header">
+                                    <img src="/myIcon/CoolWarehouse.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
+                                    <p style="font-family:'Cascadia Mono'" class="card-title">Склад - @wh.WarehouseName</p>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-grid gap-2">
+                                    <a data-name="@wh.WarehouseName" data-id="@wh.Id" class="btn btn-outline-success BtnUnFreeze">Разморозить склад </a>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                <p class="card-text">Количество товаров, оставшихся на складе:@wh.TotalCountWarehouse</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    }
+                }
+            
+        
     </div>
     
 }

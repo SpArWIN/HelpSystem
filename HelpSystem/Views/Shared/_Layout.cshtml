@@ -188,7 +188,7 @@
                 <div class="modal-header bg-warning text-white">
                     <h5 class="modal-title">Привязка товара</h5>
                 </div>
-                <div class="modal-body">
+                <div  class="modal-body">
                     <div class="mb-3">
                         <label for="ProductID" style="display:none" class="form-label">ID:</label>
                         <input type="text" style="display:none" class="form-control" id="ProductID" value="Код" readonly>
@@ -204,6 +204,10 @@
                     <div class="mb-3">
                         <label for="UserId" class="form-label">Выберите пользователя:</label>
                         <select class="form-control select2" id="UserId"> </select>
+                    </div>
+                    <div  class="mb-3">
+                        <label for="BindingComent" class="form-label" title="Введите комментарий (необязательное поле)">Введите комментарий (необязательное поле)</label>
+                        <textarea name="CommentBind" class="form-control" placeholder="" id="BindingComent" style="margin:5px; min-height:20px; max-height:120px;"></textarea>
                     </div>
                     <div style="margin:5px;" class="d-grid gap-2">
 
@@ -266,19 +270,6 @@
                         <div id="ProfileProduct"  style="margin:6px; ">
                             @*А тут будет профиль отображаться*@
                         </div>
-
-                        @* <div class="col-md-2">
-                            <textarea id="ProductTextCentr" class="form-control" rows="10" readonly></textarea>
-                        </div>
-                        <div class="col-md-5">
-                            <textarea id="ProductInfoTextAreaLeft" class="form-control" rows="10" readonly>
-                           
-                                        
-                             </textarea>
-                        </div>
-                        <div class="col-md-5">
-                            <textarea id="ProductInfoTextAreaRight" class="form-control" rows="10" readonly></textarea>
-                        </div> *@
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -296,7 +287,7 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/modal.js?v=28"></script>
+<script src="~/js/modal.js?v=29"></script>
   @*
       Скрипт для Export в Excel через JS
 

@@ -17,6 +17,8 @@
 
 
         public int ProductId { get; set; }
+        //Комментарий
+        public string ? Comments { get; set; }
 
 
     }

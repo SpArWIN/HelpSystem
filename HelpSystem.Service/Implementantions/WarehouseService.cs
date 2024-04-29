@@ -489,6 +489,7 @@ namespace HelpSystem.Service.Implementantions
 
                     // Привязываем товар к пользователю
                     availableProduct.UserId = user.Id;
+                    availableProduct.Comments = model.Comments;
                     await _products.Update(availableProduct);
 
                     string description = $"Товар {availableProduct.NameProduct} был прикреплен к {user.Profile.LastName} {user.Profile.Name} {user.Profile.Surname}";
@@ -520,10 +521,12 @@ namespace HelpSystem.Service.Implementantions
                             StatusCode = StatusCode.NotFind
                         };
                     }
+
                     var Product = lastMovement.Product;
                     if (Product.UserId == null)
                     {
                         Product.UserId = user.Id;
+                        Product.Comments = model.Comments;
                         await _products.Update(Product);
                         return new BaseResponse<Products>()
                         {

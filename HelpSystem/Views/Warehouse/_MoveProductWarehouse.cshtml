@@ -61,13 +61,13 @@
                                                 }
                                                 else
                                                 {
-                                                    <option disabled>Нет доступных складов</option>
+                                                    <option disabled>Склад : ' @warehouse.Name ' недоступен.</option>
                                                 }
                                             }
                                         }
                                         else
                                         {
-                                            <option disabled>Нет доступных складов</option>
+                                            <option disabled>Нет  складов</option>
                                         }
                                     </select>
                                 </div>
@@ -106,6 +106,12 @@
                     <label for="SelectMassWarehouse">Выберите склад</label>
                     <select class="form-select" id="SelectMassWarehouse">
                     </select>
+                
+                </div>
+           
+                <div class="form-floating">
+                    <textarea  class="form-control" placeholder=""id="TextAreas" style="margin-top:5px; min-height:20px; max-height:140px;"></textarea>
+                    <label for="massMoveFooter" >Введите комментарий ( необязательное поле)</label>
                 </div>
                 <a id="BtnMassMove" class="btn btn-danger">Массовое перемещение</a>
             </div>
@@ -197,7 +203,7 @@
                 console.log('Перемещение массовое');
                 var warehouseId = $('#SelectMassWarehouse').val();
                 console.log('Склад:', warehouseId);
-
+            var Comment = $(this).closest('div').find('textarea').val();
                 var selectedProducts = [];
                 //Вызываем массовое перемещение и передаем
                 $('.form-check input[type="checkbox"]:checked').each(function () {
@@ -209,7 +215,8 @@
                         Id: productId,
                         SourceWarehouseId: null,  // Добавим текущий склад при отправке на сервер
                         DestinationWarehouseId: warehouseId,
-                        CountTransfer: 1
+                        CountTransfer: 1,
+                        Comments: Comment
                     };
 
                     // Добавляем товар в список выбранных товаров

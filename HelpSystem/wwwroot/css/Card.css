@@ -23,10 +23,13 @@
 .card-img {
     filter: grayscale(1);
     transition: 1s;
+    opacity:0.4;
+
 }
 
     .card-img:hover {
         filter: grayscale(0);
+        opacity:1;
     }
 
 /*Для карточки со складом*/
