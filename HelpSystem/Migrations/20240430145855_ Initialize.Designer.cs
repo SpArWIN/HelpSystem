@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240427083402_FreeZing")]
-    partial class FreeZing
+    [Migration("20240430145855_ Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -149,8 +149,8 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("dd3b68b9-a2ce-495c-a646-2e157b1808d1"),
-                            UserId = new Guid("0ce3a5ef-dadb-467e-a296-630d288e28e9")
+                            Id = new Guid("8c52b5ac-a1e2-4f57-8252-03089e5aeda9"),
+                            UserId = new Guid("595a3a23-cce8-4cc2-bc32-16e56e7a3f52")
                         });
                 });
 
@@ -273,7 +273,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("0ce3a5ef-dadb-467e-a296-630d288e28e9"),
+                            Id = new Guid("595a3a23-cce8-4cc2-bc32-16e56e7a3f52"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",

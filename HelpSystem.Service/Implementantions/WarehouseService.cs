@@ -7,6 +7,7 @@ using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -142,6 +143,7 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
+                Dictionary<int, int> productCounts = new Dictionary<int, int>();
                 var AllWarehouse = await _warehouseRepository.GetAll()
                     .Select(x => new WarehouseViewModel()
                     {
@@ -163,22 +165,44 @@ namespace HelpSystem.Service.Implementantions
                 //Если есть информация о том, что товар был перемещён на этот склад, делаем подсчёт и отображаем
                 foreach (var warehouse in AllWarehouse)
                 {
-                    // Получаем количество записей, представляющих товары, прибывшие на этот склад
-                    var incomingCount = await _productMovementRepository.GetAll()
-                        .OrderByDescending(m => m.MovementDate)
-                        .Where(x => x.DestinationWarehouseId == warehouse.Id)
-                        .CountAsync();
+                    // Получаем количество уникальных товаров, прибывших на этот склад
 
-                    // Получаем количество записей, представляющих товары, ушедшие со склада
-                    var outgoingCount = await _productMovementRepository.GetAll()
-                        .OrderByDescending(m => m.MovementDate)
+                    var incomingMovements = await _productMovementRepository.GetAll()
+                           .Include(p => p.Product)
+                           .Where(x => x.DestinationWarehouseId == warehouse.Id)
+
+                           .ToListAsync();
+
+                    // Получаем записи о перемещениях товаров, которые ушли со склада
+                    var outgoingMovements = await _productMovementRepository.GetAll()
+                        .Include(p => p.Product)
                         .Where(x => x.SourceWarehouseId == warehouse.Id)
-                        .CountAsync();
+
+                        .ToListAsync();
+                    int TotalCount = 0;
+                  
+                    foreach (var movement in incomingMovements)
+                    {
+                        if(!outgoingMovements.Any(x=>x.ProductId == movement.ProductId && x.MovementDate > movement.MovementDate))
+                        {
+                            TotalCount++;
+                        }
+                    }
+                        
+                    foreach(var movement in outgoingMovements)
+                    {
+                        if(!incomingMovements.Any(x=>x.ProductId == movement.ProductId && x.MovementDate < movement.MovementDate))
+                        {
+                            TotalCount--;
+                        }
+                    }
+
+
                     // Добавляем уже имеющееся количество товаров на складе
                     var existingCount = warehouse.TotalCountWarehouse;
 
-                    // Обновляем общее количество товаров на складе, добавляя количество пришедших записей и вычитая количество ушедших
-                    warehouse.TotalCountWarehouse = (existingCount + incomingCount) - outgoingCount;
+                    // Обновляем общее количество товаров на складе, добавляя количество пришедших товаров и вычитая количество ушедших
+                    warehouse.TotalCountWarehouse = existingCount + TotalCount;
                 }
 
                 return new BaseResponse<IEnumerable<WarehouseViewModel>>()
@@ -304,7 +328,7 @@ namespace HelpSystem.Service.Implementantions
                         .Where(x => x.Warehouse == warehouse)
                         .ToListAsync();
 
-
+                    //Косяк где-то тут
 
                     if (productsOnWarehouse.Any())
                     {
@@ -321,22 +345,39 @@ namespace HelpSystem.Service.Implementantions
 
                             .ToListAsync();
 
-                        foreach (var incomingMovement in incomingMovements)
+                        foreach (var movement in outgoingMovements)
                         {
-                            if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
+                            // Проверяем, является ли товар "возвращенным" и его перемещение было позже последнего перемещения на склад
+
+                            var existingProduct = productsOnWarehouse.FirstOrDefault(p => p.Id == movement.Product.Id);
+                            if (existingProduct != null)
                             {
-                                productsOnWarehouse.Add(incomingMovement.Product);
+                                productsOnWarehouse.Remove(existingProduct);
+                            }
+
+                            if (incomingMovements.Any(x => x.Product.Id == movement.Product.Id && x.MovementDate > movement.MovementDate))
+                            {
+
+                                productsOnWarehouse.Add(movement.Product);
                             }
                         }
 
-                        // Перебираем только что ушедшие товары и удаляем их со склада, если последнее перемещение из склада было после последнего перемещения на него
-                        foreach (var outgoingMovement in outgoingMovements)
+                        // Добавляем товары, которые приходят на текущий склад
+                        foreach (var movement in incomingMovements)
                         {
-                            if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
+                            // Проверяем, является ли товар "новым" или его последнее перемещение было ранее, чем последнее перемещение со склада
+                            if (!outgoingMovements.Any(x => x.Product.Id == movement.Product.Id && x.MovementDate > movement.MovementDate))
                             {
-                                productsOnWarehouse.Remove(outgoingMovement.Product);
+                                // Проверяем, содержится ли товар уже на складе
+                                var existingProduct = productsOnWarehouse.FirstOrDefault(p => p.Id == movement.Product.Id);
+                                if (existingProduct == null)
+                                {
+                                    productsOnWarehouse.Add(movement.Product);
+                                }
                             }
                         }
+
+                        
 
 
 
@@ -604,6 +645,7 @@ namespace HelpSystem.Service.Implementantions
                                 x.Product.Id == incomingMovement.Product.Id &&
                                 x.SourceWarehouseId == WhId &&
                                 x.MovementDate > incomingMovement.MovementDate);
+
                             if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
                             {
 
@@ -636,9 +678,10 @@ namespace HelpSystem.Service.Implementantions
 
                         // Формируем список деталей товара для аккордеона
                         var productDetails = productsOnWarehouse
+                            .OrderBy(p => p.Id)
                             .Select(p => new TransferProductViewModel
-
                             {
+
                                 Id = p.Id,
                                 Name = p.NameProduct,
                                 Code = p.InventoryCode,
