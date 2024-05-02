@@ -88,6 +88,20 @@ namespace HelpSystem.DAL
                 .ValueGeneratedOnAdd();
 
 
+
+            var WarehouseService = Guid.NewGuid();
+            modelBuilder.Entity<Warehouse>().HasData(
+                new Warehouse
+                {
+                    Id = WarehouseService,
+                    Name = "Склад утилизации",
+                    IsFreeZing = false,
+                    IsService = true,
+                    Products = new List<Products>()
+                }
+                );
+
+
             modelBuilder.Entity<Role>().HasData(
                 new Role { Id = 1, RoleType = UserRoleType.User },
                 new Role { Id = 2, RoleType = UserRoleType.Moder },

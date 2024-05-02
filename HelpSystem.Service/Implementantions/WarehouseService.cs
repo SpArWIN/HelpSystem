@@ -150,7 +150,8 @@ namespace HelpSystem.Service.Implementantions
                         Id = x.Id,
                         WarehouseName = x.Name,
                         TotalCountWarehouse = x.Products.Count(),
-                        isFreesing = x.IsFreeZing
+                        isFreesing = x.IsFreeZing,
+                        isService = x.IsService
                     })
                     .ToListAsync();
                 if (AllWarehouse.Count == 0)
@@ -170,7 +171,6 @@ namespace HelpSystem.Service.Implementantions
                     var incomingMovements = await _productMovementRepository.GetAll()
                            .Include(p => p.Product)
                            .Where(x => x.DestinationWarehouseId == warehouse.Id)
-
                            .ToListAsync();
 
                     // Получаем записи о перемещениях товаров, которые ушли со склада

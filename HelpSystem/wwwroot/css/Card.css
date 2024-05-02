@@ -60,3 +60,11 @@
     justify-content: center;
     align-items: center;
 }
+
+/*Для карточки для специализированного склада*/
+.card-service {
+    box-shadow: 2px 2px 2px 4px #960909;
+    font-family: monospace;
+    border-radius: 10px;
+    border: 2px solid #960909;
+}

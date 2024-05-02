@@ -106,8 +106,27 @@
                         </div>
                     }
                 }
+
+                @* Отображаем сервисный центр отдельно от всех*@
+        @foreach(var wh in Model)
+        {
+            if (wh.isService)
+            {
+                <div class ="col-md-3 mb-3">
+                    <div class="card user-animation card-service mt-3"> 
+                        <div class =""> </div>
+                    </div>
+
+                </div>
+            }
+        }
+
+        
             
         
+
+    
+
     </div>
     
 }
