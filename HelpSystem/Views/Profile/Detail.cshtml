@@ -14,12 +14,13 @@
 <style>
    
     .table-container {
-        border: 3px solid #ccc; 
+        border: 5px solid #ccc; 
         border-radius: 5px; 
         overflow - x: auto;
         overflow-y: auto;
         max-height: 300px;
         margin-bottom:20px;
+        padding:5px;
     }
     .table {
         width: 100%; 
@@ -73,7 +74,7 @@
 </div>
 @if (Model.UserPdocut != null && Model.UserPdocut.Any())
 {
-    <p class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
+    <p style="background-color: #ffff99; " class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
     @if (User.IsInRole("3"))
     {
         <div class="table-container">
@@ -82,7 +83,7 @@
             <table id="BindingProductId" class="table table-bordered table-scroll">
                 <thead>
                 <tr>
-                    <th style="display:none">id</th>
+                  
                     <th>Наименование</th>
                     <th>Инвентарный код</th>
                     <th>Количество</th>
@@ -93,13 +94,13 @@
                 @foreach (var product in Model.UserPdocut)
                 {
                     <tr>
-                        <td style="display:none">@product.Id</td>
-                        <td>@product.NameProduct</td>
-                        <td>@product.InventoryCod</td>
-                        <td>@product.TotalCount</td>
+                        
+                        <td class="text-center">@product.NameProduct</td>
+                            <td class="text-center" >@product.InventoryCod</td>
+                            <td class="text-center" >@product.TotalCount</td>
                         <td>
                             <div class="d-grid gap-2">
-                                <button id="unbinding" class="btn btn-success btn-sm ">Открепить</button>
+                                <button id="unbinding" data-product-id ="@product.Id" class="btn btn-success btn-sm ">Открепить</button>
                             </div>
                         </td>
 
@@ -109,7 +110,7 @@
               
             </table>
         </div>
-        <div style="background-color: #ffff99;" class="text-center mt-3">
+        <div style="background-color: #ffff99; " class="text-center mt-3">
             <strong>Общее количество прикрепленных товаров: @Model.SumTotalProducts</strong>
         </div>
     }
@@ -122,7 +123,7 @@
                 <thead>
                 <tr>
                     <th style="display:none">id</th>
-                    <th>Наименование</th>
+                    <th >Наименование</th>
                     <th>Инвентарный код</th>
                     <th>Количество</th>
 
@@ -133,9 +134,9 @@
                 {
                     <tr>
                         <td style="display:none">@product.Id</td>
-                        <td>@product.NameProduct</td>
-                        <td>@product.InventoryCod</td>
-                        <td>@product.TotalCount</td>
+                            <td class="text-center" >@product.NameProduct</td>
+                            <td class="text-center" >@product.InventoryCod</td>
+                            <td class="text-center" >@product.TotalCount</td>
 
                     </tr>
                 }
@@ -160,6 +161,7 @@
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
       
         <script>
             $(document).ready(function() {
@@ -167,10 +169,10 @@
                 $('#BindingProductId').on('click', '#unbinding', function() {
                     // Находим родительскую строку tr
                     var row = $(this).closest('tr');
-                    var id = row.find('td:eq(0)').text(); // Получаем Id товара из скрытой ячейки
+                var id = $(this).data('product-id'); // Получаем Id товара из скрытой ячейки
 
-                    var nameProduct = row.find('td:eq(1)').text(); // Наименование товара
-                    var inventoryCode = row.find('td:eq(2)').text(); // Инвентарный код
+                    var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
+                    var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
                     var ProfileId = $('#profileId').val();
 
                     // Показываем подтверждающее уведомление без запроса количества
@@ -190,6 +192,7 @@
                         }
                     });
                 });
+                initializeProfileTable();
             });
         </script>
 

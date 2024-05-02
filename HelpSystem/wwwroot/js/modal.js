@@ -996,6 +996,22 @@ function initializeSelect2() {
 
 
 
+//Функция для инициализации таблицы профиля
+
+function initializeProfileTable() {
+    var table = " #BindingProductId";
+    var language = "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json";
+    $(table).DataTable({
+        searching: true,
+        paging: true,
+        ordering: true,
+        info: true,
+        language: {
+            url: language
+        }
+    });
+}
+
 //Загрузка таблицы списка товаров на складе через ajax
 
 

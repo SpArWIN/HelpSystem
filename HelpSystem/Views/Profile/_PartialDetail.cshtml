@@ -22,7 +22,8 @@
 </div>
 <div class="form-group">
     <label for="age">Возраст:</label>
-    <input type="number" class="form-control" id="age" value="@Model.Age">
+    <input min="1"  type="number" class="form-control" id="age" value="@Model.Age" >
+    <div class="error-message"></div>
 </div>
 
 @if (!User.IsInRole("1"))
@@ -48,4 +49,35 @@
         </select>
     </div>
 }
+@*Тут отобразим роль, для того, чтобы он считал ее
+    Делается это для того, чтобы на бекенде считал роль пользователя и отправил
+*@
+else
+{
+ <select style="display:none" id="roleSelect">
+        @foreach(var rol in Model.Roles)
+        {
+            if(rol.Id == Model.RoleId)
+            {
+                <option value="@rol.Id" selected >@rol.RoleName</option>
+            }
+            else
+            {
+                <option value="@rol.Id">@rol.RoleName</option>
+            }
+            }
+        }
+    </select>
+}
 
+<script>
+    $(document).ready(function () {
+        $('#age').on('input', function () {
+            var value = $(this).val();
+            //Сделаем проверку на стороне клиента
+            if (value.startsWith("-") || value == "0") {
+                $(this).val("");
+            }
+        });
+    });
+</script>

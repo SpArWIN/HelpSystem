@@ -110,10 +110,12 @@ namespace HelpSystem.Service.Implementantions
 
 
 
-                if (profile.Age != model.Age ||
-                    profile.Surname != model.Surname ||
-                    profile.LastName != model.LastName ||
-                    profile.Description != model.Description || profile.Name != model.Name)
+                if ((profile.Age != model.Age && model.Age > 0) ||
+     (!string.IsNullOrEmpty(model.Surname) && profile.Surname != model.Surname) ||
+     (!string.IsNullOrEmpty(model.LastName) && profile.LastName != model.LastName) ||
+     (!string.IsNullOrEmpty(model.Description) && profile.Description != model.Description) ||
+     (!string.IsNullOrEmpty(model.Name) && profile.Name != model.Name))
+
                 {
                     profile.Age = model.Age;
                     profile.Surname = model.Surname;

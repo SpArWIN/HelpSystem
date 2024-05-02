@@ -7,13 +7,31 @@
 }
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
 
+<style>
+
+    .table-container {
+        border: 5px solid #bbb;
+        border-radius: 5px;
+        overflow - x: auto;
+        overflow-y: auto;
+        max-height: 300px;
+        margin-bottom: 20px;
+      
+        
+    }
+  
+  
+
+    .table-scroll {
+        width: 100%; /* Занимаем всю доступную ширину */
+        padding: 8px;
+    }
+</style>
 
 
-
-
-<div class="row">
+<div class="row table-container">
     <div class="col-md-12">
-        <table class="table" id="usersTable">
+        <table class="table table-scroll table-bordered " id="usersTable">
             <thead>
                 <tr>
                     <th>Логин</th>
@@ -35,7 +53,7 @@
                         <td>@Us.Name</td>
                         <td>@Us.Surname</td>
                         <td>@Us.Roles</td>
-                        <td>@Us.Age</td>
+                        <td class="text-center">@Us.Age</td>
                         <td>
                             <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Us.UserId" class="btn btn-outline-info">Профиль</a>
                             <a onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Us.UserId', context: 'profile'})" class="btn btn-outline-secondary">Изменить</a>

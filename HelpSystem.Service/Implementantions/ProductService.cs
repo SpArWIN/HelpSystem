@@ -49,6 +49,7 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.UserId == null) // Проверяем, что товар не привязан к пользователю
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
+             
                     .ToListAsync();
 
 
@@ -64,6 +65,7 @@ namespace HelpSystem.Service.Implementantions
                     {
                         // Находим последнее перемещение товара
                         var lastMovement = await _productMovementRepository.GetAll()
+                            //Разобраться нужно с привязкой, в момент времени, когда склад заморожен
                             .OrderByDescending(pm => pm.MovementDate)
                             .FirstOrDefaultAsync(pm => pm.ProductId == product.Id);
 
@@ -71,16 +73,20 @@ namespace HelpSystem.Service.Implementantions
                         {
                             // Получаем наименование склада назначения из последнего перемещения
                             var destinationWarehouseName = await _warehouseRepository.GetAll()
-                                .Where(x => x.Id == lastMovement.DestinationWarehouseId)
+                                .Where(x => x.Id == lastMovement.DestinationWarehouseId && x.IsFreeZing == false)
                                 .Select(x => x.Name)
                                 .FirstOrDefaultAsync();
+                            if (destinationWarehouseName != null)
+                            {
 
-                            // Формируем строку с информацией о последнем перемещении товара
-                            var productLocationInfo =
-                                $"{product.NameProduct} ({product.InventoryCode}) СКЛАД: {destinationWarehouseName}";
 
-                            // Добавляем информацию о последнем перемещении товара в словарь
-                            productsLocationInfo[product.Id] = productLocationInfo;
+                                // Формируем строку с информацией о последнем перемещении товара
+                                var productLocationInfo =
+                                    $"{product.NameProduct} ({product.InventoryCode}) СКЛАД: {destinationWarehouseName}";
+
+                                // Добавляем информацию о последнем перемещении товара в словарь
+                                productsLocationInfo[product.Id] = productLocationInfo;
+                            }
                         }
                         else
                         {
@@ -128,10 +134,11 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-                var productsInMemory = await _productsRepository.GetAll()
+               var productsInMemory = await _productsRepository.GetAll()
                     .Include(w => w.Warehouse)
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
+                  
                     .ToListAsync();
 
 
