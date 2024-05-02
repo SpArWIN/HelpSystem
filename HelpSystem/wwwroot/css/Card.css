@@ -33,19 +33,23 @@
     }
 
 /*Для карточки со складом*/
-.card-img-static {
-    position: center;
-  
-  
-}
+
 .card-img-gif {
     position: absolute;
     opacity: 0;
     transition: opacity 0.5s ease;
+    z-index :2;
+
 }
 .card:hover .card-img-gif {
     opacity: 1;
+
 }
+
+.card:hover .card-img-static {
+    opacity: 0;
+}
+
 /*Для модального окна с */
 .card-profile {
     box-shadow: 1px 2px 2px 3px #e97042; /* Тень */

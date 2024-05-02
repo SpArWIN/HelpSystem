@@ -22,7 +22,8 @@ namespace HelpSystem.Domain.Entity
         public Guid? UserId { get; set; }
         public virtual User? User { get; set; } //К какому пользователю привязываем в случае чего
 
-
+        //Для того, чтобы отобразить списание товара, добавим пустой DateTime
+        //public DateTime? TimeDebbiting { get; set; } 
 
 
     }

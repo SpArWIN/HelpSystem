@@ -1066,7 +1066,11 @@ function MassInputWarehouse(id) {
                 var selectMassWarehouse = $('#SelectMassWarehouse');
                 selectMassWarehouse.empty(); // Очищаем список перед добавлением новых элементов
                 warehouses.forEach(function (warehouse) {
-                    selectMassWarehouse.append('<option value="' + warehouse.id + '">' + warehouse.name + '</option>');
+                    // Добавляем класс "utilization" к складам, которые являются утилизованными
+                  
+                    var optionClass = warehouse.isService ? 'utilization' : '';
+                
+                    selectMassWarehouse.append('<option value="' + warehouse.id + '" class= "' + optionClass + '">' + warehouse.name + '</option>');
                 });
             } else {
                 var selectMassWarehouse = $('#SelectMassWarehouse');
@@ -1096,54 +1100,126 @@ function BindingProdWarehouse(ProductId,Name,Code) {
 
 //Метод массового перемещения товара, будет уходить по тому же url, только сразу списком
 //titl - Когда загрузка, res - при ответе
-function MassMovedProduct(products,titl,res) {
+//DestanWh - Для того, чтобы проверить, что за склад, на который товар переносится, отправим его сюда отдельно
+function MassMovedProduct(products,titl,res,DestanWh) {
     //Вот как раз тут перед отправкой закинем текущий склад
     products.forEach(function (product) {
         product.SourceWarehouseId = currentWarehouseId;
     });
-    //Пошли фигачить ajax :)
-    Swal.fire({
-        title: titl,
-        html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
-        timerProgressBar: true,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-    $.ajax({
-        type: 'POST',
-        url: '/Transfer/AddTransfer',
-        data: { model: products },
-        success: function (response) {
-            setTimeout(function () {
-                Swal.close();
-                Swal.fire({
-                    title: res,
-                    text: response.description,
-                    icon: 'success',
-                    confirmButtonText: 'Окей',
 
+    //Пишем get запрос к серверу, на получения данных о складе, вдруг это идёт перемещение на списание
+    $.get('/Warehouse/GetMovedWarehouse', { id: DestanWh }, function (response) {
+        if (response.data) {
+            //Проверяем, не является ли склад сервисным центром
+            var isService = response.data.isService;
+            if (isService) {
+                var count = products.length;
+                var messageText = 'Перемещаемые товары ' + count + ' (шт)  будут перенесены на склад утилизации. Продолжить?';
+                Swal.fire({
+                    title: 'Внимание',
+                    text: messageText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Да,продолжить',
+                    cancelButtonText: 'Отменить'
                 }).then((result) => {
-                    location.reload();
-                });
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: titl,
+                            html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+                            timerProgressBar: true,
+                            showConfirmButton: false,
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Transfer/AddTransfer',
+                            data: { model: products },
+                            success: function (response) {
+                                setTimeout(function () {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: res,
+                                        text: response.description,
+                                        icon: 'success',
+                                        confirmButtonText: 'Окей',
 
-            },1000)
-        },
-        error: function (response) {
-            setTimeout(function () {
-                Swal.close();
-                Swal.fire({
-                    title: 'Упс..что-то пошло не так',
-                    text: response.responseJSON.description,
-                    icon: 'error',
-                    confirmButtonText: 'Понятно',
+                                    }).then((result) => {
+                                        location.reload();
+                                    });
+
+                                }, 1000)
+                            },
+                            error: function (response) {
+                                setTimeout(function () {
+                                    Swal.close();
+                                    Swal.fire({
+                                        title: 'Упс..что-то пошло не так',
+                                        text: response.responseJSON.description,
+                                        icon: 'error',
+                                        confirmButtonText: 'Понятно',
+                                    })
+                                }, 1000)
+
+                            }
+                        });
+                    }
                 })
-            },1000)
-           
+            }
+            else {
+                //Пошли фигачить ajax :)
+                Swal.fire({
+                    title: titl,
+                    html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: '/Transfer/AddTransfer',
+                    data: { model: products },
+                    success: function (response) {
+                        setTimeout(function () {
+                            Swal.close();
+                            Swal.fire({
+                                title: res,
+                                text: response.description,
+                                icon: 'success',
+                                confirmButtonText: 'Окей',
+
+                            }).then((result) => {
+                                location.reload();
+                            });
+
+                        }, 1000)
+                    },
+                    error: function (response) {
+                        setTimeout(function () {
+                            Swal.close();
+                            Swal.fire({
+                                title: 'Упс..что-то пошло не так',
+                                text: response.responseJSON.description,
+                                icon: 'error',
+                                confirmButtonText: 'Понятно',
+                            })
+                        }, 1000)
+
+                    }
+                });
+            }
         }
-    });
+    })
+
+   
 
 }
 

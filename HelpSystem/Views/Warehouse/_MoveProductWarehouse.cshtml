@@ -57,7 +57,8 @@
                                             {
                                                 if (!warehouse.IsFreeZing)
                                                 {
-                                                    <option value="@warehouse.Id">@warehouse.Name</option>
+                                                    <option value="@warehouse.Id" data-isService="@warehouse.IsService">@warehouse.Name</option>
+                                                    
                                                 }
                                                 else
                                                 {
@@ -103,7 +104,7 @@
         <footer id="massMoveFooter" style="display:none;">
             <div class="d-grid gap-2" style="margin:5px; text-align:center">
                 <div style="margin:6px;">
-                    <label for="SelectMassWarehouse">Выберите склад</label>
+                    <label id="LabelForMassMove" for="SelectMassWarehouse">Выберите склад</label>
                     <select class="form-select" id="SelectMassWarehouse">
                     </select>
                 
@@ -141,7 +142,7 @@
                 Comments:Comment
             }
            massMoveProducts.push(product);
-            MassMovedProduct(massMoveProducts, 'Перемещение товара','Перемещение товара');
+            MassMovedProduct(massMoveProducts, 'Перемещение товара', 'Перемещение товара', warehouseId);
 
         });
        
@@ -238,12 +239,14 @@
                 console.log('Выбранные товары для массового перемещения:', massMoveProducts);
 
               
-                MassMovedProduct(massMoveProducts, 'Массовое перемещение товаров', 'Перемещение товаров');
+                MassMovedProduct(massMoveProducts, 'Массовое перемещение товаров', 'Перемещение товаров',warehouseId);
             }
         });
 
-                
-            
+      
+
+        
+
        
     });
 </script>

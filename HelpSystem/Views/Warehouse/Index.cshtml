@@ -43,7 +43,7 @@
         @foreach (var Warehouse in Model)
         {
             //Если склад не заморожен, отображаем как есть
-            if (!Warehouse.isFreesing)
+            if (!Warehouse.isFreesing && !Warehouse.isService)
             {
 
                 <div class="col-md-4 mb-6 ">
@@ -90,7 +90,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card user-animation card-freeze mt-3">
                                 <div class="card-header">
-                                    <img src="/myIcon/CoolWarehouse.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
+                                    <img src="/myIcon/CoolWarehouse.png" width="128" height="128" class="card-img card-img-top" alt="Склад" />
                                     <p style="font-family:'Cascadia Mono'" class="card-title">Склад - @wh.WarehouseName</p>
                                 </div>
                                 <div class="card-body">
@@ -114,7 +114,23 @@
             {
                 <div class ="col-md-3 mb-3">
                     <div class="card user-animation card-service mt-3"> 
-                        <div class =""> </div>
+                        <div class ="card-header " style="display:flex; justify-content:center;" >
+                            <img src="/myIcon/ServiceStatic.png" width="100" height="100"  class="card-img-static" />
+                            <img src="/myIcon/ServiceWithOutPhone.gif" width="100" height="100" class="card-img-gif" />
+                            
+                        </div>
+                        <div class="card-body">
+                            <p class="card-title">@wh.WarehouseName</p>
+                             
+                        </div>
+
+                        <div class="card-footer">
+                            <p class="card-text">Количество утилизационных товаров:@wh.TotalCountWarehouse</p>
+
+                            <div class="d-grid-gap-2">
+                                <a data-id="@wh.Id" class="btn btn-outline-warning "> Список утилизационных товаров</a>
+                            </div>
+                        </div>
                     </div>
 
                 </div>

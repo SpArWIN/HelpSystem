@@ -233,6 +233,7 @@ namespace HelpSystem.Service.Implementantions
                     {
                         Id = x.Id,
                         WarehouseName = x.Name,
+                        isService = x.IsService
                     }).FirstOrDefaultAsync(x => x.Id == id);
                 if (Response != null)
                 {
@@ -335,14 +336,12 @@ namespace HelpSystem.Service.Implementantions
                         var incomingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.DestinationWarehouseId == warehouse.Id)
-
                             .ToListAsync();
 
                         // Получаем записи о перемещениях товаров, которые ушли со склада
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.SourceWarehouseId == warehouse.Id)
-
                             .ToListAsync();
 
                         foreach (var movement in outgoingMovements)
@@ -626,6 +625,7 @@ namespace HelpSystem.Service.Implementantions
                             .OrderByDescending(m => m.MovementDate)
                             .ToListAsync();
 
+
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.SourceWarehouseId == WhId)
@@ -634,7 +634,7 @@ namespace HelpSystem.Service.Implementantions
 
                         // Получаем список всех складов, кроме текущего
                         var NotCurrentWarehouse = await _warehouseRepository.GetAll()
-                            .Where(x => x.Id != WhId)
+                            .Where(x => x.Id != WhId && !x.IsService)
                             .ToListAsync();
 
                         foreach (var incomingMovement in incomingMovements)

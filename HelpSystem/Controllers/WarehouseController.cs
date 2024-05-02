@@ -38,7 +38,7 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
-
+        //Мето действия для отображения в частичном представлении, для изменения (наименования)
         public async Task<IActionResult> GetCurrentWarehouse(Guid id)
         {
 
@@ -51,6 +51,17 @@ namespace HelpSystem.Controllers
             return PartialView("_PartialWarehouse");
 
         }
+        //А это метод действия для получения склада, для проверки во время перемещения товара 
+        public async Task<IActionResult> GetMovedWarehouse(Guid id)
+        {
+            var Response = await _warehouseService.GetWarehouse(id);
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(new {data = Response.Data});
+            }
+            return Json(new {description = Response.Description});
+        }
+
 
         public async Task<IActionResult> UpdateWarehouse(WarehouseViewModel model)
         {
