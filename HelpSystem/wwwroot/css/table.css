@@ -1,0 +1,28 @@
+﻿.table-rounded {
+    border-radius: 5px;
+}
+
+/* Выделенные границы ячеек таблицы */
+.table-bordered th,
+.table-bordered td {
+    border: 3px solid #888; /* Цвет границы */
+}
+
+/* Эффект при наведении на строки таблицы */
+.table-hover tbody tr:hover {
+    background-color: #ffff99; /* Цвет фона при наведении */
+}
+
+#WarehouseProductTable {
+    border-collapse: separate;
+    border-spacing: 6px;
+}
+
+.accordion-item {
+    margin-bottom: 10px; /* Добавляет внешний отступ снизу каждого элемента аккордеона */
+}
+/* Резиновая (адаптивная) таблица */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+}

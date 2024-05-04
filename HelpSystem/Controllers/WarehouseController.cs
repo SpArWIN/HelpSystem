@@ -55,23 +55,23 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> GetMovedWarehouse(Guid id)
         {
             var Response = await _warehouseService.GetWarehouse(id);
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json(new {data = Response.Data});
+                return Json(new { data = Response.Data });
             }
-            return Json(new {description = Response.Description});
+            return Json(new { description = Response.Description });
         }
         //Так как при списании конкретного товара, будет необходим склад, который является утилизационным, его нужно получить
 
         public async Task<IActionResult> GetDetimingWarehouse()
         {
             var Response = await _warehouseService.GetDetWarehouse();
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json(new {data = Response.Data});
+                return Json(new { data = Response.Data });
 
             }
-            return Json(new {description = Response.Description});
+            return Json(new { description = Response.Description });
         }
 
         public async Task<IActionResult> UpdateWarehouse(WarehouseViewModel model)
@@ -94,12 +94,18 @@ namespace HelpSystem.Controllers
             return PartialView("_ProductWarehouse", Response.Data);
 
         }
-        //Метод получения таблицы товаров на складе в JSON формате
-        //public async Task<IActionResult> GetJSONWarehouse(Guid id)
-        //{
-        //    var Response = await _warehouseService.GetProductWarehouse(id);
-        //    return Json(new { data = Response.Data });
-        //}
+        //Метод получения списанных товаров по складу
+        [HttpGet]
+        public async Task<IActionResult> GetDebitingProduct()
+        {
+            var Response = await _warehouseService.GetDebitingProduct();
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView("_PartialProductDebiting", Response.Data);
+            }
+            return PartialView("_PartialProductDebiting");
+        }
+
         //Метод привязки со стороны СКЛАДАА
         public async Task<IActionResult> BindingWarehouseProduct(BindingProductWarehouse model)
         {

@@ -128,7 +128,7 @@
                             <p class="card-text">Количество утилизационных товаров:@wh.TotalCountWarehouse</p>
 
                             <div class="d-grid-gap-2">
-                                <a data-id="@wh.Id" class="btn btn-outline-warning "> Список утилизационных товаров</a>
+                                <a data-id="@wh.Id" class="btn btn-outline-warning " onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetDebitingProduct', data: '@wh.Id' , context: 'DebitingWh'})  "> Список утилизационных товаров</a>
                             </div>
                         </div>
                     </div>

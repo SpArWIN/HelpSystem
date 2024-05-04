@@ -49,7 +49,7 @@ namespace HelpSystem.Service.Implementantions
                     .Where(x => x.UserId == null) // Проверяем, что товар не привязан к пользователю
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
-             
+
                     .ToListAsync();
 
 
@@ -134,12 +134,12 @@ namespace HelpSystem.Service.Implementantions
         {
             try
             {
-               var productsInMemory = await _productsRepository.GetAll()
-                    .Include(w => w.Warehouse)
-                    .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
-                                EF.Functions.Like(x.InventoryCode, $"%{term}%"))
-                  
-                    .ToListAsync();
+                var productsInMemory = await _productsRepository.GetAll()
+                     .Include(w => w.Warehouse)
+                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
+                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
+
+                     .ToListAsync();
 
 
 

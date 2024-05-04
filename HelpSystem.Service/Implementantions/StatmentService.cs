@@ -201,7 +201,7 @@ namespace HelpSystem.Service.Implementantions
                 }
 
                 //Проверим заполнены ли поля у юзверя
-                if(Response.User.Profile.Name == null|| Response.User.Profile.Surname == null || Response.User.Profile.LastName == null)
+                if (Response.User.Profile.Name == null || Response.User.Profile.Surname == null || Response.User.Profile.LastName == null)
                 {
                     return new BaseResponse<AnswerStatmentViewModel>
                     {

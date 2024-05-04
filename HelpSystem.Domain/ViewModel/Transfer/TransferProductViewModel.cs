@@ -7,6 +7,6 @@
         public string Name { get; set; }
         public string Code { get; set; }
         public IEnumerable<Entity.Warehouse>? Warehouses { get; set; }
-        public Guid? DestinationWarehouseId { get; set; } // Склад, на который был перемещен товар
+        public Guid? DestinationWarehouseId { get; set; }     // Склад, на который был перемещен товар
     }
 }

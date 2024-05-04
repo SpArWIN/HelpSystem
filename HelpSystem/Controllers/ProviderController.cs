@@ -84,9 +84,9 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> FreezePh(Guid Id)
         {
             var Response = await _providerService.FreezeProvider(Id);
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok(new {  description = Response.Description });
+                return Ok(new { description = Response.Description });
             }
             return BadRequest(new { description = Response.Description });
         }

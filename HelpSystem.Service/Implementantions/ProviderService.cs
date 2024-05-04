@@ -96,7 +96,7 @@ namespace HelpSystem.Service.Implementantions
                 var Provider = await _Providerrepository.GetAll()
                     .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
-                if(Provider == null)
+                if (Provider == null)
                 {
                     return new BaseResponse<Provider>()
                     {
@@ -122,7 +122,7 @@ namespace HelpSystem.Service.Implementantions
                     StatusCode = StatusCode.InternalServerError
                 };
             }
-           
+
         }
         public async Task<BaseResponse<Provider>> UnFreezeProvider(Guid id)
         {
@@ -131,7 +131,7 @@ namespace HelpSystem.Service.Implementantions
                 var UnFreezeProvider = await _Providerrepository.GetAll()
                     .Where(x => x.Id == id)
                     .FirstOrDefaultAsync();
-                if(UnFreezeProvider == null)
+                if (UnFreezeProvider == null)
                 {
                     return new BaseResponse<Provider>()
                     {
@@ -289,6 +289,6 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        
+
     }
 }

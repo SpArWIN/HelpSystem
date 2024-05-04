@@ -12,6 +12,6 @@ namespace HelpSystem.Domain.ViewModel.Warehouse
         //Для фронтенда, отрисовывать буду в зависмости заморозки
         public bool isFreesing { get; set; }
 
-        public bool isService {  get; set; } // Опять же для фронта, для отображения карточки, являющейся сервисом.
+        public bool isService { get; set; } // Опять же для фронта, для отображения карточки, являющейся сервисом.
     }
 }

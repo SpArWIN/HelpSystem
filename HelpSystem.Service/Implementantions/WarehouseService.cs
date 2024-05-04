@@ -7,11 +7,9 @@ using HelpSystem.Domain.ViewModel.Transfer;
 using HelpSystem.Domain.ViewModel.Warehouse;
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace HelpSystem.Service.Implementantions
 {
-
 
     public class WarehouseService : IWarehouseService
     {
@@ -20,14 +18,15 @@ namespace HelpSystem.Service.Implementantions
 
         private IBaseRepository<User> _userRepository;
         private IBaseRepository<ProductMovement> _productMovementRepository;
-
-        public WarehouseService(IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,
+        private IBaseRepository<Invoice> _invoiceRepository;
+        public WarehouseService(IBaseRepository<Invoice> inv, IBaseRepository<Warehouse> warehouse, IBaseRepository<Products> products,
             IBaseRepository<User> user, IBaseRepository<ProductMovement> productMovementRepository)
         {
             _warehouseRepository = warehouse;
             _products = products;
             _userRepository = user;
             _productMovementRepository = productMovementRepository;
+            _invoiceRepository = inv;
         }
 
         public async Task<BaseResponse<Warehouse>> CreateWarehouse(WarehouseViewModel model)
@@ -182,18 +181,18 @@ namespace HelpSystem.Service.Implementantions
 
                         .ToListAsync();
                     int TotalCount = 0;
-                  
+
                     foreach (var movement in incomingMovements)
                     {
-                        if(!outgoingMovements.Any(x=>x.ProductId == movement.ProductId && x.MovementDate > movement.MovementDate))
+                        if (!outgoingMovements.Any(x => x.ProductId == movement.ProductId && x.MovementDate > movement.MovementDate))
                         {
                             TotalCount++;
                         }
                     }
-                        
-                    foreach(var movement in outgoingMovements)
+
+                    foreach (var movement in outgoingMovements)
                     {
-                        if(!incomingMovements.Any(x=>x.ProductId == movement.ProductId && x.MovementDate < movement.MovementDate))
+                        if (!incomingMovements.Any(x => x.ProductId == movement.ProductId && x.MovementDate < movement.MovementDate))
                         {
                             TotalCount--;
                         }
@@ -378,7 +377,7 @@ namespace HelpSystem.Service.Implementantions
                             }
                         }
 
-                        
+
 
 
 
@@ -803,15 +802,15 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        public  async Task<BaseResponse<Guid>> GetDetWarehouse()
+        public async Task<BaseResponse<Guid>> GetDetWarehouse()
         {
             try
             {
                 var DetamingWh = await _warehouseRepository.GetAll()
                     .Where(x => x.IsService == true)
                    .Select(x => x.Id).FirstOrDefaultAsync();
-               
-                if(DetamingWh == Guid.Empty)
+
+                if (DetamingWh == Guid.Empty)
                 {
                     return new BaseResponse<Guid>()
                     {
@@ -831,8 +830,98 @@ namespace HelpSystem.Service.Implementantions
                 {
                     StatusCode = StatusCode.InternalServerError,
                 };
-             
+
             }
+        }
+        //Метод получения списанных товаров на складе утилизации
+        public async Task<IBaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>> GetDebitingProduct()
+        {
+            //Так как мы точно знаем, что это будет склад утилизации, потому что только он пойдёт по этому маршруту.
+            //Проверять смысла на сервис просто нет :)
+
+            try
+            {
+                var products = await _products.GetAll()
+                    .Include(w => w.Warehouse)
+                 .Where(p => p.TimeDebbiting != null) // Фильтр по складу и времени списания
+                 .ToListAsync();
+                var result = new List<ProductDebitingWarehouseViewModel>();
+
+                var ProductDebiting = new List<ProductDebitingViewModel>();
+                if (products.Any())
+                {
+
+                    result = products
+               .GroupBy(x => x.NameProduct)
+               .Select(group => new ProductDebitingWarehouseViewModel()
+                    {
+                   ProductName = group.Key,
+                   TotalCount = group.Count(),
+                   Whproduct = group.Select(x =>
+                    {
+                        var invoice = _invoiceRepository.GetAll()
+                            .Where(i => i.Products.Any(p => p.Id == x.Id))
+                            .Select(i => i.CreationDate)
+                            .FirstOrDefault();
+
+                        var lastMovement = _productMovementRepository.GetAll()
+                            .Where(m => m.Product.Id == x.Id)
+                            .OrderByDescending(m => m.MovementDate)
+                            .Skip(1)
+                            .FirstOrDefault();
+
+                        var debitingWarehouseName = lastMovement != null ?
+                             _warehouseRepository.GetAll()
+                                .Where(w => w.Id == lastMovement.DestinationWarehouseId)
+                                .Select(w => w.Name)
+                                .FirstOrDefault() : null;
+
+                        return new ProductDebitingViewModel()
+                        {
+                            Id = x.Id,
+                            ProductName = x.NameProduct,
+                            Inventory = x.InventoryCode,
+                            CommentsDebiting = x.Comments,
+                            DataEntrance = invoice.ToString("g"),
+                            DateDebiting = x.TimeDebbiting.Value.ToString("g"),
+                            OriginalWarehouse = x.Warehouse.Name,
+                            DebitingWarehouse = debitingWarehouseName
+                        };
+                            }).ToList(),
+                    }).ToList();
+
+
+
+
+                    return new BaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>()
+                    {
+                        Data = result,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+
+                return new BaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                    Description = $"Нет списанного товара"
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{ex.Message}"
+                };
+
+            }
+
+
+
         }
     }
 }
+
+
+

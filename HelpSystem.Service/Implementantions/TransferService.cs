@@ -42,7 +42,7 @@ namespace HelpSystem.Service.Implementantions
 
                 foreach (var prod in model)
                 {
-                   
+
                     var productList = await _productsRepository.GetAll()
                         .Include(w => w.Warehouse)
                         .Where(x => x.Id == prod.Id)
@@ -76,7 +76,7 @@ namespace HelpSystem.Service.Implementantions
 
                 // Получаем id целевого склада
                 Guid destinationWarehouseId = model.First().DestinationWarehouseId;
-                if(destinationWarehouseId == Guid.Empty)
+                if (destinationWarehouseId == Guid.Empty)
                 {
                     return new BaseResponse<IEnumerable<ProductMovement>>
                     {
@@ -234,14 +234,14 @@ namespace HelpSystem.Service.Implementantions
         //Метод для отметки списание товара
         private async Task MarkProduct(List<Products> product)
         {
-            foreach(var prod in product)
+            foreach (var prod in product)
             {
                 prod.TimeDebbiting = DateTime.Now;
-              await  _productsRepository.Update(prod);
+                await _productsRepository.Update(prod);
             }
 
         }
-        
+
 
     }
 }

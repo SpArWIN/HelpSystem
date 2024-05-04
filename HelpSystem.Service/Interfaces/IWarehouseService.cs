@@ -41,13 +41,13 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id);
-        
 
-       /// <summary>
-       /// Метод получения сервисного склад, для передачи в модальное окно
-       /// </summary>
-       /// <returns>id</returns>
-        Task<BaseResponse<Guid>>GetDetWarehouse();
+
+        /// <summary>
+        /// Метод получения сервисного склад, для передачи в модальное окно
+        /// </summary>
+        /// <returns>id</returns>
+        Task<BaseResponse<Guid>> GetDetWarehouse();
         /// <summary>
         /// Метод сохранениея склада
         /// </summary>
@@ -75,5 +75,13 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="idGuid"></param>
         /// <returns></returns>
         Task<IBaseResponse<IEnumerable<Warehouse>>> GetNotCurrentWH(Guid idGuid);
+
+
+        /// <summary>
+        /// Метод получения всех товаров, которые были списаны
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        Task<IBaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>> GetDebitingProduct();
     }
 }

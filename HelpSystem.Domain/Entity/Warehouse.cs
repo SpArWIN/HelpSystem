@@ -13,7 +13,7 @@
         //Заморожен ли склад
         public bool IsFreeZing { get; set; }
 
-        public bool  IsService { get; set; } = false; //  Создаем один склад, которыый будет для утилизации.
+        public bool IsService { get; set; } = false; //  Создаем один склад, которыый будет для утилизации.
 
 
 

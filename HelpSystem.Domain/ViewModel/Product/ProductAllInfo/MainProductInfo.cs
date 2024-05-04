@@ -6,11 +6,11 @@ namespace HelpSystem.Domain.ViewModel.Product.ProductAllInfo
     //Класс будет использоваться для собирательной всей информации о товаре, абсолютно
     public class MainProductInfo
     {
-       
+
         public string NameProduct { get; set; }
         public string InventoryCode { get; set; }
 
-        public string ? Comments { get; set; }
+        public string? Comments { get; set; }
         public string OriginalWarehouse { get; set; } // Изначальное место положение
         public string CurrentWarehouseName { get; set; } //Текущее местоположение
 
@@ -19,6 +19,6 @@ namespace HelpSystem.Domain.ViewModel.Product.ProductAllInfo
         public string DateInvouce { get; set; } // Дата поступления товара по накладной 
         public string NumberDocument { get; set; } //Номер документа по которому поступил товар
 
-        public string ? DateDebiting { get; set; }// Дата списания , если она есть 
+        public string? DateDebiting { get; set; }// Дата списания , если она есть 
     }
 }
