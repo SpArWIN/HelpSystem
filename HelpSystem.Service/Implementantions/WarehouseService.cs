@@ -11,6 +11,8 @@ using System.Linq;
 
 namespace HelpSystem.Service.Implementantions
 {
+
+
     public class WarehouseService : IWarehouseService
     {
         private IBaseRepository<Warehouse> _warehouseRepository;
@@ -801,6 +803,36 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-
+        public  async Task<BaseResponse<Guid>> GetDetWarehouse()
+        {
+            try
+            {
+                var DetamingWh = await _warehouseRepository.GetAll()
+                    .Where(x => x.IsService == true)
+                   .Select(x => x.Id).FirstOrDefaultAsync();
+               
+                if(DetamingWh == Guid.Empty)
+                {
+                    return new BaseResponse<Guid>()
+                    {
+                        Data = Guid.Empty,
+                        StatusCode = StatusCode.NotFind
+                    };
+                }
+                return new BaseResponse<Guid>()
+                {
+                    Data = DetamingWh,
+                    StatusCode = StatusCode.Ok,
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<Guid>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                };
+             
+            }
+        }
     }
 }

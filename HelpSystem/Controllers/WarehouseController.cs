@@ -61,7 +61,18 @@ namespace HelpSystem.Controllers
             }
             return Json(new {description = Response.Description});
         }
+        //Так как при списании конкретного товара, будет необходим склад, который является утилизационным, его нужно получить
 
+        public async Task<IActionResult> GetDetimingWarehouse()
+        {
+            var Response = await _warehouseService.GetDetWarehouse();
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(new {data = Response.Data});
+
+            }
+            return Json(new {description = Response.Description});
+        }
 
         public async Task<IActionResult> UpdateWarehouse(WarehouseViewModel model)
         {

@@ -217,6 +217,43 @@
             </div>
         </div>
     </div>
+
+
+    @*Модальное окно для одиночного списания товара*@
+    <div class="modal fade" id="ModelDebiting" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered " role="document">
+            <div class="modal-content">
+                <div  class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Списание товара</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="PrID" style="display:none" class="form-label">ID:</label>
+                        <input type="text" style="display:none" class="form-control" id="PrID" readonly>
+                       
+                    </div>
+                    <div class="mb-3">
+                        <label for="DebitNameProduct" class="form-label">Наименование товара:</label>
+                        <input type="text" class="form-control" id="DebitNameProduct" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="CodInv" class="form-label">Код товара:</label>
+                        <input type="text" class="form-control" id="CodInv" readonly>
+                    </div>
+                    <div class="form-floating">
+                        <textarea  required minlength="10" name="CommentBind" placeholder="" class="form-control" id="DegitingCom" style="margin:5px; min-height:20px; max-height:120px;"></textarea>
+               
+                        <label for="DegitingCom" class="form-label">Введите комментарий <b>обязательное поле</b></label>
+                    </div>
+                </div>
+           
+                  <div style="margin:5px; padding:8px;" class="d-grid gap-2">
+                    <a   style="width:100%" id="BtnDebiting" class="btn btn-outline-warning">Списать товар</a>
+                  </div>
+            </div>
+        </div>
+   </div>
     
     
    @*  @*Модальное окно для перемещения товара*@
@@ -287,7 +324,7 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/modal.js?v=31"></script>
+<script src="~/js/modal.js?v=33"></script>
   @*
       Скрипт для Export в Excel через JS
 

@@ -580,7 +580,8 @@ namespace HelpSystem.Service.Implementantions
                                 Usver = FindUser,
                                 AllTransfersProducts = allTransfersProducts,
                                 NumberDocument = InvoiceProduct.NumberDocument,
-                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g"),
+                                DateDebiting = Product.TimeDebbiting?.ToString("g"),
 
                             };
                             return new BaseResponse<MainProductInfo>()
@@ -605,7 +606,8 @@ namespace HelpSystem.Service.Implementantions
                                 AllTransfersProducts = null,
                                 Usver = FindUser,
                                 NumberDocument = InvoiceProduct.NumberDocument,
-                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g"),
+                                DateDebiting = Product.TimeDebbiting?.ToString("g"),
                             };
                             return new BaseResponse<MainProductInfo>()
                             {
@@ -640,8 +642,8 @@ namespace HelpSystem.Service.Implementantions
                                 Usver = null,
                                 AllTransfersProducts = allTransfersProducts,
                                 NumberDocument = InvoiceProduct.NumberDocument,
-                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
-
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g"),
+                                DateDebiting = Product.TimeDebbiting?.ToString("g")
                             };
                             return new BaseResponse<MainProductInfo>()
                             {
@@ -664,7 +666,9 @@ namespace HelpSystem.Service.Implementantions
                                 AllTransfersProducts = null,
                                 Usver = null,
                                 NumberDocument = InvoiceProduct.NumberDocument,
-                                DateInvouce = InvoiceProduct.CreationDate.ToString("g")
+                                DateInvouce = InvoiceProduct.CreationDate.ToString("g"),
+                                DateDebiting = Product.TimeDebbiting?.ToString("g"),
+
                             };
                             return new BaseResponse<MainProductInfo>()
                             {

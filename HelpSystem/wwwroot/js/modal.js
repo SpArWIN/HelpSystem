@@ -647,7 +647,7 @@ function ProductUserFunction(data) {
 
 
 // Функция для отображения маршрутизации товара
-function GenerateRoute(transfers) {
+function GenerateRoute(transfers,debing) {
     const $infoContainer = $('#routeInfoContainer');
 
     if (!Array.isArray(transfers) || transfers.length === 0) {
@@ -678,15 +678,29 @@ function GenerateRoute(transfers) {
         }
 
 
-        const transferInfo = `<div style="border: 4px solid ${color}; padding: 5px; margin: 4px;">`
+        let transferInfo = `<div style="border: 4px solid ${color}; padding: 5px; margin: 4px;">`
             + `Перемещение ${index + 1}:`
             + `<br>Отправная точка: ${transfer.sourceWarehouseName || 'Неизвестно'}`
             + `<br>Конечная точка:<strong>${transfer.destinationWarehouseName || 'Неизвестно'}</strong>`
             + `<br>Дата прибытия: ${transfer.dateTimeIncoming || 'Неизвестно'}`
-            + `<br> Дата отправления: ${transfer.dateTimeOutgoing || 'Неизвестно'}`
-            + `<br>Комментарий при перемещении: ${transfer.comments || 'Нет комментариев'}` // Сделать с бека комментарии при перемещении
-            + `</div>`;
+            + `<br> Дата отправления: ${transfer.dateTimeOutgoing || 'Неизвестно'}`;
 
+        // Добавляем стили и текст для последней записи
+        if (index === transfers.length - 1 && debing) {
+            transferInfo += `<div style="position: relative; display: inline-block; padding: 10px; margin-top: 10px; vertical-align: top;">`;
+            transferInfo += `<p class="text-center" style="font-size: 20px; position: relative; left: 220px;  z-index: 2; margin: 0; padding: 2px; transform: rotate(-5deg);"> СПИСАН ${debing} </p>`;
+            transferInfo += `<div style="position: absolute; top: 0; left: 220px; width: 100%; height: 100%; border: 3px solid brown; transform: rotate(-5deg); z-index: 1; border-radius: 5px;"></div>`;
+            transferInfo += `</div>`;
+        }
+
+
+
+        transferInfo += `<br>Комментарий при перемещении: ${transfer.comments || 'Нет комментариев'}`;
+
+       
+        transferInfo += `</div>`;
+
+        // Добавляем HTML-разметку к общему HTML-коду
         infoHtml += transferInfo;
     });
 
@@ -710,7 +724,12 @@ function BaseInfo(data) {
     InfoProduct += `<br>Дата : ${data.dateInvouce} `;
     InfoProduct += `<br>Текущее местоположение: ${currentLocation}`;
 
-
+    if (data.dateDebiting) {
+        InfoProduct += `<div style="position: relative; display: inline-block; padding: 10px; margin-top: 10px; margin-bottom: 20px; vertical-align: top;">`;
+        InfoProduct += `<p class="text-center" style="font-size: 20px; position: relative; left: 220px; z-index: 2; margin: 0; padding: 2px; transform: rotate(-5deg);"> СПИСАН ${data.dateDebiting} </p>`;
+        InfoProduct += `<div style="position: absolute; top: 0; left: 220px; width: 100%; height: 100%; border: 3px solid brown; transform: rotate(-5deg); z-index: 1; border-radius: 5px;"></div>`;
+        InfoProduct += `</div>`;
+    }
     $infoProduct.html(InfoProduct);
     $infoProduct.css({
         'border': '3px solid #e97a0c',  
@@ -728,7 +747,7 @@ function ProductInfo(data) {
         // Если контейнер видим, просто обновляем информацию внутри него
         textFieldsContainer.slideUp('slow', function () {
             // По завершении анимации скрытия, обновляем информацию и снова отображаем контейнер
-            GenerateRoute(data.allTransfersProducts);
+            GenerateRoute(data.allTransfersProducts, data.dateDebiting);
             BaseInfo(data);
             ProductUserFunction(data)
             textFieldsContainer.slideDown('slow');
@@ -736,7 +755,7 @@ function ProductInfo(data) {
 
     } else {
         // Если контейнер скрыт, заполняем его новой информацией и показываем с анимацией
-        GenerateRoute(data.allTransfersProducts);
+        GenerateRoute(data.allTransfersProducts,data.dateDebiting);
         BaseInfo(data);
         ProductUserFunction(data)
         textFieldsContainer.slideDown('slow');
@@ -964,6 +983,7 @@ function initializeSelect2() {
                             text: response.message,
                             icon: 'success',
                             confirmButtonText: 'Окей'
+
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 $('#CreateProductsForm')[0].reset();
@@ -1034,19 +1054,32 @@ function initializeWarehouseProductTable(warehouseId) {
 
         // Находим кнопку "Закрепить" в текущей строке и устанавливаем ей нужный id склада
         var $attachBtn = $row.find('button.btn-success');
+        var $debitBtn = $row.find('button.btn-danger');
         $attachBtn.attr('data-warehouse-id', warehouseId);
+        $debitBtn.attr('data-warehouse-id', warehouseId);
+
         $(document).on('click', '#attachBtn', function () {
             var $button = $(this); // Получаем ссылку на кнопку "Закрепить", на которую кликнули
             var productId = $button.data('product-id'); // Получаем ID продукта из атрибута data-product-id кнопки
-          
+            var SourceWh = $debitBtn.data('warehouse-id');
 
             var nameProduct = $button.closest('tr').find('td:eq(1)').text();
 
             var Code = $button.closest('tr').find('td:eq(2)').text();
             //Привязка со стороны склада
-            BindingProdWarehouse(productId, nameProduct, Code);
+            BindingProdWarehouse(productId, nameProduct, Code,SourceWh);
           
         });
+
+        $(document).on('click', '#DebittingBtn', function () {
+            var $btn = $(this);
+            var prod = $btn.data('product-id');
+            var nameProduct = $btn.closest('tr').find('td:eq(1)').text();
+
+            var Code = $btn.closest('tr').find('td:eq(2)').text();
+           
+            DebitingWarehouse(prod, nameProduct, Code,warehouseId);
+        })
     });
 }
 
@@ -1083,6 +1116,64 @@ function MassInputWarehouse(id) {
         }
     });
 }
+//Клик события списания
+function DebitingWarehouse(ProductId, Name, Code,Source) {
+
+    var nameProduct = Name;
+    var codeProduct = Code;
+    var Product = ProductId;
+   
+    $('#PrID').val(Product);
+    $('#DebitNameProduct').val(nameProduct);
+    $('#CodInv').val(codeProduct);
+    $('#ModelDebiting').modal('show');
+
+
+}
+
+//Вот тут обработает событие списание кнопки
+$('#BtnDebiting').click(function () {
+    var massMoveProducts = [];
+    var Prod = $('#PrID').val();
+    var Com = $('#DegitingCom').val();
+    if (!Com || Com.length <= 5) {
+        Swal.fire({
+            title: 'Ошибка списания',
+            text: 'Комментарий обязателен для списания товара.',
+            icon: 'info',
+            confirmButtonText: 'Хорошо',
+        });
+    }
+    else {
+
+
+
+        let Destw;
+        $.get('/Warehouse/GetDetimingWarehouse', function (response) {
+            if (response.data) {
+                Destw = response.data;
+
+                var product = {
+                    Id: Prod,
+                    SourceWarehouseId: null,
+                    DestinationWarehouseId: Destw,
+                    CountTransfer: 1,
+                    Comments: Com
+                };
+
+
+                massMoveProducts.push(product);
+                MassMovedProduct(massMoveProducts, 'Списание товара', 'Списание', Destw);
+            }
+        });
+    }
+  
+
+   
+});
+
+
+
 //Клик события закрепление
 function BindingProdWarehouse(ProductId,Name,Code) {
     // Так как клики многократные, остальные убираем, оставляем текущий
@@ -1092,11 +1183,16 @@ function BindingProdWarehouse(ProductId,Name,Code) {
     var Product = ProductId;
          $('#ProductID').val(Product);
         $('#nameProduct').val(nameProduct);
-        $('#inventoryCode').val(codeProduct);
+    $('#inventoryCode').val(codeProduct);
+
         $('#ModalBindingProduct').modal('show');
         initializeSelectUser2();
    
 }
+
+
+
+
 
 //Метод массового перемещения товара, будет уходить по тому же url, только сразу списком
 //titl - Когда загрузка, res - при ответе
@@ -1108,13 +1204,26 @@ function MassMovedProduct(products,titl,res,DestanWh) {
     });
 
     //Пишем get запрос к серверу, на получения данных о складе, вдруг это идёт перемещение на списание
+    //TODO нужно подумать, как провернуть
     $.get('/Warehouse/GetMovedWarehouse', { id: DestanWh }, function (response) {
         if (response.data) {
             //Проверяем, не является ли склад сервисным центром
             var isService = response.data.isService;
             if (isService) {
                 var count = products.length;
-                var messageText = 'Перемещаемые товары ' + count + ' (шт)  будут перенесены на склад утилизации. Продолжить?';
+                var messageText;
+                var title;
+                if (count > 1) {
+
+                    messageText = 'Перемещаемые товары ' + count + ' (шт)  будут перенесены на склад утилизации. Продолжить?';
+                    title = 'Списание товаров';
+                }
+                else {
+                    messageText = 'Перемещаемый товар, будет перенесён на склад утилизации. Продолжить?';
+                    title = 'Списание товара';
+             
+
+                }
                 Swal.fire({
                     title: 'Внимание',
                     text: messageText,
@@ -1127,7 +1236,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire({
-                            title: titl,
+                            title: title,
                             html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
                             timerProgressBar: true,
                             showConfirmButton: false,
@@ -1144,7 +1253,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                                 setTimeout(function () {
                                     Swal.close();
                                     Swal.fire({
-                                        title: res,
+                                        title: 'Списание товаров',
                                         text: response.description,
                                         icon: 'success',
                                         confirmButtonText: 'Окей',

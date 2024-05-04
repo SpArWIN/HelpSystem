@@ -42,7 +42,7 @@ namespace HelpSystem.Service.Implementantions
 
                 foreach (var prod in model)
                 {
-                    // Получаем товары по наименованию и инвентарному коду
+                   
                     var productList = await _productsRepository.GetAll()
                         .Include(w => w.Warehouse)
                         .Where(x => x.Id == prod.Id)
@@ -57,7 +57,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     return new BaseResponse<IEnumerable<ProductMovement>>()
                     {
-                        Description = "Нет доступных товаров на перемещение.",
+                        Description = "Невозможно списать товар, который закреплён за пользователем.",
                         StatusCode = StatusCode.NotFind,
                     };
                 }
@@ -86,6 +86,18 @@ namespace HelpSystem.Service.Implementantions
                 }
 
 
+                var UtilizationBd = await _warehouseRepository.GetAll()
+                    .Where(x => x.Id == destinationWarehouseId && x.IsService)
+                    .FirstOrDefaultAsync();
+
+                if (UtilizationBd != null)
+                {
+                    //сделаю функцию, которая перед записью о перемемещении товара добавит всем товарам время по списанию
+                    await MarkProduct(products);
+
+                }
+
+
                 Guid SourceWarehouseID = model.First().SourceWarehouseId;
                 // Выполняем операцию перемещения для указанного количества товаров
                 foreach (var transfer in model)
@@ -111,6 +123,8 @@ namespace HelpSystem.Service.Implementantions
                         {
                             sourceWarehouseId = product.Warehouse.Id; // Если информация о перемещениях отсутствует, берем исходный склад
                         }
+
+
 
                         // Создаем запись о перемещении товара
                         var movement = new ProductMovement()
@@ -217,5 +231,17 @@ namespace HelpSystem.Service.Implementantions
             }
 
         }
+        //Метод для отметки списание товара
+        private async Task MarkProduct(List<Products> product)
+        {
+            foreach(var prod in product)
+            {
+                prod.TimeDebbiting = DateTime.Now;
+              await  _productsRepository.Update(prod);
+            }
+
+        }
+        
+
     }
 }

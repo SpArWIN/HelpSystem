@@ -41,12 +41,18 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<BaseResponse<WarehouseViewModel>> GetWarehouse(Guid id);
+        
+
+       /// <summary>
+       /// Метод получения сервисного склад, для передачи в модальное окно
+       /// </summary>
+       /// <returns>id</returns>
+        Task<BaseResponse<Guid>>GetDetWarehouse();
         /// <summary>
-        /// Метод сохранение изменений склада
+        /// Метод сохранениея склада
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-
         Task<IBaseResponse<Warehouse>> SaveWarehouse(WarehouseViewModel model);
         /// <summary>
         /// Метод получения всех товаров по складу
