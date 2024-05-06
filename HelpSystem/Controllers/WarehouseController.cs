@@ -90,8 +90,12 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> GetProductsWarehouse(Guid id)
         {
             var Response = await _warehouseService.GetProductWarehouse(id);
-
-            return PartialView("_ProductWarehouse", Response.Data);
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return PartialView("_ProductWarehouse", Response.Data);
+            }
+            return PartialView("_ProductWarehouse");
+           
 
         }
         //Метод получения списанных товаров по складу
@@ -103,7 +107,7 @@ namespace HelpSystem.Controllers
             {
                 return PartialView("_PartialProductDebiting", Response.Data);
             }
-            return PartialView("_PartialProductDebiting");
+            return PartialView("_PartialProductDebiting",Response.Data);
         }
 
         //Метод привязки со стороны СКЛАДАА

@@ -38,3 +38,22 @@
       
     }
 
+/*Когда товара нет,для отображения инфы*/
+.Noproduct {
+    font-size: 2.5em;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    animation: typewriter 3s ease-in-out forwards;
+   
+}
+@keyframes typewriter {
+    from {
+     opacity:0.2;
+    }
+   
+    to {
+      opacity:0.9;
+    }
+ 
+}

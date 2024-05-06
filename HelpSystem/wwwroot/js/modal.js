@@ -1034,6 +1034,9 @@ function initializeProfileTable() {
 
 //Загрузка таблицы списка товаров на складе через ajax
 
+
+
+
 function initializeWarehouseProductTable(warehouseId) {
     var tableSelector = "#productAccordion .accordion-body table";
     var languageUrl = "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json";

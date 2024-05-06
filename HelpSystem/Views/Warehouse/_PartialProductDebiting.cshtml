@@ -7,3 +7,76 @@
     // Layout = "_Layout";
 }
 <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.css" />
+<div id="DebitingAccordian" class="accordion">
+    @if (Model != null)
+    {
+
+
+        @foreach (var product in Model)
+        {
+            <div class="accordion-item"> 
+                <h2 class="accordion-header" id="heading-@product.ProductName.Replace(" ","-")">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@product.ProductName.Replace(" ", "-")">
+                        @product.ProductName (Общее количество : @product.TotalCount)
+                    </button>
+                </h2>
+                <div id="collapse-@product.ProductName.Replace(" ","-")" class="accordion-collapse collapse" aria-labelledby="heading-@product.ProductName.Replace(" ","-")"> 
+                    <div class="accordion-body"> 
+                        <div class="table-responsive">
+                            <table id="WarehouseDebitTable-@product.ProductName.Replace(" ","-")" class="table table-bordered table-rounded table-hover" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th colspan="7" class="text-center">Информация по списанию</th>
+                                    </tr>
+                                    <tr>
+
+                                        <th class="text-center">Наименование товара</th>
+                                        <th class="text-center">Инвентарный код</th>
+                                        <th class="text-center">Причина списания</th>
+                                        <th class="text-center">Дата прихода</th> <!-- Перемещено сюда -->
+                                        <th class="text-center">Склад Прихода</th> <!-- Перемещено сюда -->
+                                        <th class="text-center">Дата списания</th> <!-- Перемещено сюда -->
+                                        <th class="text-center">Склад Списания</th> <!-- Перемещено сюда -->
+                                        <th rowspan="2" colspan="2" class="text-center">Действия</th> <!-- Объединено с предыдущим -->
+                                    </tr>
+
+                                </thead>
+                                <tbody>
+                                    @foreach (var group in product.Whproduct)
+                                    {
+                                        <tr style="text-align:center">
+                                            <td class="text-center">@group.ProductName</td>
+                                            <td class="text-center">@group.Inventory</td>
+                                            <td class="text-center">@group.CommentsDebiting</td>
+
+                                            <td class="text-center">@group.DataEntrance</td>
+                                            <td class="text-center">@group.OriginalWarehouse</td>
+                                            <td class="text-center">@group.DateDebiting</td>
+                                            <td class="text-center" >@group.DebitingWarehouse</td>
+
+
+                                            <td class="text-center">
+                                                <div class="d-grid gap-2">
+                                                    <button class="btn btn-warning" id="UnDebitBtn" data-product-id="@group.Id">Отменить списание</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+    else
+    {
+        <h2 class="Noproduct">Нет утилизованных товаров</h2>
+    }
+
+</div>

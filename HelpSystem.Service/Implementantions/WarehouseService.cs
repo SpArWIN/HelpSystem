@@ -402,17 +402,11 @@ namespace HelpSystem.Service.Implementantions
 
 
 
-                        //var Products = productsOnWarehouse
-                        //    .Select(group=>new ProductinWarehouseViewModel()
-                        //    {
-                        //        NameProduct = group.NameProduct,
-                        //        CodeProduct = group.InventoryCode,
-                        //        AvailableCount = 
-                        //    })
 
                         return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                         {
-                            Data = GroupedProducts
+                            Data = GroupedProducts,
+                            StatusCode = StatusCode.Ok
                         };
 
 
@@ -470,7 +464,8 @@ namespace HelpSystem.Service.Implementantions
                         }).ToList();
                     return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                     {
-                        Data = groupedProducts
+                        Data = groupedProducts,
+                        StatusCode = StatusCode.Ok
                     };
 
 
@@ -482,7 +477,9 @@ namespace HelpSystem.Service.Implementantions
 
                 return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                 {
-                    Data = null
+                    Data = null,
+                    StatusCode = StatusCode.NotFind
+                 
                 };
             }
 
@@ -491,7 +488,8 @@ namespace HelpSystem.Service.Implementantions
             {
                 return new BaseResponse<IEnumerable<ProductinWarehouseViewModel>>()
                 {
-                    Data = null
+                    Data = null,
+                    StatusCode = StatusCode.InternalServerError
                 };
             }
         }
@@ -622,64 +620,64 @@ namespace HelpSystem.Service.Implementantions
                     {
                         var incomingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
-                            .Where(x => x.DestinationWarehouseId == WhId)
-                            .OrderByDescending(m => m.MovementDate)
+                            .Where(x => x.DestinationWarehouseId == WhId && x.Product.UserId == null)
+                         
                             .ToListAsync();
 
 
                         var outgoingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
-                            .Where(x => x.SourceWarehouseId == WhId)
-                            .OrderByDescending(m => m.MovementDate)
+                            .Where(x => x.SourceWarehouseId == WhId && x.Product.UserId == null)
                             .ToListAsync();
 
                         // Получаем список всех складов, кроме текущего
                         var NotCurrentWarehouse = await _warehouseRepository.GetAll()
                             .Where(x => x.Id != WhId && !x.IsService)
-                            .ToListAsync();
+                          .ToListAsync();
 
-                        foreach (var incomingMovement in incomingMovements)
+                        foreach (var movement in outgoingMovements)
                         {
-                            // Проверяем, вернулся ли товар на тот же склад после последнего исходящего перемещения
+                            // Проверяем, является ли товар "возвращенным" и его перемещение было позже последнего перемещения на склад
 
-                            bool returnedToSameWarehouse = outgoingMovements.Any(x =>
-                                x.Product.Id == incomingMovement.Product.Id &&
-                                x.SourceWarehouseId == WhId &&
-                                x.MovementDate > incomingMovement.MovementDate);
+                            var existingProduct = productsOnWarehouse.FirstOrDefault(p => p.Id == movement.Product.Id);
 
-                            if (!outgoingMovements.Any(x => x.Product.Id == incomingMovement.Product.Id && x.MovementDate > incomingMovement.MovementDate))
+                            if (existingProduct != null)
                             {
-
-                                if (incomingMovement.Product.UserId == null)
-                                {
-                                    productsOnWarehouse.Add(incomingMovement.Product);
-                                }
-
-                                if (returnedToSameWarehouse)
-                                {
-                                    productsOnWarehouse.Remove(incomingMovement.Product);
-                                }
+                                productsOnWarehouse.Remove(existingProduct);
                             }
 
-                        }
-
-                        // Перебираем только что ушедшие товары и удаляем их со склада, если последнее перемещение из склада было после последнего перемещения на него
-                        foreach (var outgoingMovement in outgoingMovements)
-                        {
-                            if (!incomingMovements.Any(x => x.Product.Id == outgoingMovement.Product.Id && x.MovementDate < outgoingMovement.MovementDate))
+                            if (incomingMovements.Any(x => x.Product.Id == movement.Product.Id && x.MovementDate > movement.MovementDate))
                             {
 
-
-                                productsOnWarehouse.Remove(outgoingMovement.Product);
-
+                                productsOnWarehouse.Add(movement.Product);
                             }
                         }
+
+                        // Добавляем товары, которые приходят на текущий склад
+                        foreach (var movement in incomingMovements)
+                        {
+                            // Проверяем, является ли товар "новым" или его последнее перемещение было ранее, чем последнее перемещение со склада
+                            if (!outgoingMovements.Any(x => x.Product.Id == movement.Product.Id && x.MovementDate > movement.MovementDate))
+                            {
+                                // Проверяем, содержится ли товар уже на складе
+                                var existingProduct = productsOnWarehouse.FirstOrDefault(p => p.Id == movement.Product.Id);
+                                if (existingProduct == null)
+                                {
+                                    productsOnWarehouse.Add(movement.Product);
+                                }
+                            }
+                        }
+
+
+
+                     
 
 
 
                         // Формируем список деталей товара для аккордеона
                         var productDetails = productsOnWarehouse
                             .OrderBy(p => p.Id)
+                            
                             .Select(p => new TransferProductViewModel
                             {
 
@@ -866,15 +864,24 @@ namespace HelpSystem.Service.Implementantions
 
                         var lastMovement = _productMovementRepository.GetAll()
                             .Where(m => m.Product.Id == x.Id)
-                            .OrderByDescending(m => m.MovementDate)
-                            .Skip(1)
-                            .FirstOrDefault();
 
-                        var debitingWarehouseName = lastMovement != null ?
-                             _warehouseRepository.GetAll()
-                                .Where(w => w.Id == lastMovement.DestinationWarehouseId)
-                                .Select(w => w.Name)
-                                .FirstOrDefault() : null;
+                            .FirstOrDefault();
+                        var movementCount = _productMovementRepository.GetAll()
+        .Count(m => m.Product.Id == x.Id);
+                        var debitingWarehouseId = lastMovement.DestinationWarehouseId;
+                        if (movementCount > 1)
+                        {
+                            debitingWarehouseId = lastMovement.DestinationWarehouseId;
+                        }
+                        else
+                        {
+                            debitingWarehouseId = lastMovement.SourceWarehouseId;
+                        }
+                        //Тут тоже исправить нужно
+                        var debitingWarehouseName = _warehouseRepository.GetAll()
+          .Where(w => w.Id == debitingWarehouseId)
+          .Select(w => w.Name)
+          .FirstOrDefault();
 
                         return new ProductDebitingViewModel()
                         {
