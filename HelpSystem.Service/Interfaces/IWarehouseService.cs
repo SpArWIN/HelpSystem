@@ -83,5 +83,10 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="id"></param>
         /// <returns></returns>
         Task<IBaseResponse<IEnumerable<ProductDebitingWarehouseViewModel>>> GetDebitingProduct();
+        /// <summary>
+        /// Метод получения словарей для тригера кнопки отмена списания
+        /// </summary>
+        /// <returns></returns>
+        Task<BaseResponse<Dictionary<int, DateTime>>> GetTimeProduct();
     }
 }

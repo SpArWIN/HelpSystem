@@ -927,6 +927,41 @@ namespace HelpSystem.Service.Implementantions
 
 
         }
+
+        public async Task<BaseResponse<Dictionary<int, DateTime>>> GetTimeProduct()
+        {
+            try
+            {
+                var Products = await _products.GetAll()
+                    .Where(x => x.TimeDebbiting.HasValue)
+                    .ToListAsync();
+                if(Products != null)
+                {
+                    var dictonary = Products.ToDictionary(x => x.Id, y => y.TimeDebbiting.Value);
+                    return new BaseResponse<Dictionary<int, DateTime>>
+                    {
+                        Data= dictonary,
+                        StatusCode = StatusCode.Ok
+                    };
+                }
+                return new BaseResponse<Dictionary<int, DateTime>>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                };
+               
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse<Dictionary<int, DateTime>>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = $"{ex.Message}"
+                };
+            }
+        }
     }
 }
 

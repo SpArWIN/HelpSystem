@@ -33,11 +33,11 @@
                                         <th class="text-center">Наименование товара</th>
                                         <th class="text-center">Инвентарный код</th>
                                         <th class="text-center">Причина списания</th>
-                                        <th class="text-center">Дата прихода</th> <!-- Перемещено сюда -->
-                                        <th class="text-center">Склад Прихода</th> <!-- Перемещено сюда -->
-                                        <th class="text-center">Дата списания</th> <!-- Перемещено сюда -->
-                                        <th class="text-center">Склад Списания</th> <!-- Перемещено сюда -->
-                                        <th rowspan="2" colspan="2" class="text-center">Действия</th> <!-- Объединено с предыдущим -->
+                                        <th class="text-center">Дата прихода</th> 
+                                        <th class="text-center">Склад Прихода</th> 
+                                        <th class="text-center">Дата списания</th> 
+                                        <th class="text-center">Склад Списания</th> 
+                                        <th rowspan="2" colspan="2" class="text-center">Действия</th> 
                                     </tr>
 
                                 </thead>
@@ -57,12 +57,10 @@
 
                                             <td class="text-center">
                                                 <div class="d-grid gap-2">
-                                                    <button class="btn btn-warning" id="UnDebitBtn" data-product-id="@group.Id">Отменить списание</button>
+                                                    <button class="btn btn-warning" id="UnDebitBtn_@group.Id" data-product-id="@group.Id">Отменить списание</button>
                                                 </div>
                                             </td>
                                         </tr>
-
-
 
                                     }
                                 </tbody>

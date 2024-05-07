@@ -98,6 +98,18 @@ namespace HelpSystem.Controllers
            
 
         }
+        //Метод получения времени списанных товаров 
+        [HttpGet] 
+        public async Task<IActionResult> GetTimeDebeting()
+        {
+            var Response = await _warehouseService.GetTimeProduct();
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json( Response.Data );
+            }
+            return BadRequest(new {description = Response.Description});
+        }
+
         //Метод получения списанных товаров по складу
         [HttpGet]
         public async Task<IActionResult> GetDebitingProduct()

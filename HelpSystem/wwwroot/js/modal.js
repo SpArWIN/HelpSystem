@@ -1032,9 +1032,37 @@ function initializeProfileTable() {
     });
 }
 
+//Триггер на отключение кнопки списания
+
+async function CancellationTrigger() {
+    //отправим get запрос и получим словарь с id и датой
+   //Что то с этим сделать
+        const Response = await $.get('/Warehouse/GetTimeDebeting');
+
+    if (Object.keys(Response).length > 0) {
+            // Перебираем каждый элемент словаря
+        Object.entries(Response).forEach(function ([productId, timeDebitting]) {
+                var timeDebitting = new Date(timeDebitting);
+
+                // Получаем текущее время
+                var currentTime = new Date();
+
+                // Вычисляем разницу между текущим временем и временем списания товара
+                var timeDifference = currentTime.getTime() - timeDebitting.getTime();
+
+                // Проверяем, прошло ли более 24 часов
+                if (timeDifference > 24 * 60 * 60 * 1000) {
+                   
+                    var unDebitBtn = $("#UnDebitBtn_" + productId + "");
+                    unDebitBtn.removeClass('btn-warning').addClass('btn-secondary disabled');
+                }
+            });
+        }
+   
+
+}
+
 //Загрузка таблицы списка товаров на складе через ajax
-
-
 
 
 function initializeWarehouseProductTable(warehouseId) {
@@ -1223,7 +1251,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                 else {
                     messageText = 'Перемещаемый товар, будет перенесён на склад утилизации. Продолжить?';
                     title = 'Списание товара';
-             
+
 
                 }
                 Swal.fire({
@@ -1280,7 +1308,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                             }
                         });
                     }
-                })
+                });
             }
             else {
                 //Пошли фигачить ajax :)
@@ -1328,7 +1356,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                 });
             }
         }
-    })
+    });
 
    
 
