@@ -32,6 +32,9 @@ function openModal(parameters) {
                
                
             }
+            if (context == "DebitingProduct") {
+                initializeWarehouseDebiting();
+            }
 
         },
         failure: function () {
@@ -1034,34 +1037,47 @@ function initializeProfileTable() {
 
 //Триггер на отключение кнопки списания
 
-async function CancellationTrigger() {
+ async function CancellationTrigger() {
     //отправим get запрос и получим словарь с id и датой
-   //Что то с этим сделать
-        const Response = await $.get('/Warehouse/GetTimeDebeting');
+    //Что то с этим сделать
+    const Response = await $.get('/Warehouse/GetTimeDebeting');
 
     if (Object.keys(Response).length > 0) {
-            // Перебираем каждый элемент словаря
+       
         Object.entries(Response).forEach(function ([productId, timeDebitting]) {
-                var timeDebitting = new Date(timeDebitting);
+            var timeDebitting = new Date(timeDebitting);
+            var currentTime = new Date();
+            var timeDifference = currentTime.getTime() - timeDebitting.getTime();
+            if (timeDifference > 24 * 60 * 60 * 1000) {
+                var unDebitBtn = $("#UnDebitBtn_" + productId + "");
 
-                // Получаем текущее время
-                var currentTime = new Date();
+                unDebitBtn.removeClass('btn-warning').addClass('btn-secondary disabled');
+                unDebitBtn.text('Отмена списания недоступна');
+            
+            }
+        });
 
-                // Вычисляем разницу между текущим временем и временем списания товара
-                var timeDifference = currentTime.getTime() - timeDebitting.getTime();
 
-                // Проверяем, прошло ли более 24 часов
-                if (timeDifference > 24 * 60 * 60 * 1000) {
-                   
-                    var unDebitBtn = $("#UnDebitBtn_" + productId + "");
-                    unDebitBtn.removeClass('btn-warning').addClass('btn-secondary disabled');
-                }
-            });
-        }
-   
+    }
+  
 
 }
+//Загрузка таблицы списка утилизационных товаров
+function initializeWarehouseDebiting() {
+    var tableSelector = "#DebitingAccordian .accordion-body table";
+    var languageUrl = "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json";
+    $(tableSelector).DataTable({
+        searching: true,
+        paging: true,
+        ordering: true,
+        info: true,
+        language: {
+            url: languageUrl
+        }
 
+    });
+    CancellationTrigger();
+}
 //Загрузка таблицы списка товаров на складе через ajax
 
 
@@ -1079,6 +1095,7 @@ function initializeWarehouseProductTable(warehouseId) {
         }
       
     });
+
     $(tableSelector).find('tbody tr').each(function () {
         var $row = $(this);
 

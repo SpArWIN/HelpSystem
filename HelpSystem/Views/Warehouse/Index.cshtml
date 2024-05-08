@@ -128,7 +128,7 @@
                             <p class="card-text">Количество утилизационных товаров:@wh.TotalCountWarehouse</p>
 
                             <div class="d-grid-gap-2">
-                                <a data-id="@wh.Id" class="btn btn-outline-warning " id="DetimeId" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetDebitingProduct', data: '@wh.Id' , context: 'ListWarehouse'})  "> Список утилизационных товаров</a>
+                                <a data-id="@wh.Id" class="btn btn-outline-warning " id="DetimeId" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetDebitingProduct', data: '@wh.Id' , context: 'DebitingProduct'})  "> Список утилизационных товаров</a>
                             </div>
                         </div>
                     </div>
@@ -197,10 +197,8 @@ else
 
         });
 
-        //Когда кликаем по списку утилизационных товаров
-        $("#DetimeId").on('click', function () {
-            CancellationTrigger();
-        });
+     
+
         $('.BtnFreeZing').on('click', function () {
             var warehouseName = $(this).data('name');
             //Разберись с передачей id
