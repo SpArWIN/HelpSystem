@@ -182,6 +182,10 @@ namespace HelpSystem.Service.Implementantions
                         .ToListAsync();
                     int TotalCount = 0;
 
+                  
+                    
+
+
                     foreach (var movement in incomingMovements)
                     {
                         if (!outgoingMovements.Any(x => x.ProductId == movement.ProductId && x.MovementDate > movement.MovementDate))
@@ -888,7 +892,7 @@ namespace HelpSystem.Service.Implementantions
                             Id = x.Id,
                             ProductName = x.NameProduct,
                             Inventory = x.InventoryCode,
-                            CommentsDebiting = x.Comments,
+                            CommentsDebiting = x.CommentDebbiting,
                             DataEntrance = invoice.ToString("g"),
                             DateDebiting = x.TimeDebbiting.Value.ToString("g"),
                             OriginalWarehouse = x.Warehouse.Name,

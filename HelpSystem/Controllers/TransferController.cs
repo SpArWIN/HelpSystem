@@ -24,6 +24,17 @@ namespace HelpSystem.Controllers
 
             return BadRequest(new { description = Response.Description });
         }
+        //В случае отмены списания товара, добавим метод отмены
+        [HttpPost]
+        public async Task<IActionResult>DeleteTransfer(int Id)
+        {
+            var Response = await _transferService.DeleteTransferService(Id);
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok (new {description = Response.Description});
+            }
+            return BadRequest(new {description = Response.Description});
+        }
 
         public IActionResult Index()
         {

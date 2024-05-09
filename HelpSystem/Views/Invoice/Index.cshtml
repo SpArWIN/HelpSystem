@@ -123,7 +123,7 @@
                     {
                     foreach (var Ware in Model.Warehouses)
                     {
-                        if (!Ware.isFreesing)
+                        if (!Ware.isFreesing && !Ware.isService)
                         {
                             <option value="@Ware.Id">@Ware.WarehouseName</option>
                         }

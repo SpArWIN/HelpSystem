@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HelpSystem.Service.Implementantions
 {
+
     public class TransferService : ITransferService
     {
         private readonly IBaseRepository<ProductMovement> _transBaseRepository;
@@ -93,7 +94,7 @@ namespace HelpSystem.Service.Implementantions
                 if (UtilizationBd != null)
                 {
                     //сделаю функцию, которая перед записью о перемемещении товара добавит всем товарам время по списанию
-                    await MarkProduct(products);
+                    await MarkProduct(products,model);
 
                 }
 
@@ -190,6 +191,60 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+        /// <summary>
+        /// Метод удаления записи и списания товара
+        /// </summary>
+        /// <param name="ProductId"></param>
+        /// <returns></returns>
+        public async Task<BaseResponse<ProductMovement>> DeleteTransferService(int ProductId)
+        {
+            try
+            {
+                var DebitingProduct = await _productsRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == ProductId);
+                if (DebitingProduct != null) {
+                    //Находим последнюю запись это на склад утилизации и удаляем ее, очищая время.
+                    var LastMovement = await _transBaseRepository.GetAll()
+                        .Where(x => x.Product == DebitingProduct)
+                        //Чтобы найти последнюю, отсортируем по времени
+                        .OrderByDescending(x=>x.MovementDate)
+                        .FirstOrDefaultAsync();
+                    if (LastMovement != null)
+                    {
+                        DebitingProduct.TimeDebbiting = null;
+                        await _transBaseRepository.Delete(LastMovement);
+                        await _productsRepository.Update(DebitingProduct);
+                        return new BaseResponse<ProductMovement>()
+                        {
+                            StatusCode = StatusCode.Ok,
+                            Description = $"{DebitingProduct.NameProduct} {DebitingProduct.InventoryCode} был восстановлен"
+                        };
+                    }
+
+                    return new BaseResponse<ProductMovement>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = $"Перемещение на склад утилизации не найдено",
+                    };
+                   
+                   
+                }
+                return new BaseResponse<ProductMovement>()
+                {
+                    StatusCode = StatusCode.NotFind,
+                    Description = $"Товар не найден"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<ProductMovement>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = ex.Message
+                };
+              
+            }
+        }
 
         public async Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(int ProductId)
         {
@@ -232,14 +287,18 @@ namespace HelpSystem.Service.Implementantions
 
         }
         //Метод для отметки списание товара
-        private async Task MarkProduct(List<Products> product)
+        private async Task MarkProduct(List<Products> product,List<TransferViewModel>mod)
         {
             foreach (var prod in product)
             {
                 prod.TimeDebbiting = DateTime.Now;
-                await _productsRepository.Update(prod);
+            
             }
 
+            for (int i = 0; i < Math.Min(product.Count, mod.Count); i++){
+                product[i].CommentDebbiting = mod[i].CommentDebiting;
+                await _productsRepository.Update(product[i]);
+            }
         }
 
 

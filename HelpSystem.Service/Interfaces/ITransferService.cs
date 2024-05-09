@@ -13,6 +13,7 @@ namespace HelpSystem.Service.Interfaces
         /// <returns></returns>
         Task<BaseResponse<IEnumerable<ProductMovement>>> AddTransferService(List<TransferViewModel> model);
 
+        Task<BaseResponse<ProductMovement>> DeleteTransferService(int ProductId);
         Task<BaseResponse<ProductMovement>> GetCurrentPositionProduct(int ProductId);
     }
 }

@@ -1019,8 +1019,11 @@ function initializeSelect2() {
 
 
 
-//Функция для инициализации таблицы профиля
 
+
+
+
+//Функция для инициализации таблицы профиля
 function initializeProfileTable() {
     var table = " #BindingProductId";
     var language = "//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json";
@@ -1077,7 +1080,79 @@ function initializeWarehouseDebiting() {
 
     });
     CancellationTrigger();
+
+    $(tableSelector).find('tbody tr').each(function () {
+
+        var $row = $(this);
+        //Ищем кнопку отменить списание
+        var $UndoDebiting = $row.find('.btn-warning');
+        var BtnProductID = $UndoDebiting.data('product-id');
+        $UndoDebiting.on('click', function () {
+          
+            UndoWriteProduct(BtnProductID);
+        });
+    });
+
+
+
 }
+
+//Метод отмены списания товара 
+function UndoWriteProduct(id) {
+    Swal.fire({
+        title: 'Внимание',
+        text: 'Вы действительно хотите отменить списание товара?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Да,продолжить',
+        cancelButtonText: 'Нет'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Отмена списания',
+                html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+                timerProgressBar: true,
+                showConfirmButton: false,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: '/Transfer/DeleteTransfer',
+                data: { Id: id },
+                success: function (response) {
+                    setTimeout(function () {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Отмена списания',
+                            text: response.description,
+                            icon: 'success',
+                            confirmButtonText: 'Хорошо'
+                        });
+                    },1000)
+                },
+                error: function (response) {
+                    setTimeout(function () {
+                        Swal.close();
+                        Swal.fire({
+                            title: 'Что-то пошло не так',
+                            text: response.responseJSON.description,
+                            icon: 'error',
+                            confirmButtonText: 'Хорошо'
+                        });
+                    },1000)
+                  
+
+                }
+            });
+        }
+    });
+}
+
 //Загрузка таблицы списка товаров на складе через ajax
 
 
@@ -1125,7 +1200,7 @@ function initializeWarehouseProductTable(warehouseId) {
 
             var Code = $btn.closest('tr').find('td:eq(2)').text();
            
-            DebitingWarehouse(prod, nameProduct, Code,warehouseId);
+            DebitingWarehouse(prod, nameProduct, Code);
         })
     });
 }
@@ -1164,7 +1239,7 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события списания
-function DebitingWarehouse(ProductId, Name, Code,Source) {
+function DebitingWarehouse(ProductId, Name, Code) {
 
     var nameProduct = Name;
     var codeProduct = Code;
@@ -1183,6 +1258,7 @@ $('#BtnDebiting').click(function () {
     var massMoveProducts = [];
     var Prod = $('#PrID').val();
     var Com = $('#DegitingCom').val();
+
     if (!Com || Com.length <= 5) {
         Swal.fire({
             title: 'Ошибка списания',
@@ -1205,7 +1281,7 @@ $('#BtnDebiting').click(function () {
                     SourceWarehouseId: null,
                     DestinationWarehouseId: Destw,
                     CountTransfer: 1,
-                    Comments: Com
+                    CommentDebiting: Com
                 };
 
 
