@@ -1,4 +1,5 @@
 ﻿using HelpSystem.Domain.Response;
+using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Report;
 
 namespace HelpSystem.Service.Interfaces
@@ -18,6 +19,11 @@ namespace HelpSystem.Service.Interfaces
         /// </summary>
         /// <returns></returns>
         Task<IBaseResponse<ReportUSERSViewModel>> GetUsersReports();
-
+        //напиши отчёт по 
+        /// <summary>
+        /// Отчёт по списанному товару
+        /// </summary>
+        /// <returns></returns>
+        Task<IBaseResponse<ReportDebitingProduct>> GetDebitingReports();
     }
 }

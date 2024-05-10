@@ -40,9 +40,9 @@ namespace HelpSystem.Service.Implementantions
             {
                 //Получаем все склады
                 var Warehouses = await _warehouseRepository.GetAll()
+                    .Where(i=>!i.IsService)
                     .Include(p => p.Products)
                     .ToListAsync();
-
                 var ReportData = new ReportsProductOnWarehouseViewModel();
                 ReportData.StartTime = startDate.ToString("d");
                 ReportData.EndTime = endDate.ToString("d");
@@ -223,7 +223,6 @@ namespace HelpSystem.Service.Implementantions
                     if (Products.Any())
                     {
 
-
                         //Группируем товары по наименованию и инвентарному коду
                         var GroupedProducts = Products
                             .GroupBy(p => new { p.NameProduct, p.InventoryCode })
@@ -287,7 +286,110 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+        //Метод получения списанных товаров пусть будет за всё время
+        public async Task<IBaseResponse<ReportDebitingProduct>> GetDebitingReports()
+        {
+            try
+            {
+
+                var Warehouses = await _warehouseRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.IsService);
+                var Report = new ReportDebitingProduct();
+                var DebitingList = new List<ProductDebitingViewModel>();
+                int TotalCount = 0;
+                if(Warehouses == null)
+                {
+                    return new BaseResponse<ReportDebitingProduct>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Склад утилизации не найден"
+                    };
+
+                }
+                //Просто так на склад товары не упадут, не будет у склада записи о том, что у него есть эти товары
+                //Однако я буду точно знать, что если есть дата списания, значит товар упал на этот склад, остаётся его передать
+                var Product = await _productRepository
+                    .GetAll()
+                    .Include(w=>w.Warehouse)
+                    .Where(x => x.TimeDebbiting != null)
+                    .ToListAsync();
+                if(Product == null)
+                {
+                    return new BaseResponse<ReportDebitingProduct>()
+                    {
+                        StatusCode = StatusCode.NotFind,
+                        Description = "Нет списанных товаров"
+                    };
+                }
+
+                foreach(var Debit in Product)
+                {
+                    TotalCount++;
+                    var invoice = _invoiceRepository.GetAll()
+                            .Where(i => i.Products.Any(p => p.Id == Debit.Id))
+                            .Select(i => i.CreationDate)
+                            .FirstOrDefault();
+
+                    //Получаем последнее перемещение товара, склад с которого товар был списан
+                    var lastMovement = _productMovementRepository.GetAll()
+                            .Where(m => m.Product.Id == Debit.Id)
+                            .FirstOrDefault();
+                    var movementCount = _productMovementRepository.GetAll()
+    .Count(m => m.Product.Id == Debit.Id);
+
+                    var debitingWarehouseId = lastMovement.DestinationWarehouseId;
+                    if (movementCount > 1)
+                    {
+                        debitingWarehouseId = lastMovement.DestinationWarehouseId;
+                    }
+                    else
+                    {
+                        debitingWarehouseId = lastMovement.SourceWarehouseId;
+                    }
+
+                    var debitingWarehouseName = _warehouseRepository.GetAll()
+        .Where(w => w.Id == debitingWarehouseId)
+        .Select(w => w.Name)
+        .FirstOrDefault();
+
+                    var DebitingProduct = new ProductDebitingViewModel()
+                    {
+                        Id = Debit.Id,
+                        ProductName = Debit.NameProduct,
+                        Inventory = Debit.InventoryCode,
+                        CommentsDebiting = Debit.CommentDebbiting !=null ? Debit.Comments :"Нет комментариев",
+                        DataEntrance = invoice.ToString("g"),
+                        DateDebiting = Debit.TimeDebbiting.Value.ToString("g"),
+                        OriginalWarehouse = Debit.Warehouse.Name,
+                        DebitingWarehouse = debitingWarehouseName
+                       
+                    };
+
+                    DebitingList.Add(DebitingProduct);
+                }
+                Report.WarehouseName = Warehouses.Name;
+                Report.WhDebitingProduct = DebitingList;
+                Report.TotalCount = TotalCount;
 
 
+                return new  BaseResponse<ReportDebitingProduct>()
+                {
+                    Data = Report,
+                    StatusCode = StatusCode.Ok,
+                    Description = "Информация об утилизованных товарах была найдена"
+                };
+
+
+
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<ReportDebitingProduct>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = ex.Message
+                };
+            }
+        }
     }
 }

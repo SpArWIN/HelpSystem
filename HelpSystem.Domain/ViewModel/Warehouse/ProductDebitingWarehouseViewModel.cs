@@ -7,7 +7,7 @@ namespace HelpSystem.Domain.ViewModel.Warehouse
     {
         public string ProductName { get; set; } //группировка будет по нему 
 
-        public IEnumerable<ProductDebitingViewModel> Whproduct { get; set; }
+        public IEnumerable<ProductDebitingViewModel> Whproduct { get; set; } 
         public int TotalCount { get; set; } // Общее количество
 
 

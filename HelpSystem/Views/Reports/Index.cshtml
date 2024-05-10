@@ -81,6 +81,7 @@
             <li><a class="dropdown-item" id="UserReportId" href="#">Отчёт по пользователю</a></li>
             <li><a class="dropdown-item" href="#" id="reportUsersProductsBtn">Отчёт по пользователям</a></li>
             <li><a class="dropdown-item" href="#" id="openDatePicker">Отчёт по поступлениям</a></li>
+            <li><a class="dropdown-item" href="#" id="reportDebitingProduct">Отчёт по списанным товарам</a></li>
         </ul>
     </li>
 </ul>
@@ -116,6 +117,9 @@
             $('#userModal').modal('show');
         });
 
+            $('#reportDebitingProduct').on("click", function () {
+                ReportDebbetingProdict();
+            });
         // Функция для открытия диалогового окна и выбора даты с помощью flatpickr
         $(document).on("click", "#openDatePicker", function () {
             const startDateInput = $('<input>').attr({

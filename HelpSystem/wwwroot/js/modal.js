@@ -1512,14 +1512,24 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '</tr>';
                             reportHtml += '</thead>';
                             reportHtml += '<tbody>';
-                            warehouseReport.productsInfo.forEach(function (productInfo) {
+                            if (warehouseReport.productsInfo.length>0) {
+
+
+                                warehouseReport.productsInfo.forEach(function (productInfo) {
+                                    reportHtml += '<tr>';
+                                    reportHtml += '<td>' + productInfo.productName + '</td>';
+                                    reportHtml += '<td>' + productInfo.inventoryCode + '</td>';
+                                    reportHtml += '<td>' + productInfo.quantityOnWarehouse + '</td>';
+                                    reportHtml += '<td>' + productInfo.availableQuantity + '</td>';
+                                    reportHtml += '</tr>';
+                                });
+                            }
+                            else {
+                                // Если нет товаров на складе, добавляем сообщение
                                 reportHtml += '<tr>';
-                                reportHtml += '<td>' + productInfo.productName + '</td>';
-                                reportHtml += '<td>' + productInfo.inventoryCode + '</td>';
-                                reportHtml += '<td>' + productInfo.quantityOnWarehouse + '</td>';
-                                reportHtml += '<td>' + productInfo.availableQuantity + '</td>';
+                                reportHtml += '<td colspan="4" class="text-center">На складе товаров нет</td>';
                                 reportHtml += '</tr>';
-                            });
+                            }
                             reportHtml += '</tbody>';
                             reportHtml += '<tfoot>';
                             reportHtml += '<tr>';
@@ -1531,6 +1541,7 @@ function ReportsWarehouse(StartDate,EndDate) {
                             reportHtml += '</div>'; // Закрываем div.warehouse-report
                             
                         });
+
                         reportHtml += '<div class="footer">' +
                             '<div class="d-grid gap-2">' +
                             '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
@@ -1651,11 +1662,16 @@ function UserReports(user) {
                             reportHtml += '</tfoot>';
                             reportHtml += '</tbody>';
                             reportHtml += '</table>';
-                            reportHtml += '<div class="footer">' +
-                                '<div class="d-grid gap-2">' +
-                                '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
-                                '</div>' +
-                                '</div>';
+                            if (response.data.length > 0) {
+
+
+                                reportHtml += '<div class="footer">' +
+                                    '<div class="d-grid gap-2">' +
+                                    '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                                    '</div>' +
+                                    '</div>';
+                            }
+
                         } else {
                             // Если данных нет, добавляем сообщение об этом
                             reportHtml += '<p class="text-center font-weight-bold" style="font-size: larger; style="background-color: #fc6;">' + response.description + '</p>';
@@ -1711,6 +1727,7 @@ function UsersReports() {
                 }).then((result) => {
                     if (result) {
                         var ReportUser = '';
+                        var exportButtonVisible = false; // Флаг для отображения кнопки экспорта
                         ReportUser += '<button id="CloseReportsBtn" class="btn btn-danger">Закрыть</button>';
                         if (response.data.users.length > 0) {
 
@@ -1718,7 +1735,7 @@ function UsersReports() {
                                 ReportUser += '<h3 class="text-center"> Пользователь:' + user.fullName + '('+user.login +')'+ '</h3>';
 
                                 if (user.userProducts.length > 0) {
-
+                                    exportButtonVisible = true;
                                     ReportUser += '<table class="table table-bordered">';
                                     ReportUser += '<thead>';
                                     ReportUser += '<tr>';
@@ -1749,22 +1766,26 @@ function UsersReports() {
                                     ReportUser += '</tbody>'; 
                                     ReportUser += '</table>';
                                   
-
+                                   
 
                                 } else {
                                     ReportUser += '<p class="text-center font-weight-bold" style="font-size: larger;">' +user.message+ '</p>';
                                 }
-
+                              
 
                             });
                         } else {
                             ReportUser+= '<p class="text-center font-weight-bold" style="font-size: larger;">Нет пользователей</p>';
                         }
-                        ReportUser += '<div class="footer">' +
-                            '<div class="d-grid gap-2">' +
-                            '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
-                            '</div>' +
-                            '</div>';
+                        if (exportButtonVisible) {
+
+
+                            ReportUser += '<div class="footer">' +
+                                '<div class="d-grid gap-2">' +
+                                '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                                '</div>' +
+                                '</div>';
+                        }
                         $('#reportContainer').fadeIn();
                         // Вставляем HTML-код отчета в контейнер
                         $('#reportContainer').html(ReportUser);
@@ -1785,6 +1806,110 @@ function UsersReports() {
                     });
                 },
                 1000);
+        }
+    });
+}
+
+//Функция формирования отчёта по списанным товарам
+
+function ReportDebbetingProdict() {
+    Swal.fire({
+        title: 'Формирование отчёта по списанному товару',
+        html: '<img src="/myIcon/wired-lineal-edit-document.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+        timerProgressBar: true,
+        showConfirmButton: false,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    $.ajax({
+        type: 'GET',
+        url: '/Reports/ReportDebitingProducts',
+        dataType: 'json',
+        success: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                if (response.data) {
+                    var DebitingReport = '';
+                    var exportButtonVisible = false;
+
+                    DebitingReport += '<button id="CloseReportsBtn" class="btn btn-danger">Закрыть</button>';
+
+                    if (response.data.whDebitingProduct.length > 0) {
+                        exportButtonVisible = true;
+                        DebitingReport += `<h3 class="text-center">Отчет по списанному товару, находящемуся на  ${response.data.warehouseName}</h3>`;
+                        DebitingReport += '<div class="warehouse-report mb-4">';
+                        DebitingReport += '<div class="table-responsive">';
+                        DebitingReport += '<table class="table table-bordered">';
+                        DebitingReport += '<thead>';
+                        DebitingReport += '<tr>';
+                        DebitingReport += '<th>Наименование товара</th>';
+                        DebitingReport += '<th>Инвентарный код</th>';
+                        DebitingReport += '<th>Дата поступления товара</th>';
+                        DebitingReport += '<th>Дата списания</th>';
+                        DebitingReport += '<th>Склад, на который товар изначально поступал</th>';
+                        DebitingReport += '<th>Склад, с которого товар был списан</th>';
+                        DebitingReport += '<th>Комментарий по списанному товару</th>';
+                        DebitingReport += '</tr>';
+                        DebitingReport += '</thead>';
+                        DebitingReport += '<tbody>';
+
+                        response.data.whDebitingProduct.forEach(function (item) {
+                            DebitingReport += '<tr>';
+                            DebitingReport += '<td>' + item.productName + '</td>';
+                            DebitingReport += '<td>' + item.inventory + '</td>';
+                            DebitingReport += '<td>' + item.dataEntrance + '</td>';
+                            DebitingReport += '<td>' + item.dateDebiting + '</td>';
+                            DebitingReport += '<td>' + item.originalWarehouse + '</td>';
+                            DebitingReport += '<td>' + item.debitingWarehouse + '</td>';
+                            DebitingReport += '<td>' + item.commentsDebiting + '</td>';
+                            DebitingReport += '</tr>';
+                        });
+
+                        DebitingReport += '</tbody>';
+                        DebitingReport += '<tfoot>';
+                        DebitingReport += '<tr>';
+                        DebitingReport += '<td colspan="7" class="text-center font-weight-bold"><strong>Итого товаров на складе: ' + response.data.totalCount + '</strong></td>';
+                        DebitingReport += '</tr>';
+                        DebitingReport += '</tfoot>';
+
+                        DebitingReport += '</table>';
+                        DebitingReport += '</div>'; // Закрываем div.table-responsive
+                        DebitingReport += '</div>'; // Закрываем div.warehouse-report
+                    } else {
+                        DebitingReport += '<p class="text-center">На складе нет списанных товаров</p>';
+                    }
+
+                    if (exportButtonVisible) {
+                        DebitingReport += '<div class="footer">' +
+                            '<div class="d-grid gap-2">' +
+                            '<a class="btn btn-info" id="ExportBtn"><strong>Экспорт</strong></a>' +
+                            '</div>' +
+                            '</div>';
+                    }
+
+                    $('#reportContainer').show();
+                    $('#reportContainer').html(DebitingReport);
+                } else {
+                    Swal.fire({
+                        title: 'Формирование отчёта',
+                        text: 'Отчет не найден',
+                        icon: 'error'
+                    });
+                }
+            }, 2000)
+        },
+        error: function (response) {
+            setTimeout(function () {
+                Swal.close();
+                Swal.fire({
+                    title: 'Формирование отчёта',
+                    text: response.responseJSON.description,
+                    icon: 'error'
+                });
+            }, 1000);
         }
     });
 }

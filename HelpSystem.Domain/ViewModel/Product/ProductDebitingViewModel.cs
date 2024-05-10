@@ -1,8 +1,9 @@
 ﻿namespace HelpSystem.Domain.ViewModel.Product
 {
-    //Для модели товара, как матрёшка
+    //Для модели товара, который списан. Как матрёшка
     public class ProductDebitingViewModel
     {
+        //Также использую этот класс для отчёта
         public int Id { get; set; }
         public string ProductName { get; set; }
         public string Inventory { get; set; }

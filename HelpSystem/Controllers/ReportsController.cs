@@ -61,6 +61,17 @@ namespace HelpSystem.Controllers
             return Json(Response.Description);
         }
 
+        //Метод, который будет отвечать за получение склада списания
+        [HttpGet]
+        public async Task<IActionResult> ReportDebitingProducts()
+        {
+            var Response = await  _reportService.GetDebitingReports();
 
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Json(new {data = Response.Data,description = Response.Description});
+            }
+            return Json(Response.Description);
+        }
     }
 }
