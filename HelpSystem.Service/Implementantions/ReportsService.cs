@@ -357,8 +357,8 @@ namespace HelpSystem.Service.Implementantions
                         Id = Debit.Id,
                         ProductName = Debit.NameProduct,
                         Inventory = Debit.InventoryCode,
-                        CommentsDebiting = Debit.CommentDebbiting !=null ? Debit.Comments :"Нет комментариев",
-                        DataEntrance = invoice.ToString("g"),
+                        CommentsDebiting = Debit.CommentDebbiting != null ? Debit.CommentDebbiting : "Нет комментариев",
+                    DataEntrance = invoice.ToString("g"),
                         DateDebiting = Debit.TimeDebbiting.Value.ToString("g"),
                         OriginalWarehouse = Debit.Warehouse.Name,
                         DebitingWarehouse = debitingWarehouseName

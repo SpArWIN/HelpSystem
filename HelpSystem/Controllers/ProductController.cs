@@ -7,13 +7,10 @@ namespace HelpSystem.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
-        private readonly IProviderService _providerService;
-        private readonly IWarehouseService _warehouseService;
-        public ProductController(IProductService productService, IProviderService provider, IWarehouseService warehouse)
+        
+        public ProductController(IProductService productService)
         {
             _productService = productService;
-            _providerService = provider;
-            _warehouseService = warehouse;
         }
 
         //Метод получения всей доступной информации о товаре 

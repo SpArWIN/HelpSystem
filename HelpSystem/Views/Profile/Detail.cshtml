@@ -55,6 +55,7 @@
                     <h5 class="card-title">Фамилия: @(!string.IsNullOrEmpty(Model.LastName) ? Model.LastName : "-")</h5>
                     <h5 class="card-title">Имя:@Model?.Name</h5>
                     <h5 class="card-title">Отчество: @(!string.IsNullOrEmpty(Model.Surname) ? Model.Surname : "-")</h5>
+                    <h5 class="card-title">Почта: @(!string.IsNullOrEmpty(Model.Email) ? Model.Email :"-")</h5>
                 }
                 else
                 {
@@ -62,6 +63,7 @@
                     <h5 class="card-title">Имя: @Model?.Name</h5>
                     <h5 class="card-title">Отчество: -</h5>
                     <h5 class="card-text-black">Возраст: -</h5>
+                    <h5 class="card-title">Почта: -</h5>
                 }
             </div>
         </div>

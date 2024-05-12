@@ -55,20 +55,6 @@ namespace HelpSystem.Controllers
 
         public async Task<IActionResult> GetUserStatment()
         {
-            //Нужно как то разобраться с пагинацией
-            //Пагинация
-            //var Start = Request.Form["start"].FirstOrDefault();
-
-            //var lengths = Request.Form["length"].FirstOrDefault();
-            //var PageSize = lengths != null ? Convert.ToInt32(lengths) : 0;
-
-            //var Skip = Start != null ? Convert.ToInt32(Start) : 0;
-
-            //Page page = new Page()
-            //{
-            //    PageSize = PageSize,
-            //    Skip = Skip
-            //};
 
             var currentUser = HttpContext.User;
             var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier);

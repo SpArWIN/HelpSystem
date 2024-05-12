@@ -25,6 +25,10 @@
     <input min="1"  type="number" class="form-control" id="age" value="@Model.Age" >
     <div class="error-message"></div>
 </div>
+<div class="form-group">
+    <label for="Em">Почта:</label>
+    <input type="email" class="form-control" id="Em" value="@Model.Email" />
+</div>
 
 @if (!User.IsInRole("1"))
 {

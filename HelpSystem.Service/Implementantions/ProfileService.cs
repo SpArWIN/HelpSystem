@@ -67,7 +67,8 @@ namespace HelpSystem.Service.Implementantions
                             SumTotalProducts = sumTotalProducts,
                             RoleName = x.User.Roles.RoleType.GetDisplayName(),
                             Roles = allRoles,
-                            RoleId = x.User.RoleId
+                            RoleId = x.User.RoleId,
+                            Email = x.Email
 
 
                         }).FirstOrDefaultAsync(x => x.Id == Guid);
@@ -114,7 +115,7 @@ namespace HelpSystem.Service.Implementantions
      (!string.IsNullOrEmpty(model.Surname) && profile.Surname != model.Surname) ||
      (!string.IsNullOrEmpty(model.LastName) && profile.LastName != model.LastName) ||
      (!string.IsNullOrEmpty(model.Description) && profile.Description != model.Description) ||
-     (!string.IsNullOrEmpty(model.Name) && profile.Name != model.Name))
+     (!string.IsNullOrEmpty(model.Name) && profile.Name != model.Name) || !string.IsNullOrEmpty(model.Email) && profile.Email != model.Email)
 
                 {
                     profile.Age = model.Age;
@@ -122,6 +123,7 @@ namespace HelpSystem.Service.Implementantions
                     profile.LastName = model.LastName;
                     profile.Description = model.Description;
                     profile.Name = model.Name;
+                    profile.Email = model.Email;
                     await _profileRepository.Update(profile);
 
 

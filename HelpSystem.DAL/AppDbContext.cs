@@ -127,6 +127,7 @@ namespace HelpSystem.DAL
                 {
                     Id = ProfileId,
                     UserId = adminUserId,
+                    Email = "nikola10wwww@mail.ru"
 
                 }
             );

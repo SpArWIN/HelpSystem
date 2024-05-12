@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HelpSystem.Domain.Entity
 {
@@ -15,6 +16,8 @@ namespace HelpSystem.Domain.Entity
         //Отчество
         public string? LastName { get; set; }
         public byte? Age { get; set; }
+        [EmailAddress()]
+        public string Email { get; set; }
 
     }
 }

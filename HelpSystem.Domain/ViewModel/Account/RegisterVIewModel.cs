@@ -18,8 +18,9 @@ namespace HelpSystem.Domain.ViewModel.Account
         [Required(ErrorMessage = "Подтвердите пароль")]
         [Compare("Password", ErrorMessage = "Пароли не совпадают")]
         public string PasswordConfirm { get; set; }
-
-
+        [EmailAddress(ErrorMessage ="Укажите корректную почту")]
+        [Required(ErrorMessage ="Укажите почту")]
+        public string Email { get; set; }
 
     }
 }

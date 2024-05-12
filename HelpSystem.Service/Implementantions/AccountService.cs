@@ -62,7 +62,8 @@ namespace HelpSystem.Service.Implementantions
                     var profile = new Profile()
                     {
                         UserId = User.Id,
-                        Name = User.Name
+                        Name = User.Name,
+                        Email = model.Email
                     };
                     await _profileRepository.Create(profile);
 

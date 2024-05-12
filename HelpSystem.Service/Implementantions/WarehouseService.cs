@@ -892,8 +892,8 @@ namespace HelpSystem.Service.Implementantions
                             Id = x.Id,
                             ProductName = x.NameProduct,
                             Inventory = x.InventoryCode,
-                            CommentsDebiting = x.CommentDebbiting,
-                            DataEntrance = invoice.ToString("g"),
+                            CommentsDebiting = lastMovement.Comments ?? x.Comments ?? x.CommentDebbiting,
+                        DataEntrance = invoice.ToString("g"),
                             DateDebiting = x.TimeDebbiting.Value.ToString("g"),
                             OriginalWarehouse = x.Warehouse.Name,
                             DebitingWarehouse = debitingWarehouseName

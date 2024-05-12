@@ -59,6 +59,7 @@ $('#SaveChanBtn').on('click',
             var Surname = $('#patronymic').val();
             var age = $('#age').val();
             var Role = $('#roleSelect').val();
+            var Em = $('#Em').val();
 
         var profileData = {
             Id: id,
@@ -66,7 +67,8 @@ $('#SaveChanBtn').on('click',
             Surname: Surname,
             LastName: lastName,
             Name: Name,
-            RoleId: Role
+            RoleId: Role,
+            Email:Em
 
         };
         MassUpdate('/Profile/Save', profileData, 'Обновление профиля', 'Изменение профиля');
@@ -1132,6 +1134,10 @@ function UndoWriteProduct(id) {
                             text: response.description,
                             icon: 'success',
                             confirmButtonText: 'Хорошо'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                location.reload();
+                            }
                         });
                     },1000)
                 },
@@ -1264,7 +1270,7 @@ $('#BtnDebiting').click(function () {
             title: 'Ошибка списания',
             text: 'Комментарий обязателен для списания товара.',
             icon: 'info',
-            confirmButtonText: 'Хорошо',
+            confirmButtonText: 'Хорошо'
         });
     }
     else {
@@ -1347,61 +1353,84 @@ function MassMovedProduct(products,titl,res,DestanWh) {
 
 
                 }
-                Swal.fire({
-                    title: 'Внимание',
-                    text: messageText,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Да,продолжить',
-                    cancelButtonText: 'Отменить'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        Swal.fire({
-                            title: title,
-                            html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
-                            timerProgressBar: true,
-                            showConfirmButton: false,
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            }
-                        });
-                        $.ajax({
-                            type: 'POST',
-                            url: '/Transfer/AddTransfer',
-                            data: { model: products },
-                            success: function (response) {
-                                setTimeout(function () {
-                                    Swal.close();
-                                    Swal.fire({
-                                        title: 'Списание товаров',
-                                        text: response.description,
-                                        icon: 'success',
-                                        confirmButtonText: 'Окей',
+                //В таком случае комментарий к перемещению крайне важен, нужно это дело проверить
+                //Если хотябы один из элементов, пустой, а если комментарий пустой, то он пустой :)
+            //При массовом перемещении, то и дело с концом
+                
+                if (products.some(item => item.Comments == "")) {
+                    Swal.fire({
+                        title: 'Ошибка перемещения товара на склад утилизации',
+                        text: 'При перемещении товара на склад утилизации, комментарий обязателен.',
+                        icon: 'error',
+                        confirmButtonColor: 'green',
+                        confirmButtonText: 'Хорошо'
+                    });
 
-                                    }).then((result) => {
-                                        location.reload();
-                                    });
+                }
+                else {
 
-                                }, 1000)
-                            },
-                            error: function (response) {
-                                setTimeout(function () {
-                                    Swal.close();
-                                    Swal.fire({
-                                        title: 'Упс..что-то пошло не так',
-                                        text: response.responseJSON.description,
-                                        icon: 'error',
-                                        confirmButtonText: 'Понятно',
-                                    })
-                                }, 1000)
 
-                            }
-                        });
-                    }
-                });
+                    Swal.fire({
+                        title: 'Внимание',
+                        text: messageText,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Да,продолжить',
+                        cancelButtonText: 'Отменить'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: title,
+                                html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                }
+                            });
+                            $.ajax({
+                                type: 'POST',
+                                url: '/Transfer/AddTransfer',
+                                data: { model: products },
+                                success: function (response) {
+                                    setTimeout(function () {
+                                        Swal.close();
+                                        Swal.fire({
+                                            title: 'Списание товаров',
+                                            text: response.description,
+                                            icon: 'success',
+                                            confirmButtonText: 'Окей',
+
+                                        }).then((result) => {
+                                            if (result.isConfirmed) {
+                                                location.reload();
+                                            }
+
+                                        });
+
+                                    }, 1000)
+                                },
+                                error: function (response) {
+                                    setTimeout(function () {
+                                        Swal.close();
+                                        Swal.fire({
+                                            title: 'Упс..что-то пошло не так',
+                                            text: response.responseJSON.description,
+                                            icon: 'error',
+                                            confirmButtonText: 'Понятно',
+                                        })
+                                    }, 1000)
+
+                                }
+                            });
+
+                        }
+
+                    });
+                }
             }
             else {
                 //Пошли фигачить ajax :)
@@ -2042,4 +2071,12 @@ function UnFreezing(Url, ResponseTitle, Id) {
             }, 3000)
         }
     });
+}
+//Функиция кнопки
+function checkHistory() {
+    if (window.history.length > 1) {
+        $("#backButton").show();
+    } else {
+        $("#backButton").hide();
+    }
 }

@@ -22,7 +22,8 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public string? RoleName { get; set; }
         //id Роли
         public int RoleId { get; set; }
-
+        [EmailAddress(ErrorMessage ="Некорректный адрес электронной почты")]
+        public string ? Email { get; set; }
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (Age.HasValue && Age < 0)
