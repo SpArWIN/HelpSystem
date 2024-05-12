@@ -89,11 +89,10 @@ namespace HelpSystem.Controllers
             var Tok = await _tokenCacheService.GetTokenAsync(Token);
             if(Tok.StatusCode == Domain.Enum.StatusCode.NotFind)
             {
-                TimeSpan expirationTime = TimeSpan.FromMinutes(2);
-                await _tokenCacheService.SetTokenAsync(Token, UserId.ToString(), expirationTime);
+                return BadRequest(new { description = "Ссылка не действительна" });
             }
             //Через какое время токен из кеша должен пропасть
-           
+            
 
             ViewBag.UserId = UserId;
             ViewBag.Token = Token;

@@ -22,9 +22,11 @@ namespace HelpSystem.Service.Implementantions
         private readonly string _emailConnect = "HelpDeskSystem@outlook.com";
         protected readonly string pass = "njxyjdctpyftn!21";
 		private readonly IBaseRepository<Profile> _profileRepository;
-        public EmailService(IBaseRepository<Profile> profile)
+		private readonly ITokenCacheService _tokenCacheService;
+        public EmailService(IBaseRepository<Profile> profile,ITokenCacheService tokenCache)
 		{
 			_profileRepository = profile;
+			_tokenCacheService = tokenCache;
 		}
 		
 		
@@ -62,6 +64,8 @@ namespace HelpSystem.Service.Implementantions
 				//ДЛя того, чтобы ссылка действовала всего один раз, создадим временный токен
 				var TemporyTokey = Guid.NewGuid().ToString();
 				var hashedToken = HashPassword.HashPassowrds(TemporyTokey);
+                TimeSpan expirationTime = TimeSpan.FromMinutes(2);
+                await _tokenCacheService.SetTokenAsync(hashedToken,UsProfile.UserId.ToString(), expirationTime);
 
                 //Формируем ссылку с восстановлением
                 var recoveryLink = $"https://localhost:44381/Account/RecoveryPassword?token={hashedToken}&userId={UsProfile.UserId}";
