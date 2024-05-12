@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewData["Title"] = "Восстановление пароля";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 4, 0, 0.1);
+    }
+</style>
+<div class="form-container">
+    <form id="passwordRecoveryForm" asp-action="PasswordRecovery" method="post">
+        <div class="mb-3">
+            <label for="Email" class="form-label">Введите ваш адрес электронной почты:</label>
+            <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" required>
+            <div id="emailHelp" class="form-text">Мы вышлем на ваш адрес инструкции по восстановлению пароля.</div>
+        </div>
+        @* <div class="mb-3">
+            <label for="Message" class="form-label">Напишите что-нибудь</label>
+            <textarea style="max-height:160px;" asp-for="Message"></textarea>
+        </div> *@
+        <button type="submit" class="btn btn-primary">Отправить</button>
+    </form>
+</div>
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#passwordRecoveryForm').submit(function (e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Обработка запроса',
+                    html: 'Пожалуйста, подождите...',
+                    timerProgressBar: true,
+                    showConfirmButton: false,
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                $.ajax({
+                    type: 'POST',
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (response){
+                        Swal.fire({
+                            title: 'Успех!',
+                            text: response.description,
+                            icon: 'success',
+                            showConfirmButton: 'Отлично'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.href = "/Account/Login";
+                            }
+                        });
+                    },
+                    error : function(response){
+                        Swal.fire({
+                            title: 'Что-то пошло не так',
+                            text: response.responseJSON.description,
+                            icon: 'error',
+                            showConfirmButton: 'Понятно'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+}
+
+

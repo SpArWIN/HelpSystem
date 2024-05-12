@@ -10,16 +10,19 @@ using System.Security.Claims;
 
 namespace HelpSystem.Service.Implementantions
 {
+
     public class AccountService : IAccountService
     {
         private readonly IBaseRepository<User> _useRepository;
         private readonly IBaseRepository<Profile> _profileRepository;
         private readonly IBaseRepository<Role> _roleRepository;
-        public AccountService(IBaseRepository<User> useRepository, IBaseRepository<Profile> profileRepository, IBaseRepository<Role> roleRepository)
+        private readonly ITokenCacheService _tokenCacheService;
+        public AccountService(IBaseRepository<User> useRepository, IBaseRepository<Profile> profileRepository, IBaseRepository<Role> roleRepository, ITokenCacheService tokenCacheService)
         {
             _useRepository = useRepository;
             _profileRepository = profileRepository;
             _roleRepository = roleRepository;
+            _tokenCacheService = tokenCacheService;
         }
 
         public async Task<BaseResponse<ClaimsIdentity>> Register(RegisterVIewModel model)
@@ -139,6 +142,59 @@ namespace HelpSystem.Service.Implementantions
                 new Claim(ClaimTypes.Role, user.RoleId.ToString())
             };
             return new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role);
+        }
+
+        public async Task<BaseResponse<User>> RecoveryPassword(RecoveryProfile model,string Token)
+        {
+            try
+            {
+                var User = await _useRepository.GetAll()
+                    .FirstOrDefaultAsync(x => x.Id == model.UserId);
+              
+                var Tok = await _tokenCacheService.GetTokenAsync(Token);
+
+                if (Tok.StatusCode == StatusCode.Ok)
+                {
+                    TimeSpan CreateToken = Tok.Data.ExpirationTime;
+                    TimeSpan tokenAge = DateTime.Now - DateTime.Now.Add(Tok.Data.ExpirationTime);
+                    if (tokenAge > CreateToken)
+                    {
+                        //Время жизни токена истекло
+                        await _tokenCacheService.RemoveTokenAsync(Token);
+                    }
+                }
+              
+                //Проверим действителен ли токен
+              
+                if (User == null)
+                {
+                    return new BaseResponse<User>()
+                    {
+                        Description = "Пользователь не найден",
+                        StatusCode = StatusCode.NotFind
+                    };
+
+                }
+                User.Password = HashPassword.HashPassowrds(model.NewPassword);
+
+                await _useRepository.Update(User);
+               
+                return new BaseResponse<User>()
+                {
+                    Description = "Пароль был успешно изменён!",
+                    StatusCode = StatusCode.Ok
+                };
+
+            }
+            catch (Exception ex)
+            {
+
+                return new BaseResponse<User>()
+                {
+                    StatusCode = StatusCode.InternalServerError,
+                    Description = ex.Message
+                };
+            }
         }
     }
 }

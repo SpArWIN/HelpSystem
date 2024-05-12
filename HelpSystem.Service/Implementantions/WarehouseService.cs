@@ -739,10 +739,10 @@ namespace HelpSystem.Service.Implementantions
                             Code = p.Product.InventoryCode,
                             Warehouses = otherWarehouses
                         }).ToList();
-
+                        var sortProduct = productDetails.OrderBy(p => p.Id).ToList();
                         return new BaseResponse<IEnumerable<TransferProductViewModel>>
                         {
-                            Data = productDetails,
+                            Data = sortProduct,
                             StatusCode = StatusCode.Ok
                         };
                     }
@@ -866,21 +866,21 @@ namespace HelpSystem.Service.Implementantions
                             .Select(i => i.CreationDate)
                             .FirstOrDefault();
 
-                        var lastMovement = _productMovementRepository.GetAll()
+                        var lastMovement =  _productMovementRepository.GetAll()
                             .Where(m => m.Product.Id == x.Id)
-
+                            .OrderByDescending(x=>x.MovementDate)
                             .FirstOrDefault();
                         var movementCount = _productMovementRepository.GetAll()
         .Count(m => m.Product.Id == x.Id);
-                        var debitingWarehouseId = lastMovement.DestinationWarehouseId;
-                        if (movementCount > 1)
-                        {
-                            debitingWarehouseId = lastMovement.DestinationWarehouseId;
-                        }
-                        else
-                        {
-                            debitingWarehouseId = lastMovement.SourceWarehouseId;
-                        }
+                        var debitingWarehouseId = lastMovement.SourceWarehouseId;
+                        //if (movementCount > 1)
+                        //{
+                        //    debitingWarehouseId = lastMovement.DestinationWarehouseId;
+                        //}
+                        //else
+                        //{
+                        //    debitingWarehouseId = lastMovement.SourceWarehouseId;
+                        //}
                         //Тут тоже исправить нужно
                         var debitingWarehouseName = _warehouseRepository.GetAll()
           .Where(w => w.Id == debitingWarehouseId)

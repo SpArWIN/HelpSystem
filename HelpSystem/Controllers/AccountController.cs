@@ -1,4 +1,5 @@
-﻿using HelpSystem.Domain.ViewModel.Account;
+﻿using HelpSystem.Domain.Entity;
+using HelpSystem.Domain.ViewModel.Account;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -10,10 +11,11 @@ namespace HelpSystem.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
-
-        public AccountController(IAccountService accountService)
+        private readonly ITokenCacheService _tokenCacheService;
+        public AccountController(IAccountService accountService, ITokenCacheService tokenCacheService)
         {
             _accountService = accountService;
+            _tokenCacheService = tokenCacheService;
         }
 
 
@@ -80,5 +82,43 @@ namespace HelpSystem.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
+        [HttpGet]
+        public async Task<IActionResult> RecoveryPassword(Guid UserId, string Token)
+        {
+            //Проверим, есть ли она уже в кеше
+            var Tok = await _tokenCacheService.GetTokenAsync(Token);
+            if(Tok.StatusCode == Domain.Enum.StatusCode.NotFind)
+            {
+                TimeSpan expirationTime = TimeSpan.FromMinutes(2);
+                await _tokenCacheService.SetTokenAsync(Token, UserId.ToString(), expirationTime);
+            }
+            //Через какое время токен из кеша должен пропасть
+           
+
+            ViewBag.UserId = UserId;
+            ViewBag.Token = Token;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RecoveryPassword(RecoveryProfile model, string Token)
+        {
+            var Response = await _accountService.RecoveryPassword(model,Token);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                var errorDescription = string.Join(",", errors);
+                return BadRequest(new { Description = errorDescription });
+            }
+
+
+            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = Response.Description });
+            }
+            return BadRequest(new { description = Response.Description });
+        }
     }
+
 }
