@@ -89,7 +89,8 @@ namespace HelpSystem.Controllers
             var Tok = await _tokenCacheService.GetTokenAsync(Token);
             if(Tok.StatusCode == Domain.Enum.StatusCode.NotFind)
             {
-                return BadRequest(new { description = "Ссылка не действительна" });
+              await  Logout();
+                return View("ErrorRecovery",Tok.Description);
             }
             //Через какое время токен из кеша должен пропасть
             

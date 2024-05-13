@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+
 using System.Text;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
@@ -19,8 +20,8 @@ namespace HelpSystem.Service.Implementantions
 {
     public class EmailService : IEmailSender
     {
-        private readonly string _emailConnect = "HelpDeskSystem@outlook.com";
-        protected readonly string pass = "njxyjdctpyftn!21";
+        private readonly string _emailConnect = "nicolai.balykin@yandex.ru";
+        protected readonly string pass = "sosrwgecrpymobyg";
 		private readonly IBaseRepository<Profile> _profileRepository;
 		private readonly ITokenCacheService _tokenCacheService;
         public EmailService(IBaseRepository<Profile> profile,ITokenCacheService tokenCache)
@@ -78,7 +79,7 @@ namespace HelpSystem.Service.Implementantions
     <title>Восстановление пароля</title>
     <style>
         .card {{
-            width: 500px;
+            width: 600px;
             margin: 0 auto;
             border: 1px solid #ccc;
             border-radius: 8px;
@@ -94,8 +95,8 @@ namespace HelpSystem.Service.Implementantions
             text-align: center;
         }}
         .card-button {{
-            display: block;
-            width: 100%;
+           
+            width: 90%;
             padding: 10px;
             text-align: center;
             background-color: #007bff;
@@ -103,6 +104,7 @@ namespace HelpSystem.Service.Implementantions
             text-decoration: none;
             border-radius: 5px;
             margin-top: 10px;
+			margin-bottom:5px;
         }}
     </style>
 </head>
@@ -121,21 +123,26 @@ namespace HelpSystem.Service.Implementantions
 </body>
 </html>";
 
-                var Message = new MailMessage(_emailConnect, Email)
+				var Message = new MailMessage(_emailConnect, Email)
 				{
-					Subject = "Восстановление пароля",
-					Body = htmlBody,
+					Subject = "Служба восстановления пароля",
+                    Body = htmlBody,
 					IsBodyHtml = true
 				};
 
-
-                var Client = new SmtpClient("smtp-mail.outlook.com", 587)
+				Message.From = new MailAddress(_emailConnect, "HelpDeskSystem");
+				
+                var Client = new SmtpClient("smtp.yandex.ru", 587)
 				{
+					
 					EnableSsl = true,
-					Credentials = new  NetworkCredential(_emailConnect, pass)
+					Credentials = new  NetworkCredential(_emailConnect, pass),
+					UseDefaultCredentials = false,
+					DeliveryMethod = SmtpDeliveryMethod.Network
 				};
+			
 
-				Client.Send(Message);
+                Client.Send(Message);
 				return await Task.FromResult(new BaseResponse<MailMessage>
 				{
 					Data = Message,
