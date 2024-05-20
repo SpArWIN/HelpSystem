@@ -6,6 +6,7 @@ namespace HelpSystem.Domain.Entity
     {
         public Guid Id { get; set; }
         [Required(ErrorMessage = "Укажите номер документа")]
+        [MaxLength(40, ErrorMessage = "Максимальная длина номера документа, не должна превышать 40 символов")]
         public string NumberDocument { get; set; } //Номер документа
         public DateTime CreationDate { get; set; }
         //Навигационное свойство на накладную

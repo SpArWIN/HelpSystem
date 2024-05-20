@@ -1,5 +1,4 @@
-﻿using HelpSystem.Domain.Entity;
-using HelpSystem.Domain.ViewModel.Account;
+﻿using HelpSystem.Domain.ViewModel.Account;
 using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -87,13 +86,13 @@ namespace HelpSystem.Controllers
         {
             //Проверим, есть ли она уже в кеше
             var Tok = await _tokenCacheService.GetTokenAsync(Token);
-            if(Tok.StatusCode == Domain.Enum.StatusCode.NotFind)
+            if (Tok.StatusCode == Domain.Enum.StatusCode.NotFind)
             {
-              await  Logout();
-                return View("ErrorRecovery",Tok.Description);
+                await Logout();
+                return View("ErrorRecovery", Tok.Description);
             }
             //Через какое время токен из кеша должен пропасть
-            
+
 
             ViewBag.UserId = UserId;
             ViewBag.Token = Token;
@@ -103,7 +102,7 @@ namespace HelpSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> RecoveryPassword(RecoveryProfile model, string Token)
         {
-            var Response = await _accountService.RecoveryPassword(model,Token);
+            var Response = await _accountService.RecoveryPassword(model, Token);
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -113,7 +112,7 @@ namespace HelpSystem.Controllers
             }
 
 
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return Ok(new { description = Response.Description });
             }

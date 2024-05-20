@@ -42,6 +42,18 @@ namespace HelpSystem.Service.Implementantions
                 {
 
 
+                    var GetAllusers = await _useRepository.GetAll()
+                        .Include(x => x.Profile)
+                        .ToListAsync();
+                    bool isEmail = GetAllusers.Any(x => x.Profile.Email == model.Email);
+                    if (isEmail)
+                    {
+                        return new BaseResponse<ClaimsIdentity>()
+                        {
+                            Description = "Адрес электронной почты уже используется. Пожалуйста, введите другой адрес.",
+                            StatusCode = StatusCode.UnCreated
+                        };
+                    }
 
                     var DefaultRole = UserRoleType.User;
                     var role = await _roleRepository.GetAll().FirstOrDefaultAsync(r => r.RoleType == DefaultRole);
@@ -57,10 +69,10 @@ namespace HelpSystem.Service.Implementantions
                             Roles = role
 
                         };
-
+                        await _useRepository.Create(User);
                     }
 
-                    await _useRepository.Create(User);
+
 
                     var profile = new Profile()
                     {
@@ -69,7 +81,6 @@ namespace HelpSystem.Service.Implementantions
                         Email = model.Email
                     };
                     await _profileRepository.Create(profile);
-
 
 
                     var Result = Authenticate(User);
@@ -144,13 +155,13 @@ namespace HelpSystem.Service.Implementantions
             return new ClaimsIdentity(claims, "ApplicationCookie", ClaimTypes.Name, ClaimTypes.Role);
         }
 
-        public async Task<BaseResponse<User>> RecoveryPassword(RecoveryProfile model,string Token)
+        public async Task<BaseResponse<User>> RecoveryPassword(RecoveryProfile model, string Token)
         {
             try
             {
                 var User = await _useRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == model.UserId);
-              
+
                 var Tok = await _tokenCacheService.GetTokenAsync(Token);
 
                 if (Tok.StatusCode == StatusCode.Ok)
@@ -163,9 +174,9 @@ namespace HelpSystem.Service.Implementantions
                         await _tokenCacheService.RemoveTokenAsync(Token);
                     }
                 }
-              
+
                 //Проверим действителен ли токен
-              
+
                 if (User == null)
                 {
                     return new BaseResponse<User>()
@@ -178,7 +189,7 @@ namespace HelpSystem.Service.Implementantions
                 User.Password = HashPassword.HashPassowrds(model.NewPassword);
 
                 await _useRepository.Update(User);
-               
+
                 return new BaseResponse<User>()
                 {
                     Description = "Пароль был успешно изменён!",

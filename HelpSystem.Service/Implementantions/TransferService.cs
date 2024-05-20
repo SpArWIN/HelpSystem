@@ -94,7 +94,7 @@ namespace HelpSystem.Service.Implementantions
                 if (UtilizationBd != null)
                 {
                     //сделаю функцию, которая перед записью о перемемещении товара добавит всем товарам время по списанию
-                    await MarkProduct(products,model);
+                    await MarkProduct(products, model);
 
                 }
 
@@ -202,12 +202,13 @@ namespace HelpSystem.Service.Implementantions
             {
                 var DebitingProduct = await _productsRepository.GetAll()
                     .FirstOrDefaultAsync(x => x.Id == ProductId);
-                if (DebitingProduct != null) {
+                if (DebitingProduct != null)
+                {
                     //Находим последнюю запись это на склад утилизации и удаляем ее, очищая время.
                     var LastMovement = await _transBaseRepository.GetAll()
                         .Where(x => x.Product == DebitingProduct)
                         //Чтобы найти последнюю, отсортируем по времени
-                        .OrderByDescending(x=>x.MovementDate)
+                        .OrderByDescending(x => x.MovementDate)
                         .FirstOrDefaultAsync();
                     if (LastMovement != null)
                     {
@@ -226,8 +227,8 @@ namespace HelpSystem.Service.Implementantions
                         StatusCode = StatusCode.NotFind,
                         Description = $"Перемещение на склад утилизации не найдено",
                     };
-                   
-                   
+
+
                 }
                 return new BaseResponse<ProductMovement>()
                 {
@@ -242,7 +243,7 @@ namespace HelpSystem.Service.Implementantions
                     StatusCode = StatusCode.InternalServerError,
                     Description = ex.Message
                 };
-              
+
             }
         }
 
@@ -287,15 +288,16 @@ namespace HelpSystem.Service.Implementantions
 
         }
         //Метод для отметки списание товара
-        private async Task MarkProduct(List<Products> product,List<TransferViewModel>mod)
+        private async Task MarkProduct(List<Products> product, List<TransferViewModel> mod)
         {
             foreach (var prod in product)
             {
                 prod.TimeDebbiting = DateTime.Now;
-            
+
             }
 
-            for (int i = 0; i < Math.Min(product.Count, mod.Count); i++){
+            for (int i = 0; i < Math.Min(product.Count, mod.Count); i++)
+            {
                 product[i].CommentDebbiting = mod[i].CommentDebiting;
                 await _productsRepository.Update(product[i]);
             }

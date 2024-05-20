@@ -1326,50 +1326,40 @@ function BindingProdWarehouse(ProductId,Name,Code) {
 //Метод массового перемещения товара, будет уходить по тому же url, только сразу списком
 //titl - Когда загрузка, res - при ответе
 //DestanWh - Для того, чтобы проверить, что за склад, на который товар переносится, отправим его сюда отдельно
-function MassMovedProduct(products,titl,res,DestanWh) {
-    //Вот как раз тут перед отправкой закинем текущий склад
+function MassMovedProduct(products, titl, res, DestanWh) {
+    // Добавляем текущий склад к каждому продукту
     products.forEach(function (product) {
         product.SourceWarehouseId = currentWarehouseId;
     });
 
-    //Пишем get запрос к серверу, на получения данных о складе, вдруг это идёт перемещение на списание
-    //TODO нужно подумать, как провернуть
+    // Делаем запрос на сервер для получения данных о складе
     $.get('/Warehouse/GetMovedWarehouse', { id: DestanWh }, function (response) {
         if (response.data) {
-            //Проверяем, не является ли склад сервисным центром
+            // Проверяем, не является ли склад сервисным центром
             var isService = response.data.isService;
+
             if (isService) {
                 var count = products.length;
-                var messageText;
-                var title;
-                if (count > 1) {
+                var messageText = count > 1 ?
+                    `Перемещаемые товары ${count} (шт) будут перенесены на склад утилизации. Продолжить?` :
+                    'Перемещаемый товар будет перенесён на склад утилизации. Продолжить?';
+                var title = count > 1 ? 'Списание товаров' : 'Списание товара';
 
-                    messageText = 'Перемещаемые товары ' + count + ' (шт)  будут перенесены на склад утилизации. Продолжить?';
-                    title = 'Списание товаров';
-                }
-                else {
-                    messageText = 'Перемещаемый товар, будет перенесён на склад утилизации. Продолжить?';
-                    title = 'Списание товара';
+                // Проверяем валидность комментариев
+                let hasInvalidComments = products.some(item => {
+                    return (item.Comments === undefined && (item.CommentsDebiting === "" || item.CommentsDebiting.length < 5)) ||
+                        (item.CommentsDebiting === undefined && (item.Comments === "" || item.Comments.length < 5));
+                });
 
-
-                }
-                //В таком случае комментарий к перемещению крайне важен, нужно это дело проверить
-                //Если хотябы один из элементов, пустой, а если комментарий пустой, то он пустой :)
-            //При массовом перемещении, то и дело с концом
-                
-                if (products.some(item => item.Comments == "")) {
+                if (hasInvalidComments) {
                     Swal.fire({
                         title: 'Ошибка перемещения товара на склад утилизации',
-                        text: 'При перемещении товара на склад утилизации, комментарий обязателен.',
+                        text: 'При перемещении товара на склад утилизации, комментарий обязателен. (Минимальная длина 5 символов)',
                         icon: 'error',
                         confirmButtonColor: 'green',
                         confirmButtonText: 'Хорошо'
                     });
-
-                }
-                else {
-
-
+                } else {
                     Swal.fire({
                         title: 'Внимание',
                         text: messageText,
@@ -1377,7 +1367,7 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
                         cancelButtonColor: '#d33',
-                        confirmButtonText: 'Да,продолжить',
+                        confirmButtonText: 'Да, продолжить',
                         cancelButtonText: 'Отменить'
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -1403,15 +1393,12 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                                             text: response.description,
                                             icon: 'success',
                                             confirmButtonText: 'Окей',
-
                                         }).then((result) => {
                                             if (result.isConfirmed) {
                                                 location.reload();
                                             }
-
                                         });
-
-                                    }, 1000)
+                                    }, 1000);
                                 },
                                 error: function (response) {
                                     setTimeout(function () {
@@ -1421,19 +1408,15 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                                             text: response.responseJSON.description,
                                             icon: 'error',
                                             confirmButtonText: 'Понятно',
-                                        })
-                                    }, 1000)
-
+                                        });
+                                    }, 1000);
                                 }
                             });
-
                         }
-
                     });
                 }
-            }
-            else {
-                //Пошли фигачить ajax :)
+            } else {
+                // Если склад не является сервисным центром, отправляем AJAX-запрос без дополнительных проверок
                 Swal.fire({
                     title: titl,
                     html: '<img src="/myIcon/icons8-truck.gif" alt="Custom Icon"><p>Пожалуйста, подождите...</p>',
@@ -1456,12 +1439,10 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                                 text: response.description,
                                 icon: 'success',
                                 confirmButtonText: 'Окей',
-
                             }).then((result) => {
                                 location.reload();
                             });
-
-                        }, 1000)
+                        }, 1000);
                     },
                     error: function (response) {
                         setTimeout(function () {
@@ -1471,17 +1452,13 @@ function MassMovedProduct(products,titl,res,DestanWh) {
                                 text: response.responseJSON.description,
                                 icon: 'error',
                                 confirmButtonText: 'Понятно',
-                            })
-                        }, 1000)
-
+                            });
+                        }, 1000);
                     }
                 });
             }
         }
     });
-
-   
-
 }
 
 

@@ -40,7 +40,7 @@ namespace HelpSystem
             services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddScoped<ITransferService, TransferService>();
             services.AddScoped<IReportService, ReportsService>();
-            services.AddTransient<IEmailSender,EmailService>();
+            services.AddTransient<IEmailSender, EmailService>();
             services.AddSingleton<ITokenCacheService, TokenService>();
 
         }

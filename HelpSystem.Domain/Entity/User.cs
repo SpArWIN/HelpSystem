@@ -11,6 +11,7 @@ namespace HelpSystem.Domain.Entity
         [MaxLength(40)]
         public string Name { get; set; }
         [MaxLength(30)]
+
         public string Login { get; set; }
 
         public string Password { get; set; }

@@ -1,9 +1,4 @@
 ﻿using HelpSystem.Domain.ViewModel.Product;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpSystem.Domain.ViewModel.Report
 {
@@ -12,6 +7,6 @@ namespace HelpSystem.Domain.ViewModel.Report
     {
         public string WarehouseName { get; set; } = string.Empty;
         public int TotalCount { get; set; }
-        public List<ProductDebitingViewModel> WhDebitingProduct { get; set; } 
+        public List<ProductDebitingViewModel> WhDebitingProduct { get; set; }
     }
 }

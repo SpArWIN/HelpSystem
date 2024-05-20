@@ -24,7 +24,7 @@ namespace HelpSystem.Domain.Entity
 
         //Для того, чтобы отобразить списание товара, добавим пустой DateTime
         public DateTime? TimeDebbiting { get; set; }
-        public string ?CommentDebbiting { get; set; } //Комментарий при списании товара
+        public string? CommentDebbiting { get; set; } //Комментарий при списании товара
 
 
     }

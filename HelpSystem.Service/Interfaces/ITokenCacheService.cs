@@ -1,10 +1,5 @@
 ﻿using HelpSystem.Domain.Response;
 using HelpSystem.Domain.ViewModel.Token;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HelpSystem.Service.Interfaces
 {

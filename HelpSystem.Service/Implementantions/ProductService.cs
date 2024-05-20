@@ -267,20 +267,20 @@ namespace HelpSystem.Service.Implementantions
 
                         // Получаем количество товаров, которые нужно создать
                         int quantity = int.Parse(pos.Quantity);
-                        if (string.IsNullOrEmpty(pos.NameProduct))
+                        if (string.IsNullOrEmpty(pos.NameProduct) || pos.NameProduct.Length < 5)
                         {
                             return new BaseResponse<IEnumerable<Products>>()
                             {
-                                Description = $"Наименование товара не указано в {positionIndex} позиции",
+                                Description = $"Или  не указано наименование товара в {positionIndex} позиции или количество символов меньше 5",
                                 StatusCode = StatusCode.UnCreated
                             };
                         }
 
-                        if (string.IsNullOrEmpty(pos.InventoryCode))
+                        if (string.IsNullOrEmpty(pos.InventoryCode) || pos.InventoryCode.Length < 4)
                         {
                             return new BaseResponse<IEnumerable<Products>>()
                             {
-                                Description = $"Инвентарный код не указан в {positionIndex} позиции",
+                                Description = $"Или инвентарный код не указан в {positionIndex} позиции или количество символов меньше 4",
                                 StatusCode = StatusCode.UnCreated
                             };
                         }

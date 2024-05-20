@@ -50,9 +50,7 @@ namespace HelpSystem.Controllers
         }
 
         //Получение списка заявок конкретного пользователя - именно заявок. 
-        //Метод возвращает Json В таблицу, нужен отдельный метод, который бы возвращал данные в частичное предсставление
-
-
+        //Метод возвращает Json В таблицу, нужен отдельный метод, который бы возвращал данные в частичное представление
         public async Task<IActionResult> GetUserStatment()
         {
 
@@ -75,6 +73,7 @@ namespace HelpSystem.Controllers
         [HttpGet]
         public IActionResult GetStatment() => View();
         //По поему это Post
+        //Получения списка всех заявок
         [HttpPost]
         public async Task<IActionResult> GetStatmentsData()
         {

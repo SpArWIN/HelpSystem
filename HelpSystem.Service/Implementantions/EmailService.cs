@@ -1,20 +1,12 @@
-﻿using HelpSystem.DAL.Implementantions;
-using HelpSystem.DAL.Interfasces;
+﻿using HelpSystem.DAL.Interfasces;
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Helpers;
 using HelpSystem.Domain.Response;
 
 using HelpSystem.Service.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace HelpSystem.Service.Implementantions
 {
@@ -22,51 +14,51 @@ namespace HelpSystem.Service.Implementantions
     {
         private readonly string _emailConnect = "nicolai.balykin@yandex.ru";
         protected readonly string pass = "sosrwgecrpymobyg";
-		private readonly IBaseRepository<Profile> _profileRepository;
-		private readonly ITokenCacheService _tokenCacheService;
-        public EmailService(IBaseRepository<Profile> profile,ITokenCacheService tokenCache)
-		{
-			_profileRepository = profile;
-			_tokenCacheService = tokenCache;
-		}
-		
-		
-	
+        private readonly IBaseRepository<Profile> _profileRepository;
+        private readonly ITokenCacheService _tokenCacheService;
+        public EmailService(IBaseRepository<Profile> profile, ITokenCacheService tokenCache)
+        {
+            _profileRepository = profile;
+            _tokenCacheService = tokenCache;
+        }
+
+
+
         public async Task<BaseResponse<MailMessage>> RecoveryPassword(string Email)
         {
-			try
-			{
-				var UsProfile = await _profileRepository.GetAll()
-					.Where(x => x.Email == Email)
-					.FirstOrDefaultAsync();
-				if(UsProfile == null)
-				{
-					return await Task.FromResult(new BaseResponse<MailMessage>
-					{
-						Description = "Пользователь с указанной почтой не найден",
-						StatusCode = Domain.Enum.StatusCode.NotFind
-					});
-				}
-				
-				var CurrentTime = DateTime.Now;
-				string TimeOfDay;
-				if(CurrentTime.TimeOfDay < TimeSpan.FromHours(12))
-				{
-					TimeOfDay = "Доброе утро";
-				}
-				else if(CurrentTime.TimeOfDay <= TimeSpan.FromHours(18))
-				{
-					TimeOfDay = "Добрый день";
-				}
-				else
-				{
-					TimeOfDay = "Добрый вечер";
-				}
-				//ДЛя того, чтобы ссылка действовала всего один раз, создадим временный токен
-				var TemporyTokey = Guid.NewGuid().ToString();
-				var hashedToken = HashPassword.HashPassowrds(TemporyTokey);
+            try
+            {
+                var UsProfile = await _profileRepository.GetAll()
+                    .Where(x => x.Email == Email)
+                    .FirstOrDefaultAsync();
+                if (UsProfile == null)
+                {
+                    return await Task.FromResult(new BaseResponse<MailMessage>
+                    {
+                        Description = "Пользователь с указанной почтой не найден",
+                        StatusCode = Domain.Enum.StatusCode.NotFind
+                    });
+                }
+
+                var CurrentTime = DateTime.Now;
+                string TimeOfDay;
+                if (CurrentTime.TimeOfDay < TimeSpan.FromHours(12))
+                {
+                    TimeOfDay = "Доброе утро";
+                }
+                else if (CurrentTime.TimeOfDay <= TimeSpan.FromHours(18))
+                {
+                    TimeOfDay = "Добрый день";
+                }
+                else
+                {
+                    TimeOfDay = "Добрый вечер";
+                }
+                //ДЛя того, чтобы ссылка действовала всего один раз, создадим временный токен
+                var TemporyTokey = Guid.NewGuid().ToString();
+                var hashedToken = HashPassword.HashPassowrds(TemporyTokey);
                 TimeSpan expirationTime = TimeSpan.FromMinutes(2);
-                await _tokenCacheService.SetTokenAsync(hashedToken,UsProfile.UserId.ToString(), expirationTime);
+                await _tokenCacheService.SetTokenAsync(hashedToken, UsProfile.UserId.ToString(), expirationTime);
 
                 //Формируем ссылку с восстановлением
                 var recoveryLink = $"https://localhost:44381/Account/RecoveryPassword?token={hashedToken}&userId={UsProfile.UserId}";
@@ -104,7 +96,7 @@ namespace HelpSystem.Service.Implementantions
             text-decoration: none;
             border-radius: 5px;
             margin-top: 10px;
-			margin-bottom:5px;
+			margin-bottom:10px;
         }}
     </style>
 </head>
@@ -123,43 +115,43 @@ namespace HelpSystem.Service.Implementantions
 </body>
 </html>";
 
-				var Message = new MailMessage(_emailConnect, Email)
-				{
-					Subject = "Служба восстановления пароля",
+                var Message = new MailMessage(_emailConnect, Email)
+                {
+                    Subject = "Служба восстановления пароля",
                     Body = htmlBody,
-					IsBodyHtml = true
-				};
+                    IsBodyHtml = true
+                };
 
-				Message.From = new MailAddress(_emailConnect, "HelpDeskSystem");
-				
+                Message.From = new MailAddress(_emailConnect, "HelpDeskSystem");
+
                 var Client = new SmtpClient("smtp.yandex.ru", 587)
-				{
-					
-					EnableSsl = true,
-					Credentials = new  NetworkCredential(_emailConnect, pass),
-					UseDefaultCredentials = false,
-					DeliveryMethod = SmtpDeliveryMethod.Network
-				};
-			
+                {
+
+                    EnableSsl = true,
+                    Credentials = new NetworkCredential(_emailConnect, pass),
+                    UseDefaultCredentials = false,
+                    DeliveryMethod = SmtpDeliveryMethod.Network
+                };
+
 
                 Client.Send(Message);
-				return await Task.FromResult(new BaseResponse<MailMessage>
-				{
-					Data = Message,
-					StatusCode = Domain.Enum.StatusCode.Ok,
-					Description = $"Сообщение успешно доставлено"
-				});
+                return await Task.FromResult(new BaseResponse<MailMessage>
+                {
+                    Data = Message,
+                    StatusCode = Domain.Enum.StatusCode.Ok,
+                    Description = $"Сообщение успешно доставлено"
+                });
 
-			}
-			catch (Exception ex)
-			{
-				return await Task.FromResult(new BaseResponse<MailMessage>
-				{
-					Description = ex.Message,
-					StatusCode = Domain.Enum.StatusCode.InternalServerError
-				});
-				
-			}
+            }
+            catch (Exception ex)
+            {
+                return await Task.FromResult(new BaseResponse<MailMessage>
+                {
+                    Description = ex.Message,
+                    StatusCode = Domain.Enum.StatusCode.InternalServerError
+                });
+
+            }
         }
     }
 }

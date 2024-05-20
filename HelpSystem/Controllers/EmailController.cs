@@ -16,15 +16,15 @@ namespace HelpSystem.Controllers
             return View();
         }
         [HttpPost]
-        public async Task <IActionResult> PasswordRecovery(string Email) 
+        public async Task<IActionResult> PasswordRecovery(string Email)
         {
             var Response = await _emailSender.RecoveryPassword(Email);
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Ok( new { description = Response.Description });
+                return Ok(new { description = Response.Description });
 
             }
-            return BadRequest ( new { description =  Response.Description });
+            return BadRequest(new { description = Response.Description });
         }
     }
 }

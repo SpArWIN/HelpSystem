@@ -40,7 +40,7 @@ namespace HelpSystem.Service.Implementantions
             {
                 //Получаем все склады
                 var Warehouses = await _warehouseRepository.GetAll()
-                    .Where(i=>!i.IsService)
+                    .Where(i => !i.IsService)
                     .Include(p => p.Products)
                     .ToListAsync();
                 var ReportData = new ReportsProductOnWarehouseViewModel();
@@ -297,7 +297,7 @@ namespace HelpSystem.Service.Implementantions
                 var Report = new ReportDebitingProduct();
                 var DebitingList = new List<ProductDebitingViewModel>();
                 int TotalCount = 0;
-                if(Warehouses == null)
+                if (Warehouses == null)
                 {
                     return new BaseResponse<ReportDebitingProduct>()
                     {
@@ -310,10 +310,10 @@ namespace HelpSystem.Service.Implementantions
                 //Однако я буду точно знать, что если есть дата списания, значит товар упал на этот склад, остаётся его передать
                 var Product = await _productRepository
                     .GetAll()
-                    .Include(w=>w.Warehouse)
+                    .Include(w => w.Warehouse)
                     .Where(x => x.TimeDebbiting != null)
                     .ToListAsync();
-                if(Product == null)
+                if (Product == null)
                 {
                     return new BaseResponse<ReportDebitingProduct>()
                     {
@@ -322,7 +322,7 @@ namespace HelpSystem.Service.Implementantions
                     };
                 }
 
-                foreach(var Debit in Product)
+                foreach (var Debit in Product)
                 {
                     TotalCount++;
                     var invoice = _invoiceRepository.GetAll()
@@ -358,11 +358,11 @@ namespace HelpSystem.Service.Implementantions
                         ProductName = Debit.NameProduct,
                         Inventory = Debit.InventoryCode,
                         CommentsDebiting = Debit.CommentDebbiting != null ? Debit.CommentDebbiting : "Нет комментариев",
-                    DataEntrance = invoice.ToString("g"),
+                        DataEntrance = invoice.ToString("g"),
                         DateDebiting = Debit.TimeDebbiting.Value.ToString("g"),
                         OriginalWarehouse = Debit.Warehouse.Name,
                         DebitingWarehouse = debitingWarehouseName
-                       
+
                     };
 
                     DebitingList.Add(DebitingProduct);
@@ -372,7 +372,7 @@ namespace HelpSystem.Service.Implementantions
                 Report.TotalCount = TotalCount;
 
 
-                return new  BaseResponse<ReportDebitingProduct>()
+                return new BaseResponse<ReportDebitingProduct>()
                 {
                     Data = Report,
                     StatusCode = StatusCode.Ok,

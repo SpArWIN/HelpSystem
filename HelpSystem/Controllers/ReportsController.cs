@@ -65,11 +65,11 @@ namespace HelpSystem.Controllers
         [HttpGet]
         public async Task<IActionResult> ReportDebitingProducts()
         {
-            var Response = await  _reportService.GetDebitingReports();
+            var Response = await _reportService.GetDebitingReports();
 
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json(new {data = Response.Data,description = Response.Description});
+                return Json(new { data = Response.Data, description = Response.Description });
             }
             return Json(Response.Description);
         }

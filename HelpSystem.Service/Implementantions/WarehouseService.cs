@@ -182,8 +182,8 @@ namespace HelpSystem.Service.Implementantions
                         .ToListAsync();
                     int TotalCount = 0;
 
-                  
-                    
+
+
 
 
                     foreach (var movement in incomingMovements)
@@ -483,7 +483,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     Data = null,
                     StatusCode = StatusCode.NotFind
-                 
+
                 };
             }
 
@@ -625,7 +625,7 @@ namespace HelpSystem.Service.Implementantions
                         var incomingMovements = await _productMovementRepository.GetAll()
                             .Include(p => p.Product)
                             .Where(x => x.DestinationWarehouseId == WhId && x.Product.UserId == null)
-                         
+
                             .ToListAsync();
 
 
@@ -674,14 +674,14 @@ namespace HelpSystem.Service.Implementantions
 
 
 
-                     
+
 
 
 
                         // Формируем список деталей товара для аккордеона
                         var productDetails = productsOnWarehouse
                             .OrderBy(p => p.Id)
-                            
+
                             .Select(p => new TransferProductViewModel
                             {
 
@@ -728,7 +728,7 @@ namespace HelpSystem.Service.Implementantions
 
                         // Получаем список складов, кроме текущего
                         var otherWarehouses = await _warehouseRepository.GetAll()
-                            .Where(x => x.Id != WhId)
+                            .Where(x => x.Id != WhId && !x.IsService)
                             .ToListAsync();
 
                         // Формируем список деталей товара для аккордеона
@@ -856,7 +856,7 @@ namespace HelpSystem.Service.Implementantions
                     result = products
                .GroupBy(x => x.NameProduct)
                .Select(group => new ProductDebitingWarehouseViewModel()
-                    {
+               {
                    ProductName = group.Key,
                    TotalCount = group.Count(),
                    Whproduct = group.Select(x =>
@@ -866,9 +866,9 @@ namespace HelpSystem.Service.Implementantions
                             .Select(i => i.CreationDate)
                             .FirstOrDefault();
 
-                        var lastMovement =  _productMovementRepository.GetAll()
+                        var lastMovement = _productMovementRepository.GetAll()
                             .Where(m => m.Product.Id == x.Id)
-                            .OrderByDescending(x=>x.MovementDate)
+                            .OrderByDescending(x => x.MovementDate)
                             .FirstOrDefault();
                         var movementCount = _productMovementRepository.GetAll()
         .Count(m => m.Product.Id == x.Id);
@@ -893,13 +893,13 @@ namespace HelpSystem.Service.Implementantions
                             ProductName = x.NameProduct,
                             Inventory = x.InventoryCode,
                             CommentsDebiting = lastMovement.Comments ?? x.Comments ?? x.CommentDebbiting,
-                        DataEntrance = invoice.ToString("g"),
+                            DataEntrance = invoice.ToString("g"),
                             DateDebiting = x.TimeDebbiting.Value.ToString("g"),
                             OriginalWarehouse = x.Warehouse.Name,
                             DebitingWarehouse = debitingWarehouseName
                         };
-                            }).ToList(),
-                    }).ToList();
+                    }).ToList(),
+               }).ToList();
 
 
 
@@ -939,12 +939,12 @@ namespace HelpSystem.Service.Implementantions
                 var Products = await _products.GetAll()
                     .Where(x => x.TimeDebbiting.HasValue)
                     .ToListAsync();
-                if(Products != null)
+                if (Products != null)
                 {
                     var dictonary = Products.ToDictionary(x => x.Id, y => y.TimeDebbiting.Value);
                     return new BaseResponse<Dictionary<int, DateTime>>
                     {
-                        Data= dictonary,
+                        Data = dictonary,
                         StatusCode = StatusCode.Ok
                     };
                 }
@@ -952,7 +952,7 @@ namespace HelpSystem.Service.Implementantions
                 {
                     StatusCode = StatusCode.NotFind,
                 };
-               
+
 
 
             }

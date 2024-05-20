@@ -1,5 +1,4 @@
 ﻿using HelpSystem.Domain.Response;
-using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Report;
 
 namespace HelpSystem.Service.Interfaces

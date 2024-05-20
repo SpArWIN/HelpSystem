@@ -62,7 +62,6 @@ namespace HelpSystem.Controllers
             return Json(new { description = Response.Description });
         }
         //Так как при списании конкретного товара, будет необходим склад, который является утилизационным, его нужно получить
-
         public async Task<IActionResult> GetDetimingWarehouse()
         {
             var Response = await _warehouseService.GetDetWarehouse();
@@ -90,24 +89,24 @@ namespace HelpSystem.Controllers
         public async Task<IActionResult> GetProductsWarehouse(Guid id)
         {
             var Response = await _warehouseService.GetProductWarehouse(id);
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
                 return PartialView("_ProductWarehouse", Response.Data);
             }
             return PartialView("_ProductWarehouse");
-           
+
 
         }
         //Метод получения времени списанных товаров 
-        [HttpGet] 
+        [HttpGet]
         public async Task<IActionResult> GetTimeDebeting()
         {
             var Response = await _warehouseService.GetTimeProduct();
-            if(Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
-                return Json( Response.Data );
+                return Json(Response.Data);
             }
-            return BadRequest(new {description = Response.Description});
+            return BadRequest(new { description = Response.Description });
         }
 
         //Метод получения списанных товаров по складу
@@ -119,7 +118,7 @@ namespace HelpSystem.Controllers
             {
                 return PartialView("_PartialProductDebiting", Response.Data);
             }
-            return PartialView("_PartialProductDebiting",Response.Data);
+            return PartialView("_PartialProductDebiting", Response.Data);
         }
 
         //Метод привязки со стороны СКЛАДАА
