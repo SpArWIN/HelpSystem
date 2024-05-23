@@ -67,13 +67,20 @@
             cursor: pointer;
         }
 
-  
-      
+
+    .report-description {
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
   
 
 
 
 </style>
+
+
 <ul class="nav nav-pills">
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">Отчёты</a>
@@ -85,12 +92,22 @@
         </ul>
     </li>
 </ul>
+<div class="container mt-5">
+    <p> <strong> Выберите нужный отчёт из выпадающего списка ниже. Отчёт будет сформирован и отображён на этой странице.</strong> </p>
+</div>
+
 <div style="display:none" class="report-container" id="reportContainer">
   
     
     
 </div>
-
+<div class=" report-description mt-4">
+    <h2>Описание отчётов</h2>
+    <p><strong>Отчёт по пользователю:</strong> предоставляет  информацию о товарах, которые привязаны к пользователю.</p>
+    <p><strong>Отчёт по пользователям:</strong> отображает сводные данные по всем пользователям, и товарам, которые к ним прикреплены.</p>
+    <p><strong>Отчёт по поступлениям:</strong> включает информацию о всех поступивших товарах за выбранный период времени.</p>
+    <p><strong>Отчёт по списанным товарам:</strong> показывает данные о товарах, которые были списаны.</p>
+</div>
 
 
 @section Scripts

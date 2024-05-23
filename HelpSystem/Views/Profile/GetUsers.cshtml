@@ -39,7 +39,6 @@
                     <th>Имя</th>
                     <th>Отчество</th>
                     <th>Роль</th>
-                    <th>Возраст</th>
                     <th>Действия</th>
                 </tr>
             </thead>
@@ -53,7 +52,7 @@
                         <td>@Us.Name</td>
                         <td>@Us.Surname</td>
                         <td>@Us.Roles</td>
-                        <td class="text-center">@Us.Age</td>
+                       
                         <td>
                             <a asp-controller="Profile" asp-action="Detail" asp-route-id="@Us.UserId" class="btn btn-outline-info">Профиль</a>
                             <a onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Us.UserId', context: 'profile'})" class="btn btn-outline-secondary">Изменить</a>

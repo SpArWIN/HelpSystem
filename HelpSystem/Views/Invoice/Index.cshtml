@@ -38,7 +38,7 @@
         max-width: 900px; /* Максимальная ширина формы */
         margin: 0 auto; /* Центрирование формы */
         padding: 20px; /* Внутренние отступы */
-       
+       margin-top:20px;
         }
      #PositionsContainer
     {
@@ -91,7 +91,7 @@
         <form id="CreateProductsForm" method="post" >
             <!-- Поле для выбора поставщика -->
             <label for="PositionCount">Укажите номер документа</label>
-        <input type="number" class="form-control" id="NumberDocumetn" name="Number">
+        <input type="text" class="form-control" id="NumberDocumetn" name="Number" min="0">
             <div class="form-group">
                 <label for="Provider">Выберите поставщика</label>
             <select class="form-control" id="Provider" name="ProviderID">
@@ -117,27 +117,27 @@
             <div class="form-group">
                 <label for="Warehouse">Укажите склад</label>
             <select class="form-control" id="Warehouse" name="WarehouseId">
-                    @if (Model.Warehouses != null  && Model.Warehouses.Any(x=>!x.isFreesing))
+                @{
+                    var availableWarehouses = Model.Warehouses?.Where(x => !x.isFreesing && !x.isService).ToList();
+                }
+
+                @if (availableWarehouses != null && availableWarehouses.Any())
+                {
+                    foreach (var ware in availableWarehouses)
                     {
-                    foreach (var Ware in Model.Warehouses)
-                    {
-                        if (!Ware.isFreesing && !Ware.isService)
-                        {
-                            <option value="@Ware.Id">@Ware.WarehouseName</option>
-                        }
+                        <option value="@ware.Id">@ware.WarehouseName</option>
                     }
                 }
                 else
                 {
                     <option disabled>Нет доступных складов</option>
                 }
-                
-                </select>
+            </select>
             </div>
             <!-- Поле для указания количества позиций -->
             <div class="form-group">
                 <label for="PositionCount">Укажите количество позиций</label>
-                <input type="number" class="form-control" id="PositionCount" name="PositionCount">
+                <input type="text" class="form-control" id="PositionCount" name="PositionCount">
             </div>
             <!-- Поле для добавления строк с полями для каждой позиции -->
             <div style="max-width:auto margin:10px;" id="PositionsContainer">
@@ -214,7 +214,20 @@
                 $('#formContainer').hide();
                 $('.table-container').show();
             });
-
+            $('#NumberDocumetn').on('input', function () {
+                var value = $(this).val();
+                //Сделаем проверку на стороне клиента
+                if (value.startsWith("-") || value == "0") {
+                    $(this).val("");
+                }
+            });
+            $('#PositionCount').on('input', function () {
+                var value = $(this).val();
+                //Сделаем проверку на стороне клиента
+                if (value.startsWith("-") || value == "0") {
+                    $(this).val("");
+                }
+            });
 
             // Таблица
             let Data = $('#InvoiceTableID').DataTable({

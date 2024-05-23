@@ -33,7 +33,8 @@ namespace HelpSystem.Migrations
 
                     b.Property<string>("NumberDocument")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -124,9 +125,6 @@ namespace HelpSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte?>("Age")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -156,9 +154,9 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("7200b51a-177f-4092-94b1-0e1a0ae220d7"),
-                            Email = "nikola10wwww@mail.ru",
-                            UserId = new Guid("9a986be6-ec2a-44a5-9f4e-66599cd846cb")
+                            Id = new Guid("e57bcf6e-4ec5-41c9-b1c7-e28d45910bd1"),
+                            Email = "nikola10www@mail.ru",
+                            UserId = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7")
                         });
                 });
 
@@ -281,7 +279,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("9a986be6-ec2a-44a5-9f4e-66599cd846cb"),
+                            Id = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -312,7 +310,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("eb6766da-60a8-4ca5-bff0-bd5d0bd206ab"),
+                            Id = new Guid("847ec6bb-668c-4259-9539-acb66ba0e91a"),
                             IsFreeZing = false,
                             IsService = true,
                             Name = "Склад утилизации"

@@ -46,10 +46,9 @@ namespace HelpSystem.Service.Implementantions
 
                 var productsInMemory = await _productsRepository.GetAll()
                     .Include(w => w.Warehouse)
-                    .Where(x => x.UserId == null) // Проверяем, что товар не привязан к пользователю
+                    .Where(x => x.UserId == null && x.TimeDebbiting == null)      // Проверяем, что товар не привязан к пользователю
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
-
                     .ToListAsync();
 
 

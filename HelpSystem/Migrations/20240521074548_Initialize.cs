@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -17,7 +18,7 @@ namespace HelpSystem.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    NumberDocument = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NumberDocument = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: false),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
@@ -57,7 +58,8 @@ namespace HelpSystem.Migrations
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsFreeZing = table.Column<bool>(type: "bit", nullable: false)
+                    IsFreeZing = table.Column<bool>(type: "bit", nullable: false),
+                    IsService = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -97,6 +99,8 @@ namespace HelpSystem.Migrations
                     ProviderId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     WarehouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TimeDebbiting = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CommentDebbiting = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InvoiceId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
                 },
                 constraints: table =>
@@ -135,7 +139,7 @@ namespace HelpSystem.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Surname = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Age = table.Column<byte>(type: "tinyint", nullable: true)
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -205,14 +209,19 @@ namespace HelpSystem.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Warehouses",
+                columns: new[] { "Id", "IsFreeZing", "IsService", "Name" },
+                values: new object[] { new Guid("847ec6bb-668c-4259-9539-acb66ba0e91a"), false, true, "Склад утилизации" });
+
+            migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("595a3a23-cce8-4cc2-bc32-16e56e7a3f52"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
-                columns: new[] { "Id", "Age", "Description", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("8c52b5ac-a1e2-4f57-8252-03089e5aeda9"), null, null, null, null, null, new Guid("595a3a23-cce8-4cc2-bc32-16e56e7a3f52") });
+                columns: new[] { "Id", "Description", "Email", "LastName", "Name", "Surname", "UserId" },
+                values: new object[] { new Guid("e57bcf6e-4ec5-41c9-b1c7-e28d45910bd1"), null, "nikola10www@mail.ru", null, null, null, new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240509134358_Comments")]
-    partial class Comments
+    [Migration("20240521074548_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,7 +36,8 @@ namespace HelpSystem.Migrations
 
                     b.Property<string>("NumberDocument")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
 
                     b.HasKey("Id");
 
@@ -127,10 +128,11 @@ namespace HelpSystem.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<byte?>("Age")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
@@ -155,8 +157,9 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a1759731-4c7b-4c3a-beb3-88c12defdc9b"),
-                            UserId = new Guid("59b14595-d697-45ee-bee0-ff17c0c80ac1")
+                            Id = new Guid("e57bcf6e-4ec5-41c9-b1c7-e28d45910bd1"),
+                            Email = "nikola10www@mail.ru",
+                            UserId = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7")
                         });
                 });
 
@@ -279,7 +282,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("59b14595-d697-45ee-bee0-ff17c0c80ac1"),
+                            Id = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -310,7 +313,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("20beea7e-573b-4de4-b74b-e91b2051f6d7"),
+                            Id = new Guid("847ec6bb-668c-4259-9539-acb66ba0e91a"),
                             IsFreeZing = false,
                             IsService = true,
                             Name = "Склад утилизации"

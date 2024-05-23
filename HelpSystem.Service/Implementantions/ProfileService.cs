@@ -59,7 +59,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             Id = x.UserId,
                             Description = x.Description,
-                            Age = x.Age,
+                          
                             Surname = x.Surname,
                             LastName = x.LastName,
                             Name = x.Name,
@@ -111,14 +111,14 @@ namespace HelpSystem.Service.Implementantions
 
 
 
-                if ((profile.Age != model.Age && model.Age > 0) ||
+                if ( 
      (!string.IsNullOrEmpty(model.Surname) && profile.Surname != model.Surname) ||
      (!string.IsNullOrEmpty(model.LastName) && profile.LastName != model.LastName) ||
      (!string.IsNullOrEmpty(model.Description) && profile.Description != model.Description) ||
      (!string.IsNullOrEmpty(model.Name) && profile.Name != model.Name) || !string.IsNullOrEmpty(model.Email) && profile.Email != model.Email)
 
                 {
-                    profile.Age = model.Age;
+                   
                     profile.Surname = model.Surname;
                     profile.LastName = model.LastName;
                     profile.Description = model.Description;

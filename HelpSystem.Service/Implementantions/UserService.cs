@@ -33,7 +33,7 @@ namespace HelpSystem.Service.Implementantions
                     Surname = x.Profile.Surname,
                     LastName = x.Profile.LastName,
                     Roles = x.Roles.RoleType.GetDisplayName(),
-                    Age = x.Profile.Age,
+                  
 
                 }).ToList();
                 return new BaseResponse<IEnumerable<UsersViewModel>>()

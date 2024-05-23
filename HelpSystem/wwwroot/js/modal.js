@@ -1347,9 +1347,15 @@ function MassMovedProduct(products, titl, res, DestanWh) {
 
                 // Проверяем валидность комментариев
                 let hasInvalidComments = products.some(item => {
-                    return (item.Comments === undefined && (item.CommentsDebiting === "" || item.CommentsDebiting.length < 5)) ||
-                        (item.CommentsDebiting === undefined && (item.Comments === "" || item.Comments.length < 5));
+                    let commentsValid = true;
+                    if (item.Comments === undefined) {
+                        commentsValid = item.CommentDebiting && item.CommentDebiting.length >= 5;
+                    } else if (item.CommentDebiting === undefined) {
+                        commentsValid = item.Comments && item.Comments.length >= 5;
+                    }
+                    return !commentsValid;
                 });
+
 
                 if (hasInvalidComments) {
                     Swal.fire({

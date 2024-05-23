@@ -8,7 +8,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
     {
         public Guid Id { get; set; }
 
-        public byte? Age { get; set; }
+    
         [MaxLength(20, ErrorMessage = "Фамилия должна иметь длину меньше 20 символов")]
         [MinLength(6, ErrorMessage = "Фамилия должно иметь длину больше 6 символов")]
         public string? Surname { get; set; }
@@ -29,13 +29,7 @@ namespace HelpSystem.Domain.ViewModel.Profile
         public int RoleId { get; set; }
         [EmailAddress(ErrorMessage = "Некорректный адрес электронной почты")]
         public string? Email { get; set; }
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (Age.HasValue && Age < 0)
-            {
-                yield return new ValidationResult("Возраст не может быть отрицательным.", new[] { nameof(Age) });
-            }
-        }
+       
         //Для роли пользователя 
         public List<RoleViewModel>? Roles { get; set; }
     }

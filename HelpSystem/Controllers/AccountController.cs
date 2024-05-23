@@ -118,6 +118,18 @@ namespace HelpSystem.Controllers
             }
             return BadRequest(new { description = Response.Description });
         }
+        //После того, как пароль восстановили, удаляем токен 
+        [HttpPost]
+        public async Task<IActionResult> DeleteToken(string key)
+        {
+            var response = await _tokenCacheService.RemoveTokenAsync(key);
+            if (response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok("Token deleted.");
+            }
+            return BadRequest("Error deleting token.");
+        }
+
     }
 
 }
