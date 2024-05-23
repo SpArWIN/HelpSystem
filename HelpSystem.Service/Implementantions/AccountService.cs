@@ -207,5 +207,44 @@ namespace HelpSystem.Service.Implementantions
                 };
             }
         }
+
+        public async Task<BaseResponse<User>> ChangePassword(RecoveryProfile profile)
+        {
+            try
+            {
+                var User = await _useRepository.GetAll()
+                    .Where(x => x.Id == profile.UserId)
+                    .FirstOrDefaultAsync();
+                if (User == null)
+                {
+                    return new BaseResponse<User>()
+                    {
+                        Description = "Пользователь не найден",
+                        StatusCode = StatusCode.NotFind
+                    };
+                }
+                User.Password = HashPassword.HashPassowrds(profile.NewPassword);
+                await _useRepository.Update(User);
+                return new BaseResponse<User>()
+                {
+
+                    Description = $"Пароль успешно изменён.",
+                    StatusCode = StatusCode.Ok
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BaseResponse<User>()
+                {
+                    Description = $"{ex.Message}",
+                    StatusCode = StatusCode.InternalServerError
+                };
+
+            }
+        }
+
+
+
+
     }
 }

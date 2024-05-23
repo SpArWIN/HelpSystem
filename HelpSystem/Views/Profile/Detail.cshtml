@@ -43,13 +43,13 @@
 </style>
 <input type="hidden" id="profileId" value="@Model.Id" />
 <br/>
-<div class="card border-warning mb-3" style="margin:5px; max-width: 100%;">
+<div class="card card-step1 border-warning mb-3" style="margin:5px; max-width: 100%;">
     <div class="row g-0">
         <div class="col-md-12">
             <h5 class="card-header text-center">Профиль</h5>
         </div>
         <div class="col-md-8">
-            <div class="card-body">
+            <div class=" card-body">
                 @if (Model != null)
                 {
                     <h5 class="card-title">Фамилия: @(!string.IsNullOrEmpty(Model.LastName) ? Model.LastName : "-")</h5>
@@ -68,7 +68,8 @@
         </div>
         <div class="card-footer">
             <div class="d-grid gap-2">
-                <a class="btn btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id', context: 'profile'})">Изменить</a>
+                <a class="btn btn-change btn-outline-warning" onclick="openModal({modalId: 'modal', url:'/Profile/GetProfile', data: '@Model.Id', context: 'profile'})">Изменить</a>
+                <a class="btn btn-pass btn-outline-danger" id="ChangePassword">Сменить пароль</a>
             </div>
         </div>
     </div>
@@ -78,10 +79,13 @@
     <p style="background-color: #ffff99; " class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
     @if (User.IsInRole("3"))
     {
+       
         <div class="table-container">
 
-
-            <table id="BindingProductId" class="table table-bordered table-scroll">
+            <script>
+                var User = "Admin";
+            </script>
+            <table id="BindingProductId" class="table table-pr table-bordered table-scroll">
                 <thead>
                 <tr>
                   
@@ -118,9 +122,11 @@
     else
     {
         <div class="table-container">
+            <script>
+                var User = "User";
+            </script>
 
-
-            <table id="BindingProductId" class="table table-bordered table-scroll">
+            <table id="BindingProductId" class="table pr-table table-bordered table-scroll">
                 <thead>
                 <tr>
                     <th style="display:none">id</th>
@@ -138,7 +144,6 @@
                             <td class="text-center" >@product.NameProduct</td>
                             <td class="text-center" >@product.InventoryCod</td>
                             <td class="text-center" >@product.TotalCount</td>
-
                     </tr>
                 }
                 </tbody>
@@ -165,12 +170,12 @@
     <script src="https://cdn.datatables.net/2.0.0/js/dataTables.js"></script>
       
         <script>
-            $(document).ready(function() {
+            $(document).ready(function () {
                 $('.card').addClass('show');
-                $('#BindingProductId').on('click', '#unbinding', function() {
+                $('#BindingProductId').on('click', '#unbinding', function () {
                     // Находим родительскую строку tr
                     var row = $(this).closest('tr');
-                var id = $(this).data('product-id'); // Получаем Id товара из скрытой ячейки
+                    var id = $(this).data('product-id'); // Получаем Id товара из скрытой ячейки
 
                     var nameProduct = row.find('td:eq(0)').text(); // Наименование товара
                     var inventoryCode = row.find('td:eq(1)').text(); // Инвентарный код
@@ -186,15 +191,121 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             var productsToUnbind = [{
-                            ProductId: id
+                                ProductId: id
                             }];
                             // Вызываем функцию отвязки товара, передавая Id товара
-                        UnbindingProduct(ProfileId, productsToUnbind);
+                            UnbindingProduct(ProfileId, productsToUnbind);
                         }
                     });
                 });
                 initializeProfileTable();
+
+                $('#ChangePassword').on('click', function () {
+                    Swal.fire({
+                        title: 'Сменить пароль',
+                        html: `
+                                                            <input type="password" id="newPassword" class="swal2-input" placeholder="Введите новый пароль" style = " font-size: 21px; width:300px;">
+                                                            <input type="password" id="confirmPassword" class="swal2-input" placeholder="Подтвердите новый пароль" style = " font-size: 21px; width:300px;">
+                                                `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Сменить',
+                        cancelButtonText: 'Отмена',
+                        preConfirm: () => {
+                            const newPassword = Swal.getPopup().querySelector('#newPassword').value;
+                            const confirmPassword = Swal.getPopup().querySelector('#confirmPassword').value;
+
+                            return { newPassword: newPassword, confirmPassword: confirmPassword };
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const userId = '@Model.Id'; // Подставьте сюда реальное значение UserId с сервера
+                            const data = {
+                                UserId: userId,
+                                NewPassword: result.value.newPassword,
+                                NewDubletPassword: result.value.confirmPassword
+                            };
+
+                            $.ajax({
+                                url: '/Account/Change',
+                                type: 'POST',
+                                data: { profile: data },
+                                success: function (response) {
+                                    Swal.fire('Успех!', response.description, 'success');
+                                },
+                                error: function (response) {
+                                    Swal.fire('Ошибка', response.responseJSON.description, 'error');
+                                }
+                            });
+                        }
+                    });
+                });
+
+            function ProfileInstructions() {
+                var ProfileSteps = [
+                    {
+                        'next .card-step1': 'Ваш профиль с основной информацией',
+                        margin: 60,
+                        bottom: 70,
+                        left: 50,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next .btn-change': 'Здесь можно обновить информацию о вас:)',
+                        margin: 15,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next .btn-pass': 'Установить новый надёжный пароль можно вот тут',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        margin: 15,
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next .table-pr': 'Товары, которые привязаны к вам.',
+                        margin: 10,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next .pr-table': 'Товары, которые к вам привязаны:)',
+                        margin: 10,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next #unbinding': 'Функция администратора: Вы можете открепить товары',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    }
+                ];
+
+                var enjoyUserStart = new EnjoyHint({});
+                enjoyUserStart.set(ProfileSteps);
+                enjoyUserStart.run();
+            }
+
+
+
+                //Система подсказок
+           
+            var profileTrigger = localStorage.getItem('profileTrigger');
+            if (profileTrigger !== 'false') {
+                localStorage.removeItem('profileTrigger');
+                ProfileInstructions();
+
+            }
+
+            $(document).on('keydown', function (e) {
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    ProfileInstructions();
+                }
             });
+
+        });
+
         </script>
 
     }

@@ -35,6 +35,7 @@ function openModal(parameters) {
             if (context == "DebitingProduct") {
                 initializeWarehouseDebiting();
             }
+           
 
         },
         failure: function () {
@@ -61,28 +62,31 @@ $('#SaveChanBtn').on('click',
             var Role = $('#roleSelect').val();
             var Em = $('#Em').val();
 
-        var profileData = {
-            Id: id,
-            Age: age,
-            Surname: Surname,
-            LastName: lastName,
-            Name: Name,
-            RoleId: Role,
-            Email:Em
+            var profileData = {
+                Id: id,
+                Age: age,
+                Surname: Surname,
+                LastName: lastName,
+                Name: Name,
+                RoleId: Role,
+                Email: Em
 
-        };
-        MassUpdate('/Profile/Save', profileData, 'Обновление профиля', 'Изменение профиля');
-    } else if (context === 'provider') {
-        // Выполняем соответствующее действие для поставщика
-        var providerId = $('#hiden').val();
-        var providerName = $('#NameProvider').val();
-        MassUpdate('/Provider/UpdateProvider', { ProviderId: providerId, ProviderName: providerName }, 'Обновление поставщика', 'Изменение поставщика');
-    } else if (context === 'warehouse') {
-        // Выполняем соответствующее действие для склада
-        var warehouseId = $('#WhHiden').val();
-        var warehouseName = $('#WhName').val();
-        MassUpdate('/Warehouse/UpdateWarehouse', { Id: warehouseId, WarehouseName: warehouseName }, 'Обновление склада', 'Изменение склада');
-    }
+            };
+            MassUpdate('/Profile/Save', profileData, 'Обновление профиля', 'Изменение профиля');
+        } else if (context === 'provider') {
+            // Выполняем соответствующее действие для поставщика
+            var providerId = $('#hiden').val();
+            var providerName = $('#NameProvider').val();
+            MassUpdate('/Provider/UpdateProvider', { ProviderId: providerId, ProviderName: providerName }, 'Обновление поставщика', 'Изменение поставщика');
+        } else if (context === 'warehouse') {
+            // Выполняем соответствующее действие для склада
+            var warehouseId = $('#WhHiden').val();
+            var warehouseName = $('#WhName').val();
+            MassUpdate('/Warehouse/UpdateWarehouse', { Id: warehouseId, WarehouseName: warehouseName }, 'Обновление склада', 'Изменение склада');
+
+        } else if (context == "changePassword") {
+            var UserId = $
+        }
 });
 
 

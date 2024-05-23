@@ -4,6 +4,7 @@
 
 @{
     ViewData["Title"] = "Главная";
+
 }
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -32,7 +33,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="d-grid gap-2">
-                        <a asp-controller="Profile" asp-action="Detail"  class="btn btn-outline-success">Перейти</a>
+                        <a asp-controller="Profile" asp-action="Detail"  class="btn btn-step1 btn-outline-success">Перейти</a>
                     </div>
                   
                 </div>
@@ -58,14 +59,20 @@
                     @if (User.IsInRole("1"))
                     {
                         <div class="d-grid gap-2">
-                            <a asp-controller="Statment" asp-action="CreateStatment" class="btn btn-outline-success">Создать</a>
+                            <a asp-controller="Statment" asp-action="CreateStatment" class="btn btn-step2 btn-outline-success">Создать</a>
                         </div>
+                        <script>
+                            var userRole = 'user';
+                        </script>
                     }
                     else
                     {
                         <div class="d-grid gap-2">
-                            <a asp-controller="Statment" asp-action="GetStatment" class="btn btn-outline-success">К заявкам</a>
+                            <a asp-controller="Statment" asp-action="GetStatment" class="btn btn-step3 btn-outline-success">К заявкам</a>
                         </div>
+                        <script>
+                            var userRole = 'admin';
+                        </script>
                     }
                 </div>
             </div>
@@ -98,11 +105,65 @@
 @section Scripts
 {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+ 
     <script>
     $(document).ready(function () {
         $('.card').addClass('show');
 
-      
+      //Подсказки
+            var enjoySteps;
+            if (userRole === 'user') {
+                enjoySteps = [
+                    {
+                        'click .btn-step1': 'Для перехода в профиль нажмите сюда',
+                        margin: 15,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                         skipButton: { className: 'btn-warning', text: 'Завершить' }
+                       
+                    },
+                    {
+                        'next .btn-step2': 'Для создания заявки необходимо перейти вот сюда.',
+                        margin: 10,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    }
+                ];
+            }
+            else if (userRole === 'admin') {
+                enjoySteps = [
+                    {
+                        'next .btn-step1': 'Для перехода в профиль нажмите сюда',
+                        margin: 10,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                    },
+                    {
+                        'next .btn-step3': 'Для перехода к заявкам нажмите сюда.',
+                        margin: 10,
+                        nextButton: { className: 'btn-success', text: 'Дальше' }
+                    }
+                ];
+            }
+
+            var enjoyUserStart = new EnjoyHint({});
+            localStorage.setItem('profileTrigger', 'false');
+            //По нажатию на F1 срабатывает подсказка
+            $(document).on('keydown', function (e) {
+                if (e.key === 'F1') {
+                    e.preventDefault();
+                    enjoyUserStart.set(enjoySteps);
+                    enjoyUserStart.run();
+                    //Когда переходим в профиль из подсказки, она продолжается, если просто зашли, то нет
+                    $('.btn-step1').on('click', function () {
+                        localStorage.setItem('profileTrigger', 'true'); // Установить триггер в локальное хранилище
+
+                    });
+
+
+
+                }
+            });
+            
           
     });
 </script>

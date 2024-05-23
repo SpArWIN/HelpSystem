@@ -79,4 +79,8 @@
     <UpToDateCheckInput Remove="Views\Provider\Index.cshtml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\js\Enjoy\" />
+  </ItemGroup>
+
 </Project>

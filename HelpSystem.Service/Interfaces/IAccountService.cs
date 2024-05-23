@@ -15,6 +15,12 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="model"></param>
         /// <returns></returns>
         Task<BaseResponse<User>> RecoveryPassword(RecoveryProfile model, string Token);
+        /// <summary>
+        /// Метод смены пароля в профиля пользователя
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        Task<BaseResponse<User>> ChangePassword(RecoveryProfile profile);
 
     }
 }

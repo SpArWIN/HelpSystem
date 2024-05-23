@@ -5,7 +5,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - HelpSystem</title>
+    <title>@ViewData["Title"] - HelpDesk</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HelpSystem.styles.css" asp-append-version="true" />
@@ -15,10 +16,14 @@
     <link href="~/css/Route.css" rel="stylesheet" />
     <link href="~/css/frozen.css" rel="stylesheet" />
     <link href="~/css/table.css" rel="stylesheet" />
+    <link href="~/js/enjoy/jquery.enjoyhint.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.datatables.net/2.0.0/css/dataTables.dataTables.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/kineticjs/5.2.0/kinetic.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
+
 
     <link rel="icon" href="@Url.Content("~/favicon.ico")" />
     
@@ -43,7 +48,7 @@
                     {
                        
                         <a asp-controller="Admin" asp-action="AdminPanel">
-                            <button class="btn btn-outline-danger">Панель Администратора 
+                            <button class="btn btn-admin btn-outline-danger">Панель Администратора 
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-wallet-fill" viewBox="0 0 16 16">
                                     <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v2h6a.5.5 0 0 1 .5.5c0 .253.08.644.306.958.207.288.557.542 1.194.542s.987-.254 1.194-.542C9.42 6.644 9.5 6.253 9.5 6a.5.5 0 0 1 .5-.5h6v-2A1.5 1.5 0 0 0 14.5 2z"/>
                                     <path d="M16 6.5h-5.551a2.7 2.7 0 0 1-.443 1.042C9.613 8.088 8.963 8.5 8 8.5s-1.613-.412-2.006-.958A2.7 2.7 0 0 1 5.551 6.5H0v6A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5z"/>
@@ -330,7 +335,10 @@
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
-<script src="~/js/modal.js?v=39"></script>
+  <script src="~/js/modal.js?v=39"></script>
+    <script src="~/js/jquery.enjoyhint.js"></script>
+    <script src="~/js/enjoyhint.js"></script>
+  
   @*
       Скрипт для Export в Excel через JS
 

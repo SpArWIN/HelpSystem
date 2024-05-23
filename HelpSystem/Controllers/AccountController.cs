@@ -3,6 +3,7 @@ using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Common;
 using System.Security.Claims;
 
 namespace HelpSystem.Controllers
@@ -102,7 +103,7 @@ namespace HelpSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> RecoveryPassword(RecoveryProfile model, string Token)
         {
-            var Response = await _accountService.RecoveryPassword(model, Token);
+            
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -110,7 +111,7 @@ namespace HelpSystem.Controllers
                 var errorDescription = string.Join(",", errors);
                 return BadRequest(new { Description = errorDescription });
             }
-
+            var Response = await _accountService.RecoveryPassword(model, Token);
 
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
@@ -130,6 +131,29 @@ namespace HelpSystem.Controllers
             return BadRequest("Error deleting token.");
         }
 
+        //Метод смены пароля в профиле
+        [HttpPost]
+        public async Task<IActionResult>Change(RecoveryProfile Profile)
+        {
+           
+
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                var errorDescription = string.Join(",", errors);
+                return BadRequest(new { description = errorDescription });
+            }
+
+            var Response = await _accountService.ChangePassword(Profile);
+            if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
+            {
+                return Ok(new { description = Response.Description });
+            }
+
+            return BadRequest(new { description = Response.Description });
+        }
     }
 
 }
