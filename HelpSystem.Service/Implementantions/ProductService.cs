@@ -46,7 +46,7 @@ namespace HelpSystem.Service.Implementantions
 
                 var productsInMemory = await _productsRepository.GetAll()
                     .Include(w => w.Warehouse)
-                    .Where(x => x.UserId == null && x.TimeDebbiting == null)      // Проверяем, что товар не привязан к пользователю
+                    .Where(x => x.UserId == null && x.TimeDebbiting == null)      // Проверяем, что товар не привязан к пользователю и не списан
                     .Where(x => EF.Functions.Like(x.NameProduct, $"%{term}%") ||
                                 EF.Functions.Like(x.InventoryCode, $"%{term}%"))
                     .ToListAsync();
@@ -64,7 +64,7 @@ namespace HelpSystem.Service.Implementantions
                     {
                         // Находим последнее перемещение товара
                         var lastMovement = await _productMovementRepository.GetAll()
-                            //Разобраться нужно с привязкой, в момент времени, когда склад заморожен
+                           
                             .OrderByDescending(pm => pm.MovementDate)
                             .FirstOrDefaultAsync(pm => pm.ProductId == product.Id);
 
@@ -87,7 +87,7 @@ namespace HelpSystem.Service.Implementantions
                                 productsLocationInfo[product.Id] = productLocationInfo;
                             }
                         }
-                        else
+                        else if(product.Warehouse.IsFreeZing == false)
                         {
                             // Если перемещений нет, формируем информацию о товаре на его первоначальном складе
                             var initialWarehouseName = product.Warehouse.Name;
