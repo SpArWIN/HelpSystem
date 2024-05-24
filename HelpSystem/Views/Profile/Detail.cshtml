@@ -74,6 +74,9 @@
         </div>
     </div>
 </div>
+<script>
+    var User;
+</script>
 @if (Model.UserPdocut != null && Model.UserPdocut.Any())
 {
     <p style="background-color: #ffff99; " class="text-center"> <strong>Прикреплённые товар(ы)</strong> </p>
@@ -239,49 +242,89 @@
                         }
                     });
                 });
-
+                //В каком режиме заходим в профиль
+            var profileTrigger = localStorage.getItem('profileTrigger');
             function ProfileInstructions() {
                 var ProfileSteps = [
                     {
                         'next .card-step1': 'Ваш профиль с основной информацией',
+                        timeout:1000,
                         margin: 60,
-                        bottom: 70,
-                        left: 50,
+                        bottom: 20, 
+                        left: 30,   
+                        top: 20,    
+                        right: 20,
                         nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
                     },
                     {
                         'next .btn-change': 'Здесь можно обновить информацию о вас:)',
                         margin: 15,
                         nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
                     },
                     {
                         'next .btn-pass': 'Установить новый надёжный пароль можно вот тут',
                         nextButton: { className: 'btn-success', text: 'Дальше' },
                         margin: 15,
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
-                    },
-                    {
-                        'next .table-pr': 'Товары, которые привязаны к вам.',
-                        margin: 10,
-                        nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
-                    },
-                    {
-                        'next .pr-table': 'Товары, которые к вам привязаны:)',
-                        margin: 10,
-                        nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
-                    },
-                    {
-                        'next #unbinding': 'Функция администратора: Вы можете открепить товары',
-                        nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
+                      
+
                     }
                 ];
 
-                var enjoyUserStart = new EnjoyHint({});
+
+                if (User && User === "User") { 
+                    ProfileSteps.push(
+
+                        {
+                            'next .pr-table': 'Товары, которые привязаны к вам.',
+                            margin: 10,
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' }
+                        
+                        }
+                    );
+                }
+
+                if(User == "Admin"){
+                    ProfileSteps.push(
+
+                        {
+                            'next .table-pr': 'Товары, которые привязаны к вам.',
+                            margin: 10,
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' }
+                        },
+
+                        {
+                            'next #unbinding': 'Функция администратора: Вы можете открепить товары',
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' }
+                        }
+                    );
+                }
+             
+                var enjoyUserStart = new EnjoyHint({
+                   
+                    onEnd: function () {
+                        if (profileTrigger !=='false'){
+                            localStorage.setItem('enjoyHintStep', 1);
+                            localStorage.removeItem('profileTrigger');
+                            window.location.href = '/Home/Index';
+                        }
+                        
+                      
+                      
+                    }
+                });
+
                 enjoyUserStart.set(ProfileSteps);
                 enjoyUserStart.run();
             }
@@ -290,7 +333,7 @@
 
                 //Система подсказок
            
-            var profileTrigger = localStorage.getItem('profileTrigger');
+          
             if (profileTrigger !== 'false') {
                 localStorage.removeItem('profileTrigger');
                 ProfileInstructions();

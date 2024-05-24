@@ -1,6 +1,5 @@
 ﻿using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Response;
-using HelpSystem.Domain.ViewModel.Account;
 using HelpSystem.Domain.ViewModel.Profile;
 
 namespace HelpSystem.Service.Interfaces
@@ -15,7 +14,7 @@ namespace HelpSystem.Service.Interfaces
         /// <param name="term"></param>
         /// <returns>Возвращает список пользователей</returns>
         Task<BaseResponse<Dictionary<Guid, string>>> GetUser(string term);
-     
-       
+
+
     }
 }

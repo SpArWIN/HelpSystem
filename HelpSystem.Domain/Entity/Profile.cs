@@ -15,7 +15,7 @@ namespace HelpSystem.Domain.Entity
         public string? Surname { get; set; }
         //Отчество
         public string? LastName { get; set; }
-      
+
         [EmailAddress()]
         public string Email { get; set; }
 

@@ -20,7 +20,7 @@
     </style>
 
 
-<div class="table-container">
+<div  class="table-container">
     <table class="display" id="GetAllSstatTable">
         <thead>
         <tr>
@@ -50,9 +50,9 @@
             BindProduct(hiddenId, productsId,Com);
         }
 
-        $(document).ready(function() {
+        $(document).ready(function () {
 
-           
+            var hasData;
 
             let Data = $("#GetAllSstatTable").DataTable({
                 ajax: {
@@ -73,26 +73,118 @@
                     {
                         data: null,
                         sortable: false,
-                        render: function(data, type, row) {
+                        render: function (data, type, row) {
                             return '<button class="btn btn-success btn-block btn-op" ">Ответить</button>';
                         }
                     }
-                ]
+                ],
+                initComplete: function (settings, json) {
+                    hasData = Data.rows().count() > 0;
+                    setupTooltips(hasData);
+                }
             });
 
-           
+
             // Делегирование события клика
 
             $('#GetAllSstatTable').on('click',
-                '.btn-op',
-                function() {
+                '.btn-op', function () {
                     var rowData = Data.row($(this).parents('tr')).data();
                     openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
                     var newStatus = '@((int)StatusStatement.Reviewed)';
                     UpdateStatus({ data: rowData.id, newStatus: newStatus });
                 });
 
+
+       //Подсказки
            
+            function setupTooltips(hasData) {
+
+                var GetStap = localStorage.getItem('GetStatments');
+                var GetStepStatments = [];
+                var enjoyUserStart = new EnjoyHint({
+                    onEnd: function () {
+                        // Если мы в режиме подсказки
+                        if (GetStap !== 'false') {
+                            Swal.fire({
+                                title: 'Информация',
+                                icon: 'info',
+                                text: 'Дальше нужно смотреть в оба глаза!',
+                                showConfirmButton: 'Хорошо!'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '/Home/Index';
+                                }
+                            });
+                        }
+                    }
+                });
+
+                GetStepStatments.push(
+                    {
+                        'next .table-container': 'Здесь отображаются все заявки пользователей',
+                        margin: 15,
+                        timeout: 1400,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    }
+                );
+
+                if (hasData) {
+                    GetStepStatments.push(
+                        {
+                            'click .btn-success': 'Попробуем ответить на заявку!',
+                            margin: 15,
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' },
+                        },
+                        {//TODO Разобраться с модальным окном
+                            'click #BtnBind': 'Попробуем привязать товар?',
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' },
+                        },
+                        {
+
+                        }
+                    );
+                }
+
+                if (GetStap !== 'false') {
+                    enjoyUserStart.set(GetStepStatments);
+                    enjoyUserStart.run();
+                    localStorage.removeItem('GetStatments');
+                }
+
+                $(document).on('keydown', function (e) {
+                    if (e.key === "F1") {
+                        e.preventDefault();
+                        enjoyUserStart.set(GetStepStatments);
+                        enjoyUserStart.run();
+                    }
+                });
+
+                enjoyUserStart.set(GetStepStatments);
+                enjoyUserStart.run();
+            }
+       
+
+
+            // if (GetStap !== 'false') {
+            //     enjoyUserStart.set(GetStepStatments);
+            //     enjoyUserStart.run();
+            //     localStorage.removeItem('GetStatments');
+            // }
+
+            // $(document).on('keydown', function (e) {
+            //     if (e.key === "F1") {
+            //         e.preventDefault();
+            //         enjoyUserStart.set(GetStepStatments);
+            //         enjoyUserStart.run();
+            //     }
+            // });
         });
 
 

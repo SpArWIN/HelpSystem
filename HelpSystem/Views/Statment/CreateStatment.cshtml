@@ -49,7 +49,7 @@
     }
 </style>
 <div class="container">
-    <div class="form-container">
+    <div   class="form-container step-form">
         <form asp-action="CreateStatment" method="post" id="StatForm">
             <div class="form-group">
                 <label for="reason">Причина создания:</label>
@@ -62,12 +62,12 @@
                 <div class="error-message"></div>
             </div>
             <div class="d-grid gap-2" style="margin-top:10px; ">
-                <button id="BtnCreateStatment" class="btn btn-success">Отправить</button>
+                <button  id="BtnCreateStatment" class="btn step-form-btn btn-success">Отправить</button>
             </div>
         </form>
     </div>
 </div>
-<div class="table-container">
+<div class="table-container ">
     <table  class="display" id="TaskTableId">
         <thead> 
         <tr>
@@ -92,10 +92,10 @@
     <link href="~/css/status.css" rel="stylesheet" />
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('.form-container').addClass('show');
 
-            $('#StatForm').submit(function(e) {
+            $('#StatForm').submit(function (e) {
                 e.preventDefault();
                 const formData = $(this).serialize();
 
@@ -114,7 +114,7 @@
                     url: $(this).attr('action'),
                     type: 'POST',
                     data: formData,
-                    success: function(response) {
+                    success: function (response) {
                         Swal.close();
                         Swal.fire({
                             title: 'Формирование заявки',
@@ -128,7 +128,7 @@
                         });
                         data.ajax.reload(); // Обновление данных в таблице
                     },
-                    error: function(response) {
+                    error: function (response) {
                         Swal.close();
                         Swal.fire({
                             title: 'Ошибка формирования заявки',
@@ -141,48 +141,148 @@
             });
 
             let data = $('#TaskTableId').DataTable({
-                    ajax: {
-                        url: "@Url.Action("GetUserStatment")",
-                        type: "POST",
-                        dataSrc: "data"
-                    },
-                    language: {
-                        url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
-                        emptyTable: "Нет заявок для отображения"
-                    },
-                    columns: [
-                        { data: "dataCreated", name: "DataCreated" }, // Дата создания
-                        { data: "reason", name: "Reason" }, // Причина
-                        { data: "description", name: "Description" }, // Описание
-                        {
-                            data: "status",
-                            name: "Status",
-                            render: function(data, type, row) {
-                                return '<span class="status-' + row.status.toLowerCase().replace(/\s+/g, '-') + '">' + row.status + '</span>';
-                            }
-                        },
-                    {
-                    data: "result",
-                    name: "Result",
-                    sortable: false,
-                    render: function(data, type, row) {
-                        if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
-                            return "Нет ответа";
+                ajax: {
+                    url: "@Url.Action("GetUserStatment")",
+                    type: "POST",
+                    dataSrc: "data",
 
-                        } else {
-                            return '<button class="btn btn-success btn-block btn-view" >Посмотреть ответ</button>';
-                        }
-                    }
                 },
-                { data: "id", name: "Id", visible: false }
-            ]
-        });
-//Это для функционала после того, как заявка завершилась
-        $('#TaskTableId').on('click', '.btn-view', function() {
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.10.25/i18n/Russian.json',
+                    emptyTable: "Нет заявок для отображения"
+                },
+                columns: [
+                    { data: "dataCreated", name: "DataCreated" }, // Дата создания
+                    { data: "reason", name: "Reason" }, // Причина
+                    { data: "description", name: "Description" }, // Описание
+                    {
+                        data: "status",
+                        name: "Status",
+                        render: function (data, type, row) {
+                            return '<span class="status-' + row.status.toLowerCase().replace(/\s+/g, '-') + '">' + row.status + '</span>';
+                        }
+                    },
+                    {
+                        data: "result",
+                        name: "Result",
+                        sortable: false,
+                        render: function (data, type, row) {
+                            if (row.status === "На рассмотрении" || row.status === "Рассмотрена") {
+                                return "Нет ответа";
+
+                            } else {
+                                return '<button class="btn btn-answer btn-success btn-block btn-view" >Посмотреть ответ</button>';
+                            }
+                        }
+                    },
+                    { data: "id", name: "Id", visible: false }
+                ],
+
+
+
+            });
+
+
+
+
+            //Система подсказок
+            var StepStatments = [];
+            var StatmentsTrigger = localStorage.getItem('StatmetnsTrigger');
+
+            var enjoyUserStart = new EnjoyHint({
+                onEnd: function () {
+
+                    if (StatmentsTrigger === 'true' && StatmentsTrigger !== null) {
+                        Swal.fire({
+                            title: 'Успех',
+                            icon: 'success',
+                            text: 'Вы успешно прошли обучение в системе HelpDesk!',
+                            showConfirmButton: 'Отлично!',
+
+                        }).then((result) => {
+                            window.location.href = '/Home/Index';
+                        });
+
+
+                    }
+
+                }
+            });
+            StepStatments.push(
+
+
+                {
+                    'next .step-form': 'Форма для заполнения заявки, необходимо вписать все поля:)',
+                    margin: 25,
+                    timeout: 1000,
+                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                    prevButton: { className: 'btn-primary', text: 'Назад' }
+                },
+                {
+                    'next .step-form-btn': 'После заполнения необходимых полей, нажми вот сюда и жди результата',
+                    margin: 15,
+                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                    prevButton: { className: 'btn-primary', text: 'Назад' }
+                }
+            );
+            //Если данные в таблице есть, играем :)
+           
+
+                StepStatments.push(
+                    {
+                        'next .table-container': 'В этой таблице,  отражены все ваши заявки, включая их статус.',
+                        margin: 15,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                    prevButton: { className: 'btn-primary', text: 'Назад' }
+                    },
+                    {
+                        'click .btn-answer': 'Если заявка имеет статус:завершена, то можно посмотреть ответ администратора:) ',
+                        margin: 15,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                         skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    showSkip: false
+                    }
+
+
+                );
+            
+
+
+
+
+            //Это если ещё раз захотим пройтись и проверить
+            $(document).on('keydown', function (e) {
+                if (e.key == "F1") {
+                    e.preventDefault();
+
+                    enjoyUserStart.set(StepStatments);
+                    enjoyUserStart.run();
+                }
+            });
+
+            if (StatmentsTrigger !== 'false' && StatmentsTrigger !== null) {
+
+                enjoyUserStart.set(StepStatments);
+                enjoyUserStart.run();
+                localStorage.removeItem('StatmetnsTrigger');
+
+
+            }
+
+            //Это для функционала после того, как заявка завершилась
+            $('#TaskTableId').on('click', '.btn-view', function () {
                 var rowData = data.row($(this).parents('tr')).data();
                 openModal({ modalId: 'StateModdal', url: '/Statment/ShowAnswer', data: rowData.id });
             });
         });
+
+      
+
+
 
     </script>
 

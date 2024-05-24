@@ -2,9 +2,7 @@
 using HelpSystem.Domain.Entity;
 using HelpSystem.Domain.Enum;
 using HelpSystem.Domain.Extension;
-using HelpSystem.Domain.Helpers;
 using HelpSystem.Domain.Response;
-using HelpSystem.Domain.ViewModel.Account;
 using HelpSystem.Domain.ViewModel.Product;
 using HelpSystem.Domain.ViewModel.Profile;
 using HelpSystem.Service.Interfaces;
@@ -61,7 +59,7 @@ namespace HelpSystem.Service.Implementantions
                         {
                             Id = x.UserId,
                             Description = x.Description,
-                          
+
                             Surname = x.Surname,
                             LastName = x.LastName,
                             Name = x.Name,
@@ -113,14 +111,14 @@ namespace HelpSystem.Service.Implementantions
 
 
 
-                if ( 
+                if (
      (!string.IsNullOrEmpty(model.Surname) && profile.Surname != model.Surname) ||
      (!string.IsNullOrEmpty(model.LastName) && profile.LastName != model.LastName) ||
      (!string.IsNullOrEmpty(model.Description) && profile.Description != model.Description) ||
      (!string.IsNullOrEmpty(model.Name) && profile.Name != model.Name) || !string.IsNullOrEmpty(model.Email) && profile.Email != model.Email)
 
                 {
-                   
+
                     profile.Surname = model.Surname;
                     profile.LastName = model.LastName;
                     profile.Description = model.Description;
@@ -244,6 +242,6 @@ namespace HelpSystem.Service.Implementantions
             }
         }
 
-        
+
     }
 }

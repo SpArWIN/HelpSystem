@@ -67,8 +67,8 @@
                     }
                     else
                     {
-                        <div class="d-grid gap-2">
-                            <a asp-controller="Statment" asp-action="GetStatment" class="btn btn-step3 btn-outline-success">К заявкам</a>
+                        <div class="d-grid gap-2  ">
+                            <a asp-controller="Statment" asp-action="GetStatment" class="btn   btn-step3 btn-outline-success">К заявкам</a>
                         </div>
                         <script>
                             var userRole = 'admin';
@@ -112,58 +112,101 @@
 
       //Подсказки
             var enjoySteps;
-            if (userRole === 'user') {
+        var GotoStatments;
+           //При переходе из профиля
+           //Goto Statments - идём в заявки
+           
+        if (userRole === 'user') {
+            enjoySteps = [
+                {
+                    'click .btn-step1': 'Для перехода в профиль нажмите сюда',
+                    margin: 15,
+                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                    prevButton: { className: 'btn-primary', text:'Назад' }
+
+                },
+            ];
+            GotoStatments = [
+                {
+                    'click .btn-step2': 'Для создания заявки необходимо перейти вот сюда.',
+                    margin: 15,
+                     timeout: 1000,
+                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                     skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
+                },
+
+            ];
+            
+        }
+            else if (userRole === 'admin') {
                 enjoySteps = [
                     {
                         'click .btn-step1': 'Для перехода в профиль нажмите сюда',
                         margin: 15,
-                        nextButton: { className: 'btn-success', text: 'Дальше' },
-                         skipButton: { className: 'btn-warning', text: 'Завершить' }
                        
-                    },
-                    {
-                        'next .btn-step2': 'Для создания заявки необходимо перейти вот сюда.',
-                        margin: 10,
                         nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
-                    }
-                ];
-            }
-            else if (userRole === 'admin') {
-                enjoySteps = [
-                    {
-                        'next .btn-step1': 'Для перехода в профиль нажмите сюда',
-                        margin: 10,
-                        nextButton: { className: 'btn-success', text: 'Дальше' },
-                        skipButton: { className: 'btn-warning', text: 'Завершить' }
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
                     },
-                    {
-                        'next .btn-step3': 'Для перехода к заявкам нажмите сюда.',
-                        margin: 10,
-                        nextButton: { className: 'btn-success', text: 'Дальше' }
-                    }
+                 
                 ];
+
+                GotoStatments = [
+                    {
+                     
+                        'click .btn-step3': 'Для перехода к заявкам нажмите сюда.',
+                        timeout: 1000,
+                        margin: 25,
+                        y:40,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                       skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
+                    },
+
+                ];
+
             }
 
             var enjoyUserStart = new EnjoyHint({});
-            localStorage.setItem('profileTrigger', 'false');
+            //Это при переходе ИЗ профиля сюда
+            var startStep = localStorage.getItem('enjoyHintStep');
+            if(startStep !==null){
+                console.log("Есть");
+                enjoyUserStart.set(GotoStatments);
+                
+                    enjoyUserStart.run();
+
+                Trigger('.btn-step3', 'GetStatments');
+                Trigger('.btn-step2', 'StatmetnsTrigger');
+                localStorage.removeItem('enjoyHintStep');
+            }
+
+             localStorage.setItem('GetStatments', 'false'); //Заявки пользователей со стороны админа
+            localStorage.setItem('profileTrigger', 'false'); //Для перехода в профиль 
+            localStorage.setItem('StatmetnsTrigger', 'false'); //Для перехода в заявки пользователей
+
+
             //По нажатию на F1 срабатывает подсказка
             $(document).on('keydown', function (e) {
                 if (e.key === 'F1') {
                     e.preventDefault();
+
                     enjoyUserStart.set(enjoySteps);
                     enjoyUserStart.run();
                     //Когда переходим в профиль из подсказки, она продолжается, если просто зашли, то нет
-                    $('.btn-step1').on('click', function () {
-                        localStorage.setItem('profileTrigger', 'true'); // Установить триггер в локальное хранилище
-
-                    });
-
-
-
+                    Trigger('.btn-step1', 'profileTrigger');
+               
                 }
+               
             });
             
+            function Trigger (btn,setItem){
+                $(btn).on('click', function () {
+                    localStorage.setItem(setItem, 'true');
+                });
+            }
           
     });
 </script>

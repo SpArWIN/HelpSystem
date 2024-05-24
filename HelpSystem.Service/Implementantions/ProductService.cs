@@ -64,7 +64,7 @@ namespace HelpSystem.Service.Implementantions
                     {
                         // Находим последнее перемещение товара
                         var lastMovement = await _productMovementRepository.GetAll()
-                           
+
                             .OrderByDescending(pm => pm.MovementDate)
                             .FirstOrDefaultAsync(pm => pm.ProductId == product.Id);
 
@@ -87,7 +87,7 @@ namespace HelpSystem.Service.Implementantions
                                 productsLocationInfo[product.Id] = productLocationInfo;
                             }
                         }
-                        else if(product.Warehouse.IsFreeZing == false)
+                        else if (product.Warehouse.IsFreeZing == false)
                         {
                             // Если перемещений нет, формируем информацию о товаре на его первоначальном складе
                             var initialWarehouseName = product.Warehouse.Name;

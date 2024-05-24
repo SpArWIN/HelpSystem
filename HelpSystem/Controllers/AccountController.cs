@@ -3,7 +3,6 @@ using HelpSystem.Service.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Common;
 using System.Security.Claims;
 
 namespace HelpSystem.Controllers
@@ -103,7 +102,7 @@ namespace HelpSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> RecoveryPassword(RecoveryProfile model, string Token)
         {
-            
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors)
@@ -133,9 +132,9 @@ namespace HelpSystem.Controllers
 
         //Метод смены пароля в профиле
         [HttpPost]
-        public async Task<IActionResult>Change(RecoveryProfile Profile)
+        public async Task<IActionResult> Change(RecoveryProfile Profile)
         {
-           
+
 
 
             if (!ModelState.IsValid)

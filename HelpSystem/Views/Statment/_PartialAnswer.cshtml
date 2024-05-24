@@ -8,7 +8,7 @@
     <label>Тема заявления</label>
     <input type="text" class="form-control mb-3" value="@Model.Reason" readonly="readonly" />
     <label>Ответ</label>
-    <textarea name="Answer" class="form-control mb-3" readonly="readonly">@Model.Answer</textarea>
+    <textarea style="min-height:20px; " name="Answer" class="form-control mb-3 " readonly="readonly">@Model.Answer </textarea>
     <small class="text-muted d-block">
         Дата: @Model.DateCreated - @Model.DateCompleted
     </small>
