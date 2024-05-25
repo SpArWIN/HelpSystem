@@ -35,8 +35,12 @@ function openModal(parameters) {
             if (context == "DebitingProduct") {
                 initializeWarehouseDebiting();
             }
-           
-
+            modal.css('z-index', '1010');
+            $('.modal-backdrop').css('z-index', '1005');
+            // Вызов callback после успешного выполнения запроса
+            if (typeof parameters.callback === 'function') {
+                parameters.callback();
+            }
         },
         failure: function () {
             modal.modal('hide')
@@ -84,9 +88,7 @@ $('#SaveChanBtn').on('click',
             var warehouseName = $('#WhName').val();
             MassUpdate('/Warehouse/UpdateWarehouse', { Id: warehouseId, WarehouseName: warehouseName }, 'Обновление склада', 'Изменение склада');
 
-        } else if (context == "changePassword") {
-            var UserId = $
-        }
+        } 
 });
 
 
