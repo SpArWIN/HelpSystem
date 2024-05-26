@@ -92,7 +92,7 @@
                     </div>
                     <div class="card-footer">
                         <div class="d-grid gap-2">
-                            <a  asp-controller="Invoice" asp-action="Index" class="btn btn-outline-warning">Перейти</a>
+                            <a  asp-controller="Invoice" asp-action="Index" class="btn btn-inv btn-outline-warning">Перейти</a>
                         </div>
                     </div>
                 </div>
@@ -113,9 +113,11 @@
       //Подсказки
             var enjoySteps;
         var GotoStatments;
+        var Invoice;
            //При переходе из профиля
            //Goto Statments - идём в заявки
-           
+       
+        
         if (userRole === 'user') {
             enjoySteps = [
                 {
@@ -166,23 +168,41 @@
                     },
 
                 ];
+            Invoice = [
+                {
+                        'click .btn-inv ':'Для перехода к накладным, складам, отчётам, нужно нажать вот сюда',
+                        timeout:1000,
+                        margin:20,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' }
+                }
+            ];
 
             }
 
             var enjoyUserStart = new EnjoyHint({});
             //Это при переходе ИЗ профиля сюда
             var startStep = localStorage.getItem('enjoyHintStep');
-            if(startStep !==null){
-                console.log("Есть");
-                enjoyUserStart.set(GotoStatments);
-                
-                    enjoyUserStart.run();
+            var InvoiceStep = localStorage.getItem('Invoice'); // Переходим к заявкам
+        if (startStep !== null) {
+            console.log("Есть");
+            enjoyUserStart.set(GotoStatments);
+            enjoyUserStart.run();
+            Trigger('.btn-step3', 'GetStatments');
+            Trigger('.btn-step2', 'StatmetnsTrigger');
+            localStorage.removeItem('enjoyHintStep');
 
-                Trigger('.btn-step3', 'GetStatments');
-                Trigger('.btn-step2', 'StatmetnsTrigger');
-                localStorage.removeItem('enjoyHintStep');
-            }
 
+        } else if (InvoiceStep !== null) {
+                enjoyUserStart.set(Invoice);
+                enjoyUserStart.run();
+                localStorage.removeItem('Invoice');
+            Trigger('.btn-inv', 'SetInvoice');
+        }
+            
+
+        localStorage.setItem('SetInvoice', 'false');//При переходе к накладным
              localStorage.setItem('GetStatments', 'false'); //Заявки пользователей со стороны админа
             localStorage.setItem('profileTrigger', 'false'); //Для перехода в профиль 
             localStorage.setItem('StatmetnsTrigger', 'false'); //Для перехода в заявки пользователей

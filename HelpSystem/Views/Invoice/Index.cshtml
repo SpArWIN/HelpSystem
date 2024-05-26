@@ -76,8 +76,8 @@
     <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navBarReferences" role="button" data-bs-toggle="dropdown" aria-expanded="false">Справочник</a>
         <ul class="dropdown-menu" aria-labelledby="navBarReferences">
-            <li><a class="dropdown-item" asp-controller="Provider" asp-action="Index">Поставщики</a></li>
-            <li><a class="dropdown-item" asp-controller="Warehouse" asp-action="Index">Склады</a></li>
+            <li><a class="dropdown-item dr-prov" asp-controller="Provider" asp-action="Index">Поставщики</a></li>
+            <li><a class="dropdown-item " asp-controller="Warehouse" asp-action="Index">Склады</a></li>
         </ul>
     </li>
     <li class="nav-item">
@@ -145,7 +145,8 @@
             </div>
             
         <button style="margin:10px;" type="button" class="btn btn-primary" id="addPositionButton">Добавить позиции</button>
-                <button id="ButtonCreateProduct" style="margin:10px;" class="btn btn-success">Отправить</button>
+         <button id="ButtonCreateProduct" style="margin:10px;" class="btn btn-success">Отправить</button>
+        <button style="margin:10px;" type="button" class="btn btn-primary" id="removeCountPosition">Удалить позиции</button>
         </form>
     </div>
 <!--А тут таблица со списком всех когда либо накладных-->
@@ -171,8 +172,8 @@
     <script src="~/js/modal.js?v=2"></script>
     <script>
         $(document).ready(function() {
-    
-           
+
+            var isF1Pressed = false; //проверка нажат ли F1
 
             $('#openFormLink').click(function(e) {
                 $('#formContainer').fadeIn();
@@ -180,26 +181,87 @@
             });
            
           /*   Отображение позиций  */
-            $('#addPositionButton').click(function() {
-                var count = $('#PositionCount').val();
+            $('#addPositionButton').click(function () {
+                var count = parseInt($('#PositionCount').val());
                 var container = $('#PositionsContainer');
-                container.empty();
-                for (var i = 1; i <= count; i++) {
+                var existingCount = container.children().length;
 
-                    var position = $(`<div class="position-row border mb-3 p-3"> <!-- Добавляем класс для строки товара и стили Bootstrap -->
-            <h5>Позиция ${i}</h5> <!-- Указываем номер позиции -->
-            <label for="NameProduct${i}">Наименование:</label>
-            <input type="text" class="form-control" id="NameProduct${i}" name="NameProduct${i}" />
-            <br/>
-            <label for="InventoryCode${i}">Артикул: </label>
-            <input type="text" class="form-control" id="InventoryCode${i}" name="InventoryCode${i}" />
-            <br/>
-            <label for="Quantity${i}">Количество: </label>
-            <input type="number" class="form-control" id="Quantity${i}" name="Quantity${i}" />
-        </div>`);
+                // Добавляем новые строки, если count больше текущего количества строк
+                for (var i = existingCount + 1; i <= count; i++) {
+                    var position = $(`<div class="position-row border mb-3 p-3" id="PositionRow${i}"> <!-- Добавляем класс для строки товара и стили Bootstrap -->
+                        <h5>Позиция ${i}</h5> <!-- Указываем номер позиции -->
+                        <label for="NameProduct${i}">Наименование:</label>
+                        <input type="text" class="form-control" id="NameProduct${i}" name="NameProduct${i}" />
+                        <br/>
+                        <label for="InventoryCode${i}">Артикул: </label>
+                        <input type="text" class="form-control" id="InventoryCode${i}" name="InventoryCode${i}" />
+                        <br/>
+                        <label for="Quantity${i}">Количество: </label>
+                        <input type="text" class="form-control" id="Quantity${i}" name="Quantity${i}" />
+                    </div>`);
                     container.append(position);
                 }
             });
+
+            $('#removeCountPosition').click(function () {
+                var container = $('#PositionsContainer');
+                var rows = container.children();
+
+                // Удаляем последнюю строку, если она пустая
+                if (rows.length > 0) {
+                    var lastRow = $(rows[rows.length - 1]);
+                    var isEmpty = lastRow.find('input').toArray().every(function (input) {
+                        return $(input).val() === '';
+                    });
+
+                    if (isEmpty) {
+                        lastRow.remove();
+                    } else {
+                        // Проверяем, если есть заполненные строки
+                        Swal.fire({
+                            title: 'Вы уверены?',
+                            text: "Последняя позиция содержит данные. Вы действительно хотите её удалить?",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: 'green',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Да, удалить',
+                            cancelButtonText:'Отменить',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                lastRow.remove();
+                                Swal.fire(
+                                    'Удалено!',
+                                    'Позиция была удалена.',
+                                    'success'
+                                );
+                            }
+                        });
+                    }
+                }
+            });
+       
+
+
+          
+
+            //Чтобы не было знака -
+            // Обработчик для удаления символов, которые не являются цифрами, и для установки минимального значения
+            $(document).on('input', '[id^=Quantity]', function () {
+                var value = $(this).val();
+
+                // Удаляем все символы, кроме цифр
+                value = value.replace(/[^0-9]/g, '');
+
+                //   Преобразуем в число и проверяем минимальное значение
+                var numValue = parseInt(value, 10);
+                if (isNaN(numValue) || numValue < 1) {
+                    numValue = 0;
+                }
+                // Устанавливаем очищенное и проверенное значение обратно в поле
+                $(this).val(numValue);
+            });
+
             //Событие создания заявки
             $('#ButtonCreateProduct').on('click', function(e) {
                     e.preventDefault();
@@ -227,8 +289,16 @@
                 if (value.startsWith("-") || value == "0") {
                     $(this).val("");
                 }
-            });
+                var count = parseInt($('#PositionCount').val());
+                if (isNaN(count) || count <= 0) {
+                    $(this).val("");
+                    return;
+                }
 
+            });
+            var GetStap = localStorage.getItem('SetInvoice'); //Мы находимся в режиме подсказки?
+            var hasData;
+            var hasV; // ДЛя повторного значения, а есть ли там данные в таблице
             // Таблица
             let Data = $('#InvoiceTableID').DataTable({
                 ajax: {
@@ -251,12 +321,265 @@
                         }
                     },
                     { data: "id", name: "Id", visible: false, width: "20%" }
-                ]
+                ],
+                initComplete: function (settings, json) {
+                    hasData = Data.rows().count() > 0;
+                    hasV = hasData;
+                    if (GetStap !== 'false') {
+                        InvoiceTool(hasData);
+                    }
+                }
 
             });
+
+            var ModelEnd = false;
             $('#InvoiceTableID').on('click','.detail-btn',function() {
                 var rowData = Data.row($(this).parents('tr')).data();
-                openModal({ modalId: 'invoiceModal', url: '/Invoice/PartialInvoiceProduct', data: rowData.id });
+                    openModal({
+                        modalId: 'invoiceModal',
+                        url: '/Invoice/PartialInvoiceProduct',
+                        data: rowData.id,
+                        callback: function () { 
+                            var GetStapInvoice = [];
+                            if (GetStap !== 'false') {
+                                var enjoyUserStart = new EnjoyHint({
+                                    onEnd: function () {
+                                        // Если мы в режиме подсказки
+                                    $('#invoiceModal').modal('hide');
+                                        setTimeout(function () {
+                                            Guide();
+                                        }, 500);
+
+                                    }
+                                });
+                            }
+                            else {
+                                var enjoyUserStart = new EnjoyHint({
+                                    onEnd: function () {
+                                    $('#invoiceModal').modal('hide');
+                                    }
+                                });
+
+                            }
+                            if (isF1Pressed || GetStap == 'true') {
+                            GetStapInvoice.push(
+                                {
+                                    'click #accordionExample': 'Нажмите сюда и увидите товар, который пришёл по накладной ',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 10,
+                                    timeout: 500,
+                                    onBeforeStart: function () {
+                                        $('.enjoyhint_prev_btn').on('click', function () {
+                                           
+                                            $('#invoiceModal').modal('hide');
+                                        
+                                        });
+                                    }
+                                },
+                                {
+                                    'next #accordionExample': 'Детали накладной ',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 20
+                                },
+                                {
+                                    'next .Count': 'Чуть ниже отображается общее количество поступившего на склад товара',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 20,
+                                    left: 10,
+                                    scrollAnimationSpeed: 1000,
+                                    
+                                }
+                            );
+
+                            }
+                            enjoyUserStart.set(GetStapInvoice);
+                      
+                             enjoyUserStart.run();
+                                isF1Pressed = false;
+                        }
+
+                    });
+
+
+
+            });
+
+            //Система подсказок
+            //По справочникам
+            localStorage.setItem('Provider', 'false');
+            function Guide() {
+                var Enj = new EnjoyHint({
+                onEnd:function(){
+                        localStorage.setItem('Provider', 'true');
+                }
+                });
+                var GuideSteps = [];
+                
+                GuideSteps.push(
+                    {
+                        'click #navBarReferences': 'Пройдёмся по справочникам',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'click .dr-prov': 'Обратимся к поставщикам',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    }
+                  
+                );
+                Enj.set(GuideSteps);
+                Enj.run();
+            }
+
+
+            //Для шапки
+            function InvoiceTool(hasData, forceRun = false) {
+                if (GetStap === 'false' && !forceRun) {
+                    console.log('Ошибка');
+                    return; // Выходим, если GetStap == 'false' и нет принудительного запуска
+                }
+                function startGetStepInvoice() {
+                    console.log('Запуск GetStepInvoice'); 
+                    var enjoyUserStart = new EnjoyHint({});
+                    var GetStepInvoice = [
+                        {
+                            'click .btn-sm': 'Для того, чтобы получить информацию о деталях накладной, необходимо нажать вот сюда',
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' },
+                            margin: 10
+                        }
+                    ];
+                    enjoyUserStart.set(GetStepInvoice);
+                    enjoyUserStart.run();
+                  
+                }
+               
+
+                // Определение шагов для HeaderStep
+                var HeaderStep = [
+                    {
+                        'next #InvoiceTableID': 'Здесь отображаются все накладные',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                        right: 270,
+                        timeout: 1000
+                    },
+                    {
+                        'click #openFormLink': 'Для создания документа, необходимо нажать вот сюда.',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #NumberDocumetn': 'Необходимо указать номер документа',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #Provider': 'Указать поставщика из списка',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #Warehouse': 'Выбрать необходимый склад',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'input #PositionCount': 'Указать количество позиций, которые приходят по накладной',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'click #addPositionButton': 'Необходимо добавить позиции в накладную, для заполнения данных',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #PositionsContainer': 'Заполнить все необходимые поля',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'click #removeCountPosition': 'По необходимости удалить ненужные позиции',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #ButtonCreateProduct': 'Создать накладную',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        onBeforeStart: function () {
+                            $('#ButtonCreateProduct').prop('disabled', true);
+                        }
+                    }
+                ];
+
+
+
+
+
+                //Когда с созданием накладной закончились подсказки, переходим к деталям, если они есть
+                var enjoyUserStart = new EnjoyHint({
+                    onEnd: function () {
+                        console.log('onEnd сработал'); // Отладочное сообщение
+                        $('#ButtonCreateProduct').prop('disabled', false);
+                        $('#closeFormButton').click();
+                        setTimeout(function () {
+                            if (hasData) {
+                               // Отладочное сообщение
+                                startGetStepInvoice();
+                            }else{
+                                Guide();
+                            } 
+
+                        }, 500); // Небольшая задержка для закрытия формы
+                    }
+                });
+
+                // Запуск HeaderStep
+                enjoyUserStart.set(HeaderStep);
+                enjoyUserStart.run();
+               
+            }
+
+            $(document).on('keydown', function (e) {
+                if (e.key == 'F1') {
+                    //Если мы просто захотели вспомнить как это делается, пожалуйста
+                    e.preventDefault();
+                    isF1Pressed = true;
+                    InvoiceTool(hasData, true);
+                }
             });
         });
 

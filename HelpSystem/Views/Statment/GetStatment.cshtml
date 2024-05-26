@@ -51,9 +51,9 @@
         }
 
         $(document).ready(function () {
-
+            var GetStap = localStorage.getItem('GetStatments');
             var hasData;
-
+            localStorage.setItem('Invoice', 'false'); //Когда закончим тут, то в режиме подсказок перейдём туда, к накладным
             let Data = $("#GetAllSstatTable").DataTable({
                 ajax: {
                     url: "@Url.Action("GetStatmentsData")",
@@ -80,7 +80,9 @@
                 ],
                 initComplete: function (settings, json) {
                     hasData = Data.rows().count() > 0;
-                    setupTooltips(hasData);
+                    if (GetStap !== 'false') {
+                        setupTooltips(hasData);
+                    }
                 }
             });
 
@@ -88,22 +90,19 @@
             
 
        //Подсказки
-            var GetStap = localStorage.getItem('GetStatments');
-            function setupTooltips(hasData) {
+       //Для проверки, была ли нажата клавиша F1
+            var isF1Pressed = false;
+            function setupTooltips(hasData, forceRun = false) {
 
-              
+                if (GetStap === 'false' && !forceRun) {
+                    return; // Выходим, если GetStap == 'false' и нет принудительного запуска
+                }
                 var GetStepStatments = [];
                 var enjoyUserStart = new EnjoyHint({
                     onEnd: function () {
                         // Если мы в режиме подсказки
-                        if (GetStap !== 'false') {
-                            console.log('Все');
-                            localStorage.removeItem('GetStatments');
-
-                        }
-
+                       
                     }
-                   
                 });
 
                 GetStepStatments.push(
@@ -126,54 +125,32 @@
                             skipButton: { className: 'btn-warning', text: 'Завершить' },
                             prevButton: { className: 'btn-primary', text: 'Назад' },
                         },
-                        // {//TODO Разобраться с модальным окном
-                        //     'click #BtnBind': 'Попробуем привязать товар?',
-                        //     nextButton: { className: 'btn-success', text: 'Дальше' },
-                        //     skipButton: { className: 'btn-warning', text: 'Завершить' },
-                        //     prevButton: { className: 'btn-primary', text: 'Назад' },
-                                    
-                        // }
-                       
+                     
+                     
                     );
+
                 }
 
-                if (GetStap !== 'false') {
-                    enjoyUserStart.set(GetStepStatments);
-                    enjoyUserStart.run();
-                    localStorage.removeItem('GetStatments');
-                }
+              
+                enjoyUserStart.set(GetStepStatments);
+                enjoyUserStart.run();
+             
 
-                $(document).on('keydown', function (e) {
-                    if (e.key === "F1") {
-                        e.preventDefault();
-                        enjoyUserStart.set(GetStepStatments);
-                        enjoyUserStart.run();
-                    }
-                });
-
-                // enjoyUserStart.set(GetStepStatments);
-                // enjoyUserStart.run();
             }
-       
 
+            $(document).on('keydown', function (e) {
+                if (e.key == 'F1') {
+                    //Если мы просто захотели вспомнить как это делается, пожалуйста
+                    e.preventDefault();
+                    isF1Pressed = true;
+                    setupTooltips(hasData,true);
+                }
+            });
 
-            // if (GetStap !== 'false') {
-            //     enjoyUserStart.set(GetStepStatments);
-            //     enjoyUserStart.run();
-            //     localStorage.removeItem('GetStatments');
-            // }
-
-            // $(document).on('keydown', function (e) {
-            //     if (e.key === "F1") {
-            //         e.preventDefault();
-            //         enjoyUserStart.set(GetStepStatments);
-            //         enjoyUserStart.run();
-            //     }
-            // });
 
 
             // Делегирование события клика
-            // openModal({ modalId: 'StateModdal', url: '/Statment/GetStatUser', data: rowData.id });
+           
             $('#GetAllSstatTable').on('click', '.btn-op', function () {
                 var rowData = Data.row($(this).parents('tr')).data();
                 openModal({
@@ -184,11 +161,12 @@
                         var newStatus = '@((int)StatusStatement.Reviewed)';
                         UpdateStatus({ data: rowData.id, newStatus: newStatus });
 
+
                         if (GetStap !== 'false') {
                             var enjoyUserStart = new EnjoyHint({
                                 onEnd: function () {
                                     // Если мы в режиме подсказки
-                                    if (GetStap !== 'false') {
+                                    
                                         console.log('Все в заявках');
                                         Swal.fire({
                                             title: 'Информация',
@@ -198,20 +176,32 @@
                                         }).then((result) => {
                                             if (result.isConfirmed) {
                                                 window.location.href = '/Home/Index';
+                                                localStorage.removeItem('GetStatments');
+                                                localStorage.setItem('Invoice','true');
                                             }
                                         });
 
-                                    }
+                                    
                                 }
                             });
+                        }
+                        else{
 
-                            var GetStepStatments = [
+                            
+                            var enjoyUserStart = new EnjoyHint({});
+
+                        }
+                        if (isF1Pressed || GetStap == 'true') {
+
+
+                            var GetStepStatments = [];
+                            GetStepStatments = [
                                 {
                                     'click #BtnBind': 'Попробуем привязать товар?',
                                     nextButton: { className: 'btn-success', text: 'Дальше' },
                                     skipButton: { className: 'btn-warning', text: 'Завершить' },
                                     prevButton: { className: 'btn-primary', text: 'Назад' },
-                                    timeout:500,
+                                    timeout: 500,
                                 },
                                 {
                                     'next .select2-selection': 'Тут ищем нужный нам товар',
@@ -220,34 +210,40 @@
                                     prevButton: { className: 'btn-primary', text: 'Назад' },
                                 },
                                 {
-                                    'next .step-com1':'Указать необязательный комментарий по привязке можно тут',
+                                    'next .step-com1': 'Указать необязательный комментарий по привязке можно тут',
                                     nextButton: { className: 'btn-success', text: 'Дальше' },
                                     skipButton: { className: 'btn-warning', text: 'Завершить' },
                                     prevButton: { className: 'btn-primary', text: 'Назад' },
 
                                 },
                                 {
-                                    'next #BdButton ':'После того, как нашли нужный товар, его можно привязать, нажав эту кнопку',
+                                    'next #BdButton ': 'После того, как нашли нужный товар, его можно привязать, нажав эту кнопку',
                                     nextButton: { className: 'btn-success', text: 'Дальше' },
                                     skipButton: { className: 'btn-warning', text: 'Завершить' },
                                     prevButton: { className: 'btn-primary', text: 'Назад' },
                                 },
                                 {
-                                    'next #AnID' :'И в конце концов, обязательно ответить пользователю на его заявление',
+                                    'next #AnID': 'И в конце концов, обязательно ответить пользователю на его заявление',
                                     nextButton: { className: 'btn-success', text: 'Дальше' },
                                     skipButton: { className: 'btn-warning', text: 'Завершить' },
                                     prevButton: { className: 'btn-primary', text: 'Назад' },
-                                    showNext:false
+                                    showNext: false
                                 }
                             ];
 
+                        }
+                      
+
                             enjoyUserStart.set(GetStepStatments);
                             enjoyUserStart.run();
-                        }
+                        isF1Pressed = false;
                     }
                 });
             });
+         
+          
 
+          
 
         });
 

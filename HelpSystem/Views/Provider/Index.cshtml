@@ -20,15 +20,17 @@
 </ul>
 @if (Model != null && Model.Any())
 {
-
+   
 
     <div class="row">
-
+        <script>
+            var hasData = true;
+        </script>
         @foreach (var Us in Model)
         {
             if (!Us.IsFreeze)
             {
-                <div class="col-md-3 mb-3">
+                <div class="col-md-3 mb-3 unfr">
                     <div class="card user-animation" style="  width: 100%; margin:15px; ">
                     <div class="card-header">
                         <p class="card-title">Поставщик</p>
@@ -36,6 +38,9 @@
                     <div class="card-body">
                         <p class="card-text">@Us.ProviderName</p>
                     </div>
+                        <script>
+                            var freeze = false;
+                        </script>
                     <div class="card-footer">
                         <div class="d-grid-gap-2">
 
@@ -51,7 +56,8 @@
             }
             else
             {
-                <div class="col-md-3 mb-3">
+
+                <div class="col-md-3 mb-3 frz">
                     <div class="card user-animation card-freeze mt-3">
                         <div class="card-header">
                             <img src="/myIcon/Provider.png" width="128;" height="128;" class="card-img card-img-top" alt="Склад" />
@@ -62,7 +68,9 @@
                                 <a data-name="@Us.ProviderName" data-id="@Us.ProviderId" class="btn btn-outline-success BtnUnFreeze">Разморозить поставщика </a>
                             </div>
                         </div>
-                      
+                        <script>
+                            var freeze = true;
+                        </script>
                     </div>
                 </div>
             }
@@ -72,6 +80,9 @@
 else
 {
     <p style="text-align : center; font-size:24px;">Список поставщиков пуст</p>
+    <script>
+        var hasData = false;
+    </script>
 }
 <!-- Фоновый затемнитель -->
 <div class="frozen-background"></div>
@@ -98,6 +109,7 @@ else
                     title: 'Укажите наименование поставщика',
                     input: 'text',
                     inputPlaceholder: 'Введите наименование поставщика ',
+                    confirmButtonText:'Создать',
                     inputValidator: (value) => {
                         if (!value || value.length < 5) {
                             return 'Минимальная длина наименования - 5 символов!';
@@ -156,8 +168,177 @@ else
 
                     }
                 });
-            })
+            });
 
+            var isPressF1Key = false; //Если захотим просто вспомнить как это работает
+            var GetSteps = localStorage.getItem('Provider');
+            //Система подсказок
+            function ProviderTool(forceRun = false) {
+                var Enj = new EnjoyHint({
+                    onEnd: function () {
+                        if (GetSteps !== 'false') {
+                            Swal.fire({
+                                title: 'Внимание',
+                                text: 'Переходим на важный участок функционала --> к справочникам :Склады',
+                                icon: 'warning',
+                                confirmButtonText: 'Приступаем!',
+                                allowOutsideClick: false
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    location.href = '/Warehouse/Index';
+                                    localStorage.removeItem('Provider');
+                                }
+                            });
+                        }
+                        if(isPressF1Key){
+                            Swal.fire({
+                                title: 'Внимание',
+                                text: 'В режиме подсказки функция добавления недоступна',
+                                icon: 'warning',
+                                confirmButtonText: 'Понял'
+                            });
+                            isPressF1Key = false;
+                        }
+                    }
+                });
+                var providerSteps = [];
+                if (GetSteps !== 'false' && !forceRun) {
+
+                    return;
+                }
+
+                    if (hasData !== 'undefined' && hasData) {
+                        // Подсказка для незамороженного поставщика
+                        if (!freeze) {
+                            providerSteps.push(
+                                {
+                                    'next .unfr': 'В карточке отображается наименование поставщика',
+                                    margin: 15,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    timeout:500
+                                },
+                                {
+                                    'click .ProvFreeze': 'Эта функция используется в случае, если поставщик больше не осуществляет поставки.',
+                                    margin: 15,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    onBeforeStart: function () {
+                                        Swal.fire({
+                                            title: 'Внимание',
+                                            text: 'В режиме подсказки, функция заморозки будет отключена!',
+                                            icon: 'info'
+                                        });
+                                        $('#confirmButtonText').prop('disabled', true);
+                                    }
+                                },
+                                {
+                                    'click #ProviderAdd': 'Для того, чтобы добавить поставщика, нажмите сюда',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    onBeforeStart: function () {
+                                        Swal.fire({
+                                            title: 'Внимание',
+                                            text: 'В режиме подсказки функция добавления будет отключена!',
+                                            icon: 'info'
+                                        });
+                                        $('#confirmButtonText').prop('disabled', true);
+                                    }
+                                }
+                            );
+                        }
+                        // Для замороженных
+                        if (freeze) {
+                            providerSteps.push(
+                                {
+                                    'next .frz': 'В карточке отображается наименование замороженного поставщика',
+                                    margin: 15,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    timeout: 500
+                                },
+                                {
+                                    'click .BtnUnFreeze': 'Эта функция используется для разморозки поставщика.',
+                                    margin: 15,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    onBeforeStart: function () {
+                                        Swal.fire({
+                                            title: 'Внимание',
+                                            text: 'В режиме подсказки. функция разморозки будет отключена!',
+                                            icon: 'info'
+                                        });
+                                        $('#confirmButtonText').prop('disabled', true);
+                                    }
+                                },
+                                {
+                                    'click #ProviderAdd': 'Для того, чтобы добавить поставщика, нажмите сюда',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    onBeforeStart: function () {
+                                        Swal.fire({
+                                            title: 'Внимание',
+                                            text: 'В режиме подсказки функция добавления будет отключена!',
+                                            icon: 'info'
+                                        });
+                                        $('#confirmButtonText').prop('disabled', true);
+                                    }
+                                }
+
+                            );
+                        }
+                    } else {
+                        // Подсказка для добавления поставщика
+                        providerSteps.push(
+                            {
+                                'click #ProviderAdd': 'Для того, чтобы добавить поставщика, нажмите сюда',
+                                nextButton: { className: 'btn-success', text: 'Дальше' },
+                                skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                prevButton: { className: 'btn-primary', text: 'Назад' },
+                                onBeforeStart: function () {
+                                    Swal.fire({
+                                        title: 'Внимание',
+                                        text: 'В режиме подсказки функция добавления будет отключена!',
+                                        icon: 'info'
+                                    });
+                                    $('#confirmButtonText').prop('disabled', true);
+                                }
+                            }
+                        );
+                    }
+                
+
+           
+                Enj.set(providerSteps);
+
+              
+                Enj.run();
+
+                // После окончания подсказок
+               
+            }
+
+
+            if (GetSteps !== 'false') {
+
+                ProviderTool(true);
+            }
+
+            $(document).on('keydown', function (e) {
+                if (e.key == 'F1') {
+                    //Если мы просто захотели вспомнить как это делается, пожалуйста
+                    e.preventDefault();
+                    isPressF1Key = true;
+                    ProviderTool(isPressF1Key);
+                   
+                }
+            });
         });
 
     </script>

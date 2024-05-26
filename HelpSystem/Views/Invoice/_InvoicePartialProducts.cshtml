@@ -1,6 +1,8 @@
 ﻿@model HelpSystem.Domain.ViewModel.Product.ProductShowViewModel
 
 <div class="container">
+   <div class="base">
+
     <div class="row" style="text-align:center">
         <small class="text-center">  <strong> Накладная: @Model.Product.FirstOrDefault()?.NumberDoc </strong></small>
     </div>
@@ -14,6 +16,8 @@
             <small class="text-muted"> <strong>Поставщик:</strong> @Model.Product.FirstOrDefault()?.Provider</small>
         </div>
     </div>
+
+   </div>
     <div class="accordion" id="accordionExample">
         @foreach (var group in Model.Product.GroupBy(p => p.NameProduct))
         {
@@ -54,7 +58,7 @@
     <div class="row mt-3">
         <div class="col-12">
             <div class="text-center" style="background-color: #ffff99;">
-                <strong>Общее количество товаров:</strong> @Model.TotalCount
+                <strong class="Count">Общее количество товаров:</strong> @Model.TotalCount
             </div>
         </div>
     </div>
