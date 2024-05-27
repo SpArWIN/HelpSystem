@@ -1205,7 +1205,7 @@ function initializeWarehouseProductTable(warehouseId) {
 
             var Code = $button.closest('tr').find('td:eq(2)').text();
             //Привязка со стороны склада
-            BindingProdWarehouse(productId, nameProduct, Code,SourceWh);
+            BindingProdWarehouse(productId, nameProduct, Code, SourceWh);
           
         });
 
@@ -1255,7 +1255,7 @@ function MassInputWarehouse(id) {
     });
 }
 //Клик события списания
-function DebitingWarehouse(ProductId, Name, Code) {
+function DebitingWarehouse(ProductId, Name, Code,callback) {
 
     var nameProduct = Name;
     var codeProduct = Code;
@@ -1264,8 +1264,13 @@ function DebitingWarehouse(ProductId, Name, Code) {
     $('#PrID').val(Product);
     $('#DebitNameProduct').val(nameProduct);
     $('#CodInv').val(codeProduct);
+    $('#ModelDebiting').css('z-index', '1010');
+    $('.modal-backdrop').css('z-index', '1005');
     $('#ModelDebiting').modal('show');
+      if (typeof callback === 'function') {
+        callback();
 
+    }
 
 }
 
@@ -1314,7 +1319,7 @@ $('#BtnDebiting').click(function () {
 
 
 //Клик события закрепление
-function BindingProdWarehouse(ProductId,Name,Code) {
+function BindingProdWarehouse(ProductId,Name,Code,callback) {
     // Так как клики многократные, остальные убираем, оставляем текущий
 
     var nameProduct = Name;
@@ -1324,11 +1329,18 @@ function BindingProdWarehouse(ProductId,Name,Code) {
         $('#nameProduct').val(nameProduct);
     $('#inventoryCode').val(codeProduct);
 
-        $('#ModalBindingProduct').modal('show');
-        initializeSelectUser2();
+    $('#ModalBindingProduct').modal('show');
+    $('#ModalBindingProduct').css('z-index', '1010');
+    $('.modal-backdrop').css('z-index', '1005');
+    initializeSelectUser2();
+    if (typeof callback === 'function') {
+        callback();
+
+    }
+      
    
 }
-
+// Обработчик для кастомного события attachBtnClick
 
 
 

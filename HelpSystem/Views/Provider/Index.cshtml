@@ -172,6 +172,7 @@ else
 
             var isPressF1Key = false; //Если захотим просто вспомнить как это работает
             var GetSteps = localStorage.getItem('Provider');
+            localStorage.setItem('Warehouse', 'false');
             //Система подсказок
             function ProviderTool(forceRun = false) {
                 var Enj = new EnjoyHint({
@@ -185,6 +186,7 @@ else
                                 allowOutsideClick: false
                             }).then((result) => {
                                 if (result.isConfirmed) {
+                                    localStorage.setItem('Warehouse', 'true');
                                     location.href = '/Warehouse/Index';
                                     localStorage.removeItem('Provider');
                                 }

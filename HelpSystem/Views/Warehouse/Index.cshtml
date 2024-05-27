@@ -35,14 +35,23 @@
 
     //Два цикла вывода организовано для того, чтобы сначала выводились активные склады, а затем в самый конец те, что заморожены
     <div class="row">
+        <script>
+            var ObjectWh = @Model.Count();
+            var FreezeWarehouse = false;
+            var NoFreezeNoService = false;
+            var FreezeWarehouse = false;
+        </script>
         @foreach (var Warehouse in Model)
         {
+           
+
+            
             //Если склад не заморожен, отображаем как есть
             if (!Warehouse.isFreesing && !Warehouse.isService)
             {
-
+             
                 <div class="col-md-4 mb-6 ">
-                    <div class="card user-animation mt-3">
+                    <div class="card user-animation mt-3 whcard">
                     <div class="card-header">
                         <p class="card-title">Склад</p>
                     </div>
@@ -51,12 +60,21 @@
                     </div>
                     <div class="card-footer">
                         <div class="row">
-                            <p class="text-muted">Количество товара на складе: @Warehouse.TotalCountWarehouse</p>
+                            <p class="text-muted countWh">Количество товара на складе: @Warehouse.TotalCountWarehouse</p>
                         </div>
+                            <script>
+                                // Записываем общее количество товаров на складе в переменную
+                                var WarehouseTotalCount_= @Warehouse.TotalCountWarehouse;
+                              
+                            </script>
+
+
                         <div class="d-grid-gap-2">
                             <div class="row"> 
                                 <div class="col-sm-6">
-                                    <a style="margin:3px;" class="btn btn-outline-info" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetProductsWarehouse', data: '@Warehouse.Id' , context: 'ListWarehouse'})  ">Список товаров</a>
+                                        <a style="margin:3px;" class="btn listprod btn-outline-info" data-warehouse-id="@Warehouse.Id">
+                                            Список товаров
+                                        </a>
                                 </div>
                                 <div class="col-sm-6">
                                     <a style="margin:3px;" class="btn btn-outline-danger" onclick="openModal({modalId: 'ModalMove', url:'/Warehouse/GetProductsDetail', data: '@Warehouse.Id' , context: 'MoveProductWarehouse'}) ">Переместить товар</a>
@@ -74,6 +92,9 @@
                         </div>
                         
                     </div>
+                       <script>
+                           NoFreezeNoService = true;
+                        </script>
                 </div>
                 </div>
             }
@@ -97,7 +118,10 @@
                                 <p class="card-text">Количество товаров, оставшихся на складе:@wh.TotalCountWarehouse</p>
                                 </div>
                             </div>
-
+                    <script>
+                          FreezeWarehouse = true;
+                       
+                    </script>
                         </div>
                     }
                 }
@@ -120,14 +144,18 @@
                         </div>
 
                         <div class="card-footer">
-                            <p class="card-text">Количество утилизационных товаров:@wh.TotalCountWarehouse</p>
+                            <p class="card-text">Количество утилизированных товаров:@wh.TotalCountWarehouse</p>
 
                             <div class="d-grid-gap-2">
-                                <a data-id="@wh.Id" class="btn btn-outline-warning " id="DetimeId" onclick="openModal({modalId: 'DetailWarehouse', url:'/Warehouse/GetDebitingProduct', data: '@wh.Id' , context: 'DebitingProduct'})  "> Список утилизационных товаров</a>
+                                <a data-id="@wh.Id" class="btn btn-outline-warning " id="DetimeId"> Список утилизированных товаров</a>
+                                
                             </div>
                         </div>
                     </div>
-
+                    <script>
+                        ServiceWarehouse = true;
+                        var DebtingTotal = @wh.TotalCountWarehouse;
+                    </script>
                 </div>
             }
         }
@@ -190,9 +218,328 @@ else
 
             });
 
-        });
+          
+           
+       
+        var PressF1Key = false;
+            var GetStap = localStorage.getItem('Warehouse');
+        //Список товаров
+            $(document).on('click', '.listprod', function (e) {
+                e.preventDefault();
+                var warehouseId = $(this).data('warehouse-id');
+                openModal({
+                    modalId: 'DetailWarehouse',
+                    url: '/Warehouse/GetProductsWarehouse',
+                    data: warehouseId,
+                    context: 'ListWarehouse',
+                    callback: function () {
+                        var Enj = new EnjoyHint({
+                            onEnd: function () {
+                                setTimeout(function () {
+                                    openSecondModal();
+                               
+                                }, 500);
+                                
+                            }
+                        });
+                        var StetList = [];
+                        var SetOs = [];
+                        if (WarehouseTotalCount_ > 0) {
 
-     
+                            StetList.push(
+                                {
+                                    'click #productAccordion': 'Здесь отображется список всех товаров на складе',
+                                    timeout: 1300,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+
+                                },
+                                {
+                                    'next .accordion-header': 'Группировка товаров по наименованию,кликните, чтобы раскрыть список',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+
+                                },
+                                {
+                                    'next .accordion-body': 'Здесь отображена основная информация о товаре.',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                },
+                                {
+                                    'next .dostup': 'Это поле, в котором отображается доступен ли товар для привязки к пользователю',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                },
+                                {
+                                    'next .deyanya': 'В данном поле отображаются возможные кнопки для манимуляции с товаром',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                },
+                                //Это действие для закрепления ModalBindingProduct
+                                {
+                                    'click #attachBtn': 'Пройдёмся по функционалу привязки',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                   
+
+                                },
+                                   
+                        
+                            );
+                        }
+                        else {
+                            StetList.push(
+                                {
+                                    'next .modal-body': 'Здесь отображется список всех товаров на складе',
+                                    timeout: 1300,
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    onBeforeStart: function () {
+                                        Swal.fire({
+                                            title: 'Внимание',
+                                            text: 'На этом складе товаров не оказалось, невозможно продемонстрировать остальные подсказки:(',
+                                            icon: 'warning',
+                                            confirmButtonText: 'Понял'
+                                        });
+                                    }
+                                }
+                            )
+                        }
+                       
+
+                        Enj.set(StetList);
+                        Enj.run();
+
+                    }
+
+                });
+            });
+
+            function openSecondModal(){
+                var Enj = new EnjoyHint({
+                    onEnd: function () {
+                        $('#ModalBindingProduct').modal('hide');
+                        $('#BtnBindWarehouse').removeClass('disabled');
+                        setTimeout(function () {
+                            DebbitingSteps();
+                        
+                        }, 500);
+                       
+                    }
+
+                });
+                var Step = [];
+                Step.push(
+                    {
+                        'next #nameProduct': 'Поле в котором отображается наименование товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        timeout: 700
+                    },
+                    {
+                        'next #inventoryCode': 'Поле в котором отображается инвентарный код товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    },
+                    {
+                        'next .select2-selection': 'Здесь необходимо найти нужного пользователя',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #BindingComent': 'Можно указать необязательный комментарий.',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10
+                    },
+                    {
+                        'next #BtnBindWarehouse': 'После всех манипуляций, можно привязывать товар',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                        onBeforeStart: function () {
+                            Swal.fire({
+                                title:'Внимание',
+                                text:'В режиме подсказки, привязка товара недоступна',
+                                icon:'warning',
+                                confirmButtonText:'Понял'
+                            });
+                            $('#BtnBindWarehouse').addClass('disabled');
+                        }
+                    }
+
+                );
+                Enj.set(Step);
+                Enj.run();
+            }
+          //Непосредственно шаги по списанию
+            function DebbitingSteps() {
+                var Enj = new EnjoyHint({
+                    onEnd: function () {
+                        $('#BtnDebiting').removeClass('disabled');
+                        $('#ModelDebiting').modal('hide');
+                        $('#DetailWarehouse').modal('hide');
+                        setTimeout(function () {
+                            MoveProductStep();
+                        },  1000);
+
+                    }
+
+                });
+                var Step = [];
+                Step.push(
+
+                    {
+                        'next #DebitNameProduct': 'Здесь отображается наименование списываемого товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                    },
+                    {
+                        'next #CodInv': 'Здесь отображается инвентарный код товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                    },
+                    {
+                        'next #DegitingCom': 'Здесь необходимо ввести обязательный комментарий',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                    },
+                    {
+                        'next #BtnDebiting': 'Затем необходимо нажать на эту кнопку для списания товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        margin: 10,
+                        onBeforeStart: function () {
+                            Swal.fire({
+                                title: 'Внимание',
+                                text: 'В режиме подсказки, списание товара недоступно',
+                                icon: 'warning',
+                                confirmButtonText: 'Понял'
+                            });
+                            $('#BtnDebiting').addClass('disabled');
+                        }
+                    }
+                );
+
+                Enj.set(Step);
+                Enj.run();
+
+            };
+           
+            //Функция для подсказки списания
+            function DebSteps() {
+                var Enjoy = new EnjoyHint({
+                    onStart: function () {
+                        var Step = [];
+                        Step.push(
+                            {
+                                'click #DebittingBtn': 'Пройдёмся по функционалу списания',
+                                nextButton: { className: 'btn-success', text: 'Дальше' },
+                                skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                prevButton: { className: 'btn-primary', text: 'Назад' },
+                                margin: 10,
+                            }
+                        );
+                        Enjoy.set(Step);
+                    },
+                    onEnd: function () {
+                        setTimeout(function () {
+                            DebbitingSteps();
+                        }, 500); // Задержка в 500 миллисекунд перед вызовом функции DebbitingSteps
+                    }
+                });
+
+                Enjoy.run();
+            }
+
+
+
+            //Клик на утилизированный склад
+            $(document).on('click', '#DetimeId', function () {
+                var warehouseId = $(this).data('id');
+
+                openModal({
+                    modalId: 'DetailWarehouse',
+                    url: '/Warehouse/GetDebitingProduct',
+                    data: warehouseId,
+                    context: 'DebitingProduct',
+                    callback: function () {
+                        // Здесь идет ваш код, который должен выполняться после успешного открытия модального окна
+                        var enjoyHintInstance = new EnjoyHint({
+                        onEnd:function(){
+                                $('#DetailWarehouse').modal('hide');
+                                setTimeout(function () {
+                                    NoFreezeWarehouse(); //Метод об обычном складе
+                                },500)
+                                
+                        }
+                        });
+
+                        var steps = [];
+
+                        if (DebtingTotal < 0) {
+                            steps.push(
+
+                                {
+                                    'next .modal-body':'Здесь отображаются списанные товары, однако на текущий момент нет списанных товаров, продемонстрировать функционал сейчас невозможно:(',
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                }
+                            );
+                        }
+
+                         steps.push(
+                        
+                            {
+                                'click .accordion-item': 'Общая информация о списанном товаре.',
+                                nextButton: { className: 'btn-success', text: 'Дальше' },
+                                skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                prevButton: { className: 'btn-primary', text: 'Назад' }
+                            },
+                            {
+                                'next .deb':'Если вдруг случайно списали не тот товар, списание можно отменить',
+                                nextButton: { className: 'btn-success', text: 'Дальше' },
+                                skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                prevButton: { className: 'btn-primary', text: 'Назад' },
+                                onBeforeStart: function () {
+                                    Swal.fire({
+                                        title: 'Внимание',
+                                        text: 'Списать товар можно в течение  24 часов, затем кнопка становится недоступной.',
+                                        icon: 'info',
+                                        confirmButtonText: 'Понял'
+                                    });
+                                    
+                                }
+                            }
+                    );
+
+                        enjoyHintInstance.set(steps);
+                        enjoyHintInstance.run();
+                    }
+                });
+            });
+
+
 
         $('.BtnFreeZing').on('click', function () {
             var warehouseName = $(this).data('name');
@@ -239,7 +586,201 @@ else
                 }
             });
 
+
+            //Система подсказок
+         
         });
-      
+        
+            function ToolHelp(farcRun = false) {
+                if (GetStap === 'false' && !farsRun) {
+                    return;
+                }
+
+                //Выдаем стандартные подскзаки в любом случае
+                var AddWh = new EnjoyHint({});
+                var AddStepWh = [];
+                AddStepWh.push(
+
+                    {
+                        'click #WarehouseId': 'Для того, чтобы добавить новый склад, необходимо перейти в раздел склады',
+                        timeout: 1300,
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+
+
+                    },
+                    {
+                        'next #WarehouseAdd ': 'Добавить новый склад',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        onBeforeStart: function () {
+                            Swal.fire({
+                                title: 'Внимание',
+                                text: 'В режиме подсказки, функция добавления склада будет отключена',
+                                icon: 'warning',
+                                confirmButtonText: 'Понял'
+                            });
+
+                        }
+
+                    },
+                    {
+                        'next .card-service': 'Так отображается карточка с складом утилизации',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        bottom: 150,
+                        margin: 10
+                    },
+                    {
+                        'click #DetimeId': 'Для того, чтобы посмотреть список списанных товаров,необходимо нажать на эту кнопку',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+
+
+                    }
+
+
+                );
+
+                AddWh.set(AddStepWh);
+                AddWh.run();
+            }
+
+        ToolHelp();
+
+            function NoFreezeWarehouse(){ //Функция для описание подсказки склада
+                if (ObjectWh > 1 && NoFreezeNoService) { //Если кроме сервиса там что то ещё есть, накидываем 
+                    var NoFreeze = new EnjoyHint({
+
+                    });
+                    var NoFreezeStep = [];
+                    NoFreezeStep.push(
+
+                        {
+                            'click .listprod': 'Для того, чтобы посмотреть список товаров на складе,необходимо нажать сюда.',
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' },
+                        }
+
+                    );
+                    NoFreeze.set(NoFreezeStep);
+                    NoFreeze.run();
+                }
+                else {
+                    return;
+                }
+            }
+
+            function MoveProductStep() { //Функция для описание подсказки склада - перемещение
+                if (ObjectWh > 1 && NoFreezeNoService) { //Если кроме сервиса там что то ещё есть, накидываем
+                    var NoFreeze = new EnjoyHint({
+                        onEnd: function () {
+                            setTimeout(function () {
+                                MoveProductStepbyStep();
+                            }, 1000)
+                        }
+                    });
+                    var NoFreezeStep = [];
+                    NoFreezeStep.push(
+                        {
+                            'click .movbtn': 'Для того, чтобы переместить товар с одного  склада на другой, необходимо нажать вот сюда.',
+                            nextButton: { className: 'btn-success', text: 'Дальше' },
+                            skipButton: { className: 'btn-warning', text: 'Завершить' },
+                            prevButton: { className: 'btn-primary', text: 'Назад' },
+                        },
+
+
+                    );
+                    NoFreeze.set(NoFreezeStep);
+                    NoFreeze.run();
+                }
+                else {
+                    return;
+                }
+            }
+
+            function MoveProductStepbyStep() {// Непосредственно сами подскази для по перемещению
+                var Enjoy = new EnjoyHint({
+                    onStart: function () {
+                        Swal.fire({
+                            title: 'Внимание',
+                            text: 'В этом списке отображаются только те товары, которые не закреплены ни за кем.',
+                            icon: 'info',
+                            confirmButton: 'Понял'
+                        });
+                    },
+
+                    onEnd: function () {
+
+                    }
+                });
+                var Step = [];
+                Step.push(
+                    {
+                        'next #accordionExample': 'Общая группировка товаров доступных для перемещения',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+
+                    },
+                    {
+                        'next .accordion-body': 'Основная информация о товаре',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+
+                    },
+                    {
+                        'next #SelectWarehouse_': 'Для перемещения, необходимо выбрать склад, на который будет перемещён товар',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    },
+                    {
+                        'next .btn-move-product': 'Кнопка для перемещения товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        onBeforeStart: function () {
+                            Swal.fire({
+                                title: 'Внимание',
+                                text: 'В режиме подсказки, функция перемещения товара  будет отключена.',
+                                icon: 'warning',
+                                confirmButtonText: 'Понял'
+                            });
+
+                        }
+                    },
+                    {
+                        'next .commov': 'Здесь можно указать необязательный комментарий по перемещению товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    },
+                    {
+                        scrollTo: 'click #headingSettings',
+                        'click #headingSettings': 'Режим массового перемещения, используется, если есть необходимость перенести 2 и более товаров',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    }
+
+                );
+                Enjoy.set(Step);
+                Enjoy.run();
+            }
+
+
+
+
+
+    });
+
+            
     </script>
 }
