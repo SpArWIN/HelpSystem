@@ -13,9 +13,6 @@
       padding: 5px; /* Добавляем немного отступа внутри границы */
     }
 
-  
-
-
   </style>
 
 <ul  class="nav nav-pills">
@@ -197,6 +194,8 @@ else
 
 
         $(document).ready(function() {
+            var PressF1Key = false;
+            var GetStap = localStorage.getItem('Warehouse');
             $('.user-animation').addClass('show');
             $('#WarehouseAdd').on('click', async function () {
                 const { value: WarehouseNmae } = await Swal.fire({
@@ -218,13 +217,112 @@ else
                     $('#FindProducts').modal('show');
                     initialiseFindProduct();
 
+                $('#FindProducts').on('shown.bs.modal', function () {
+                    if ($('#FindProducts').hasClass('show')) {
+                        if (GetStap !== 'false' && PressF1Key) {
+                            const $infoContainer = $('#routeInfoContainer');
+                            var Enj = new EnjoyHint({
+                                onNext: function () {
+                                    var currentStep = Enj.getCurrentStep();
+                                    if (currentStep == 1) { 
+                                        var inputVal = $('.select2-search__field').val();
+                                        if (inputVal.length < 4) {
+                                            Swal.fire({
+                                                title: 'Внимание',
+                                                text: 'Чтобы подсказки продолжали работать корректно, введите необходимое количество символов',
+                                                icon:'warning'
+                                            });
+                                            return false;
+                                        }
+                                    }
+                                    return true;
+                                },
+                                onEnd:function(){
+                                    $('#FindProducts').modal('hide');
+                                    localStorage.removeItem('Warehouse');
+                                    PressF1Key = false;
+                                }
+                          
+                            
+                            });
+                            $('#FindProducts').css('z-index', '1010');
+                            $('.modal-backdrop').css('z-index', '1005');
+                            var Step = [];
+                            Step.push(
+                                {
+                                'click #select2-ProductId-container': 'Давайте попробуем найти любой товар, который видели уже раньше',
+                                timeout: 600,
+                                nextButton: { className: 'btn-success', text: 'Дальше' },
+                                skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                prevButton: { className: 'btn-primary', text: 'Назад' },
+                                margin: 60
+                            },
+                            {
+                                    'next .select2-search__field':'Вбейте не менее 4 символов',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 60,
+
+                            },
+                            {
+                                'next .select2-results__option':'Выберите из списка товар',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 60,
+                            },
+                                {
+                                    scrollTo: 'modal-footer',
+                                    'click #BtnFindInfoProducts':'Давайте найдём товар',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 20,
+                               
+                            },
+                                {
+                                    scrollTo: 'modal-body',
+                                    'next #BaseProductInfo':'Здесь отображается основная информация о товаре',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 60,
+                                    bottom:10,
+                                    timeout:5000
+                                },
+                                {
+                                    scrollTo: '#ProductRowInfo',
+                                    'next #routeInfoContainer':'Если товар был перемещен, то вся история его перемещений будет отражена здесь',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 20,
+                                    
+                                },
+                                {
+                                    scrollTo: '#ProfileProduct',
+                                    'next #ProfileProduct':'Если товар к кому-то привязан, вы сможете увидеть профиль пользователя и перейти к нему',
+                                    nextButton: { className: 'btn-success', text: 'Дальше' },
+                                    skipButton: { className: 'btn-warning', text: 'Завершить' },
+                                    prevButton: { className: 'btn-primary', text: 'Назад' },
+                                    margin: 20,
+                                }
+
+                            );
+
+                            Enj.set(Step);
+                            Enj.run();
+                        }
+                    }
+                });
+
             });
 
           
            
        
-        var PressF1Key = false;
-            var GetStap = localStorage.getItem('Warehouse');
+     
         //Список товаров
             $(document).on('click', '.listprod', function (e) {
                 e.preventDefault();
@@ -397,68 +495,19 @@ else
                 Enj.set(Step);
                 Enj.run();
             }
-          // //Непосредственно шаги по списанию
-          //   function DebbitingSteps() {
-          //       var Enj = new EnjoyHint({
-          //           onEnd: function () {
-          //               $('#BtnDebiting').removeClass('disabled');
-          //               $('#ModelDebiting').modal('hide');
-          //               $('#DetailWarehouse').modal('hide');
-          //               setTimeout(function () {
-          //                   MoveProductStep();
-          //               },  1000);
+         
 
-          //           }
+            $(document).on('keydown', function (e) {
+                if (e.key === 'F1') {
+                    e.preventDefault();
 
-          //       });
-          //       var Step = [];
-          //       Step.push(
+                    PressF1Key = true;
+                    ToolHelp(PressF1Key);
+                   //Потом перейдём к админ панели
 
-          //           {
-          //               'next #DebitNameProduct': 'Здесь отображается наименование списываемого товара',
-          //               nextButton: { className: 'btn-success', text: 'Дальше' },
-          //               skipButton: { className: 'btn-warning', text: 'Завершить' },
-          //               prevButton: { className: 'btn-primary', text: 'Назад' },
-          //               margin: 10,
-          //           },
-          //           {
-          //               'next #CodInv': 'Здесь отображается инвентарный код товара',
-          //               nextButton: { className: 'btn-success', text: 'Дальше' },
-          //               skipButton: { className: 'btn-warning', text: 'Завершить' },
-          //               prevButton: { className: 'btn-primary', text: 'Назад' },
-          //               margin: 10,
-          //           },
-          //           {
-          //               'next #DegitingCom': 'Здесь необходимо ввести обязательный комментарий',
-          //               nextButton: { className: 'btn-success', text: 'Дальше' },
-          //               skipButton: { className: 'btn-warning', text: 'Завершить' },
-          //               prevButton: { className: 'btn-primary', text: 'Назад' },
-          //               margin: 10,
-          //           },
-          //           {
-          //               'next #BtnDebiting': 'Затем необходимо нажать на эту кнопку для списания товара',
-          //               nextButton: { className: 'btn-success', text: 'Дальше' },
-          //               skipButton: { className: 'btn-warning', text: 'Завершить' },
-          //               prevButton: { className: 'btn-primary', text: 'Назад' },
-          //               margin: 10,
-          //               onBeforeStart: function () {
-          //                   Swal.fire({
-          //                       title: 'Внимание',
-          //                       text: 'В режиме подсказки, списание товара недоступно',
-          //                       icon: 'warning',
-          //                       confirmButtonText: 'Понял'
-          //                   });
-          //                   $('#BtnDebiting').addClass('disabled');
-          //               }
-          //           }
-          //       );
+                }
 
-          //       Enj.set(Step);
-          //       Enj.run();
-
-          //   };
-           
-           
+            });
 
 
 
@@ -580,10 +629,10 @@ else
         });
         
             function ToolHelp(farcRun = false) {
-                if (GetStap === 'false' && !farsRun) {
+               
+                if (GetStap == 'false' || !farcRun) {
                     return;
                 }
-
                 //Выдаем стандартные подскзаки в любом случае
                 var AddWh = new EnjoyHint({});
                 var AddStepWh = [];
@@ -636,9 +685,10 @@ else
 
                 AddWh.set(AddStepWh);
                 AddWh.run();
+            
             }
 
-        ToolHelp();
+         ToolHelp();
 
             function NoFreezeWarehouse(){ //Функция для описание подсказки склада
                 if (ObjectWh > 1 && NoFreezeNoService) { //Если кроме сервиса там что то ещё есть, накидываем 
@@ -699,7 +749,7 @@ else
                             title: 'Внимание',
                             text: 'В этом списке отображаются только те товары, которые не закреплены ни за кем.',
                             icon: 'info',
-                            confirmButton: 'Понял'
+                            confirmButtonText: 'Понял'
                         });
                     },
 
@@ -707,6 +757,10 @@ else
                         $('.btn-move-product').removeClass('disabled');
                         $('#BtnMassMove').removeClass('disabled');
                         $('#ModalMove').modal('hide');
+
+                        setTimeout(function(){
+                            FreezeFind();   //Заморозка и поиск товара
+                        },500)
                     }
                 });
                 var Step = [];
@@ -836,7 +890,39 @@ else
                 Enjoy.run();
             }
 
-
+            function FreezeFind(){
+                var Enjoy = new EnjoyHint({
+                onEnd:function(){
+                        $('#BtnFreeZing').removeClass('disabled');
+                }
+                });
+                var Step = [];
+                Step.push(
+                    {
+                        'next .BtnFreeZing':'Если склад не используется, то его можно заморозить',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                        onBeforeStart: function () {
+                            $('.BtnFreeZing').addClass('disabled');
+                        }
+                    },
+                    {
+                        'click #FindProductId':'Для того, чтобы найти нужный товар, необходимо перейти в раздел поиск товара',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    },
+                    {
+                        'click #FindProduct':'Попробуем поискать нужный нам товар',
+                        nextButton: { className: 'btn-success', text: 'Дальше' },
+                        skipButton: { className: 'btn-warning', text: 'Завершить' },
+                        prevButton: { className: 'btn-primary', text: 'Назад' },
+                    }
+                );
+                Enjoy.set(Step);
+                Enjoy.run();
+            }
 
 
 

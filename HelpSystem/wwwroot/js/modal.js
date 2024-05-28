@@ -653,7 +653,8 @@ function ProductUserFunction(data) {
 
     </div>
 `;
-     let   msg = `<br>Комментарий к товару: ${data.comments}`;
+        let msg = `<br>Комментарий к товару: ${data.comments ? data.comments : 'Нет комментариев'}`;
+
         Profile += msg;
         $ProfileContainer.html(Profile);
     }

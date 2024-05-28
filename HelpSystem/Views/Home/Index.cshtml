@@ -199,14 +199,15 @@
                 enjoyUserStart.run();
                 localStorage.removeItem('Invoice');
             Trigger('.btn-inv', 'SetInvoice');
+            Trigger('.btn-inv', 'Warehouse');
         }
             
 
-        localStorage.setItem('SetInvoice', 'false');//При переходе к накладным
+            localStorage.setItem('SetInvoice', 'false');//При переходе к накладным
              localStorage.setItem('GetStatments', 'false'); //Заявки пользователей со стороны админа
             localStorage.setItem('profileTrigger', 'false'); //Для перехода в профиль 
             localStorage.setItem('StatmetnsTrigger', 'false'); //Для перехода в заявки пользователей
-
+        loclStorage.setItem('Warehouse', 'false');
 
             //По нажатию на F1 срабатывает подсказка
             $(document).on('keydown', function (e) {
