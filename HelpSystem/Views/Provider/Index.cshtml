@@ -122,7 +122,7 @@ else
                 }
             });
             //Заморозка поставщика
-            loclStorage.setItem('Warehouse', 'false');
+            localStorage.setItem('Warehouse', 'false');
             $('.ProvFreeze').on('click', function () {
                 var ProviderName = $(this).data('name');
                 var Id = $(this).data('id');

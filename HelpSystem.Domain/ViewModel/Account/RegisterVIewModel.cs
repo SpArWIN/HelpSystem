@@ -6,7 +6,7 @@ namespace HelpSystem.Domain.ViewModel.Account
     {
         [Required(ErrorMessage = "Укажите имя")]
         [MaxLength(20, ErrorMessage = "Имя должно иметь длину меньше 20 символов")]
-        [MinLength(6, ErrorMessage = "Имя должно иметь длину больше 6 символов")]
+        [MinLength(3, ErrorMessage = "Имя должно иметь длину больше 3 символов")]
         public string Name { get; set; }
         [Required(ErrorMessage = "Укажите логин")]
         [MaxLength(20, ErrorMessage = "Логин должно иметь длину меньше 20 символов")]

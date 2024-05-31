@@ -1,0 +1,52 @@
+﻿
+.info-card {
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    background-color: #f8f9fa;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+    .info-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        border: 2px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .info-card-img-top {
+        border-radius: 15px 15px 0 0;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .info-card-img-top:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .animated-text {
+        animation: fadeIn 2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+.btn-inf {
+    border-radius: 25px;
+    transition: background-color 0.3s, transform 0.3s;
+}
+.btn-inf:hover {
+    background-color: #0056b3; /* Приятный цвет при наведении */
+    transform: scale(1.05);
+}
+.btn-inf-primary {
+    background-color: #ce6a49;
+    color: white;
+    border-color: #007bff;
+}
+
+.btn-inf-secondary {
+    background-color: #6c757d;
+    border-color: #007bff;
+    color: white;
+}
