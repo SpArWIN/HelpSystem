@@ -637,7 +637,7 @@ function ProductUserFunction(data) {
 
         let profileUrl = `/Profile/Detail/${userId}`;
         let Profile = `
-    <div class="card-profile">
+    <div class="info-card" style=" width: 18rem;   margin-left :350px;">
         <div class="card-body">
             <h5 class="card-title">Владелец товара: ${data.usver.login}</h5>
             <p class="card-text">Фамилия: ${data.usver.lastName || 'Неизвестно'}</p>
@@ -2086,3 +2086,9 @@ function checkHistory() {
         $("#backButton").hide();
     }
 }
+//Открытие модальноего окна о приложении
+$(document).ready(function () {
+    $('#openModalBtn').click(function () {
+        $('#infoModal').modal('show');
+    });
+});
