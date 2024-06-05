@@ -103,10 +103,16 @@ namespace HelpSystem.DAL
 
 
             modelBuilder.Entity<Role>().HasData(
-                new Role { Id = 1, RoleType = UserRoleType.User },
-                new Role { Id = 2, RoleType = UserRoleType.Moder },
-                new Role { Id = 3, RoleType = UserRoleType.Admin }
+                new Role {Id=1, RoleType = UserRoleType.User },
+                new Role {Id=2, RoleType = UserRoleType.Admin }
             );
+
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.Users)
+                .WithOne(u => u.Roles)
+                .HasForeignKey(u => u.RoleId);
+
+
             var adminUserId = Guid.NewGuid();
 
             var ProfileId = Guid.NewGuid();
@@ -117,7 +123,7 @@ namespace HelpSystem.DAL
                     Name = "Николай",
                     Login = "TotKtoVseZnaet",
                     Password = HashPassword.HashPassowrds("Admin@"),
-                    RoleId = 3
+                    RoleId = 2
 
                 }
             );

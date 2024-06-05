@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -7,7 +8,7 @@
 namespace HelpSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialize : Migration
+    public partial class InitializeDataBase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -203,24 +204,23 @@ namespace HelpSystem.Migrations
                 values: new object[,]
                 {
                     { 1, 1 },
-                    { 2, 2 },
-                    { 3, 3 }
+                    { 2, 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Warehouses",
                 columns: new[] { "Id", "IsFreeZing", "IsService", "Name" },
-                values: new object[] { new Guid("847ec6bb-668c-4259-9539-acb66ba0e91a"), false, true, "Склад утилизации" });
+                values: new object[] { new Guid("3c18fcf0-835e-4acc-a251-dba2a0ffd2b7"), false, true, "Склад утилизации" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 3 });
+                values: new object[] { new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 2 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Description", "Email", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("e57bcf6e-4ec5-41c9-b1c7-e28d45910bd1"), null, "nikola10www@mail.ru", null, null, null, new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7") });
+                values: new object[] { new Guid("879762d9-c01e-4cc2-b4c7-04ac34190aef"), null, "nikola10www@mail.ru", null, null, null, new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",

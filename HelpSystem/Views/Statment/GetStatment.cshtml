@@ -105,6 +105,23 @@
                 var enjoyUserStart = new EnjoyHint({
                     onEnd: function () {
                         // Если мы в режиме подсказки
+                        Swal.fire({
+                            title: 'Информация',
+                            icon: 'info',
+                            text: 'На текущий момент нет заявок от пользователей, невозможно продемонстрировать функционал приложения.',
+                            showConfirmButton: 'Хорошо!'
+                        }).then((result) => {
+
+                            if (GetStap != 'false') {
+
+
+                                if (result.isConfirmed) {
+                                    window.location.href = '/Home/Index';
+                                    localStorage.removeItem('GetStatments');
+                                    localStorage.setItem('Invoice', 'true');
+                                }
+                            }
+                        });
                        
                     }
                 });
@@ -129,9 +146,12 @@
                             skipButton: { className: 'btn-warning', text: 'Завершить' },
                             prevButton: { className: 'btn-primary', text: 'Назад' },
                         },
-                     
-                     
+
+
                     );
+
+                }
+                else {
 
                 }
 

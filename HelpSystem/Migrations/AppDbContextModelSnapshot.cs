@@ -154,9 +154,9 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("e57bcf6e-4ec5-41c9-b1c7-e28d45910bd1"),
+                            Id = new Guid("879762d9-c01e-4cc2-b4c7-04ac34190aef"),
                             Email = "nikola10www@mail.ru",
-                            UserId = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7")
+                            UserId = new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0")
                         });
                 });
 
@@ -203,11 +203,6 @@ namespace HelpSystem.Migrations
                         {
                             Id = 2,
                             RoleType = 2
-                        },
-                        new
-                        {
-                            Id = 3,
-                            RoleType = 3
                         });
                 });
 
@@ -279,11 +274,11 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c39ffeb8-3bd5-430b-93e9-3a8991b069e7"),
+                            Id = new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
-                            RoleId = 3
+                            RoleId = 2
                         });
                 });
 
@@ -310,7 +305,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("847ec6bb-668c-4259-9539-acb66ba0e91a"),
+                            Id = new Guid("3c18fcf0-835e-4acc-a251-dba2a0ffd2b7"),
                             IsFreeZing = false,
                             IsService = true,
                             Name = "Склад утилизации"

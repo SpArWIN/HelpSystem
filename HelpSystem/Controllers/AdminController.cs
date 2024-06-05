@@ -18,7 +18,7 @@ namespace HelpSystem.Controllers
             return View();
         }
 
-        [Authorize(Roles = "3")]
+        [Authorize(Roles = "2")]
         [HttpGet]
         public IActionResult AdminPanel()
         {

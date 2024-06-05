@@ -303,6 +303,11 @@ function CreateWarehouse(WhName) {
                     text: response.description,
                     icon: 'success',
                     confirmButtonText: 'Окей'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        location.reload();
+                    }
+
                 });
             },1000);
         },

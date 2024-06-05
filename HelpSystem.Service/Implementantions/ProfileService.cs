@@ -141,7 +141,7 @@ namespace HelpSystem.Service.Implementantions
                             };
                         }
 
-                        usVer.Roles.RoleType = UserRoleType.Moder;
+                        usVer.Roles.RoleType = (UserRoleType)model.RoleId;
                         await _userRepository.Update(usVer);
 
                     }

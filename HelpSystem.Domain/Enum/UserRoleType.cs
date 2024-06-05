@@ -6,10 +6,8 @@ namespace HelpSystem.Domain.Enum
     {
         [Display(Name = "Пользователь")]
         User = 1,
-        [Display(Name = "Оператор")]
-        Moder = 2,
         [Display(Name = "Администратор")]
-        Admin = 3,
+        Admin = 2,
 
     }
 }
