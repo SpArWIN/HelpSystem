@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HelpSystem", "HelpSystem\HelpSystem.csproj", "{46D11BB8-2E56-4D91-BF5A-0957A6BDF17D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94AEB513-7999-4E47-AE27-C328820DB34C} = {94AEB513-7999-4E47-AE27-C328820DB34C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DAL", "DAL", "{8C5CF51F-03BB-421E-B08C-09DAFCFE67D2}"
 EndProject
