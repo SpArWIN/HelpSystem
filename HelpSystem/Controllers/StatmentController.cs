@@ -34,7 +34,7 @@ namespace HelpSystem.Controllers
             var userIdClaim = currentUser.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out Guid userId))
             {
-                //Завтра доделай это
+                
                 var Response = await _statmentIService.CreateStatment(model, userId);
 
                 if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
@@ -66,13 +66,13 @@ namespace HelpSystem.Controllers
 
             }
 
-            return Json(new { /*recordsFiltered = Response.Total, recordsTotal = Response.Total,*/ data = "Нет заявок" });
+            return Json(new {  data = "Нет заявок" });
 
         }
 
         [HttpGet]
         public IActionResult GetStatment() => View();
-        //По поему это Post
+        
         //Получения списка всех заявок
         [HttpPost]
         public async Task<IActionResult> GetStatmentsData()

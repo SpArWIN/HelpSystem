@@ -4,70 +4,70 @@
     //Layout = "_Layout";
 }
 <meta charset="utf-8" />
-<div class="form-group">
-    <div class="form-group" style="display: none;">
-        <label for="hiddenId">ID:</label>
-        <input type="text" class="form-control" id="hiddenId" value="@Model.Id">
-    </div>
-    <label for="lastName">Фамилия:</label>
-    <input type="text" class="form-control" id="lastName" value="@Model.LastName">
-</div>
-<div class="form-group">
-    <label for="firstName">Имя:</label>
-    <input type="text" class="form-control" id="firstName" value="@Model?.Name">
-</div>
-<div class="form-group">
-    <label for="patronymic">Отчество:</label>
-    <input type="text" class="form-control" id="patronymic" value="@Model?.Surname">
-</div>
-<div class="form-group">
-    <label for="Em">Почта:</label>
-    <input type="email" class="form-control" id="Em" value="@Model.Email" />
-</div>
-
-@if (!User.IsInRole("1"))
-{
     <div class="form-group">
-        <label  class="mb-2">Текущая роль: <span class="fw-bold">@Model.RoleName</span></label>
+        <div class="form-group" style="display: none;">
+            <label for="hiddenId">ID:</label>
+            <input type="text" class="form-control" id="hiddenId" value="@Model.Id">
+        </div>
+        <label for="lastName">Фамилия:</label>
+        <input type="text" class="form-control" id="lastName" value="@Model.LastName">
+    </div>
+    <div class="form-group">
+        <label for="firstName">Имя:</label>
+        <input type="text" class="form-control" id="firstName" value="@Model?.Name">
+    </div>
+    <div class="form-group">
+        <label for="patronymic">Отчество:</label>
+        <input type="text" class="form-control" id="patronymic" value="@Model?.Surname">
+    </div>
+    <div class="form-group">
+        <label for="Em">Почта:</label>
+        <input type="email" class="form-control" id="Em" value="@Model.Email" />
     </div>
 
-    <div class="form-group">
-        <label for="roleSelect" class="form-label">Установите роль:</label>
-        <select id="roleSelect" class="form-select">
-            @foreach (var role in Model.Roles)
-            {
-                @if (role.Id == Model.RoleId)
+    @if (!User.IsInRole("1"))
+    {
+        <div class="form-group">
+            <label  class="mb-2">Текущая роль: <span class="fw-bold">@Model.RoleName</span></label>
+        </div>
+
+        <div class="form-group">
+            <label for="roleSelect" class="form-label">Установите роль:</label>
+            <select id="roleSelect" class="form-select">
+                @foreach (var role in Model.Roles)
                 {
-                    <option value="@role.Id" selected>@role.RoleName</option>
+                    @if (role.Id == Model.RoleId)
+                    {
+                        <option value="@role.Id" selected>@role.RoleName</option>
+                    }
+                    else
+                    {
+                        <option value="@role.Id">@role.RoleName</option>
+                    }
+                }
+            </select>
+        </div>
+    }
+    @*Тут отобразим роль, для того, чтобы он считал ее
+        Делается это для того, чтобы на бекенде считал роль пользователя и отправил
+    *@
+    else
+    {
+     <select style="display:none" id="roleSelect">
+            @foreach(var rol in Model.Roles)
+            {
+                if(rol.Id == Model.RoleId)
+                {
+                    <option value="@rol.Id" selected >@rol.RoleName</option>
                 }
                 else
                 {
-                    <option value="@role.Id">@role.RoleName</option>
+                    <option value="@rol.Id">@rol.RoleName</option>
+                }
                 }
             }
         </select>
-    </div>
-}
-@*Тут отобразим роль, для того, чтобы он считал ее
-    Делается это для того, чтобы на бекенде считал роль пользователя и отправил
-*@
-else
-{
- <select style="display:none" id="roleSelect">
-        @foreach(var rol in Model.Roles)
-        {
-            if(rol.Id == Model.RoleId)
-            {
-                <option value="@rol.Id" selected >@rol.RoleName</option>
-            }
-            else
-            {
-                <option value="@rol.Id">@rol.RoleName</option>
-            }
-            }
-        }
-    </select>
-}
+    }
 
 <script>
     $(document).ready(function () {

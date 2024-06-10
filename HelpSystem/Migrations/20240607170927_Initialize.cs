@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HelpSystem.Migrations
 {
     /// <inheritdoc />
-    public partial class InitializeDataBase : Migration
+    public partial class Initialize : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -210,17 +210,17 @@ namespace HelpSystem.Migrations
             migrationBuilder.InsertData(
                 table: "Warehouses",
                 columns: new[] { "Id", "IsFreeZing", "IsService", "Name" },
-                values: new object[] { new Guid("3c18fcf0-835e-4acc-a251-dba2a0ffd2b7"), false, true, "Склад утилизации" });
+                values: new object[] { new Guid("d8923825-0fc1-401d-9289-cb1598ca84d2"), false, true, "Склад утилизации" });
 
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "Id", "Login", "Name", "Password", "RoleId" },
-                values: new object[] { new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 2 });
+                values: new object[] { new Guid("d7b7fcc1-0761-4ee9-b8ba-c96dca7c95ee"), "TotKtoVseZnaet", "Николай", "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7", 2 });
 
             migrationBuilder.InsertData(
                 table: "Profiles",
                 columns: new[] { "Id", "Description", "Email", "LastName", "Name", "Surname", "UserId" },
-                values: new object[] { new Guid("879762d9-c01e-4cc2-b4c7-04ac34190aef"), null, "nikola10www@mail.ru", null, null, null, new Guid("d8c053c8-169b-44eb-94da-c0acb60714c0") });
+                values: new object[] { new Guid("b21e01d5-1139-463e-9f1d-dd7144b182db"), null, "nikola10www@mail.ru", null, null, null, new Guid("d7b7fcc1-0761-4ee9-b8ba-c96dca7c95ee") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_InvoiceId",

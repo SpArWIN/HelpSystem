@@ -165,9 +165,6 @@
             }
         }
 
-        
-            
-        
 
     
 
@@ -199,7 +196,7 @@ else
     <script>
 
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             var PressF1Key = false;
             var GetStap = localStorage.getItem('Warehouse');
             $('.user-animation').addClass('show');
@@ -300,7 +297,7 @@ else
                             ];
 
                             // Логирование шагов
-                        
+
 
                             // Проверка существования элементов перед запуском
                             var allElementsExist = steps.every(function (step) {
@@ -312,7 +309,7 @@ else
                                 Enj.set(steps);
                                 Enj.run();
                             } else {
-                               
+
                                 Swal.fire({
                                     title: 'Ошибка',
                                     text: 'Некоторые элементы не найдены на странице.',
@@ -320,7 +317,7 @@ else
                                     confirmButtonText: 'Понял'
                                 });
                             }
-                        } else if (TotalCountProductWarehouse <=0 && DebtingTotal <=) {
+                        } else if (TotalCountProductWarehouse <= 0 && DebtingTotal <=0) {
 
                             Swal.fire({
                                 title: 'Внимание',
@@ -333,11 +330,11 @@ else
                 });
             });
 
-          
-           
-       
-     
-        //Список товаров
+
+
+
+
+            //Список товаров
             $(document).on('click', '.listprod', function (e) {
                 e.preventDefault();
                 var warehouseId = $(this).data('warehouse-id');
@@ -349,21 +346,24 @@ else
                     callback: function () {
                         var Enj = new EnjoyHint({
                             onEnd: function () {
-                                setTimeout(function () {
-                                    openSecondModal();
-                                  
-                                }, 500);
+                                if (PressF1Key || GetStap != 'false') {
+                                    setTimeout(function () {
+                                        openSecondModal();
+
+                                    }, 500);
+                                }
+                               
 
                             }
                         });
                         var StetList = [];
 
-                        
+
                         if (PressF1Key || GetStap != 'false') {
 
 
                             if (TotalCountProductWarehouse > 0) {
-                             
+
                                 StetList.push(
                                     {
                                         'click #productAccordion': 'Здесь отображется список всех товаров на складе',
@@ -398,7 +398,7 @@ else
                                         skipButton: { className: 'btn-warning', text: 'Завершить' },
                                         prevButton: { className: 'btn-primary', text: 'Назад' },
                                     },
-                                  
+
                                     {
                                         'click #attachBtn': 'Пройдёмся по функционалу привязки',
                                         nextButton: { className: 'btn-success', text: 'Дальше' },
@@ -411,7 +411,7 @@ else
 
                                 );
                             }
-                            else{
+                            else {
                                 StetList.push(
 
                                     {
@@ -419,25 +419,25 @@ else
                                         nextButton: { className: 'btn-success', text: 'Дальше' },
                                         skipButton: { className: 'btn-warning', text: 'Завершить' },
                                         prevButton: { className: 'btn-primary', text: 'Назад' },
-                                        margin:20,
+                                        margin: 20,
                                     }
                                 );
-                            } 
-                
+                            }
+
                             Enj.set(StetList);
                             Enj.run();
-                          
-                     
+
+
                         }
-                      
+
                     }
                 });
             });
 
-            function openSecondModal(){
+            function openSecondModal() {
                 var Enj = new EnjoyHint({
                     onEnd: function () {
-                     
+
                         if (WarehouseTotalCount_ > 0) {
 
 
@@ -451,9 +451,10 @@ else
 
                             }, 500);
                         }
-                        setTimeout(function(){
+                        setTimeout(function () {
                             MoveProductStep();
-;                        },500)
+                            ;
+                        }, 500)
                         $('#ModalBindingProduct').modal('hide');
                         $('#BtnBindWarehouse').removeClass('disabled');
                         $('#DetailWarehouse').modal('hide');
@@ -516,7 +517,7 @@ else
                 Enj.set(Step);
                 Enj.run();
             }
-         
+
 
             $(document).on('keydown', function (e) {
                 if (e.key === 'F1') {
@@ -524,7 +525,7 @@ else
 
                     PressF1Key = true;
                     ToolHelp(PressF1Key);
-                   //Потом перейдём к админ панели
+                    //Потом перейдём к админ панели
 
                 }
 
@@ -542,7 +543,7 @@ else
                     data: warehouseId,
                     context: 'DebitingProduct',
                     callback: function () {
-                        // Здесь идет ваш код, который должен выполняться после успешного открытия модального окна
+                       
                         var enjoyHintInstance = new EnjoyHint({
                             onEnd: function () {
                                 $('#DetailWarehouse').modal('hide');
@@ -557,10 +558,10 @@ else
 
                         var steps = [];
 
-                      
 
-                        if (PressF1Key  || GetStap !='false') {
-                            if(DebtingTotal <= 0){
+
+                        if (PressF1Key || GetStap != 'false') {
+                            if (DebtingTotal <= 0) {
                                 steps.push(
 
                                     {
@@ -572,7 +573,7 @@ else
                                     }
                                 );
                             }
-                            else{
+                            else {
                                 steps.push(
 
                                     {
@@ -588,7 +589,7 @@ else
                                         prevButton: { className: 'btn-primary', text: 'Назад' },
                                         onBeforeStart: function () {
                                             $('.deb').addClass('disabled');
-                                            
+
                                             Swal.fire({
                                                 title: 'Внимание',
                                                 text: 'Списать товар можно в течение  24 часов, затем кнопка становится недоступной.',
@@ -600,15 +601,15 @@ else
                                     }
                                 );
                             }
-                          
+                            enjoyHintInstance.set(steps);
+                            enjoyHintInstance.run();
                         }
-                        enjoyHintInstance.set(steps);
-                        enjoyHintInstance.run();
-                           
+                    
 
-                           
-                        
-                     
+
+
+
+
                     }
 
                 });
@@ -616,58 +617,58 @@ else
 
 
 
-        $('.BtnFreeZing').on('click', function () {
-            var warehouseName = $(this).data('name');
-            //Разберись с передачей id
-            var Id = $(this).data('id'); 
-            Swal.fire({
-                title: 'Вы действительно хотите заморозить склад ' + warehouseName + '?\n Это приостановит всевозможные поступления и перемещения на него.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Да, заморозить',
-                cancelButtonText: 'Отменить заморозку',
-                background: " url(/myIcon/FreeZingS.png)",
-                color: "#fff",
-                
-            }).then((result) => {
-                if (result.isConfirmed) {
-              
-                 
-                    FreeZing('/Warehouse/FreezeWh', 'Заморозка склада  ', Id);
-                   
-                }
-            });
-        });
+            $('.BtnFreeZing').on('click', function () {
+                var warehouseName = $(this).data('name');
+                //Разберись с передачей id
+                var Id = $(this).data('id');
+                Swal.fire({
+                    title: 'Вы действительно хотите заморозить склад ' + warehouseName + '?\n Это приостановит всевозможные поступления и перемещения на него.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Да, заморозить',
+                    cancelButtonText: 'Отменить заморозку',
+                    background: " url(/myIcon/FreeZingS.png)",
+                    color: "#fff",
 
-        //Разморозка склада
-        $('.BtnUnFreeze').on('click', function () {
-            var WarehouseName = $(this).data('name');
-            var Id = $(this).data('id');
-            Swal.fire({
-                title: 'Вы действительно хотите разморозить склад ' + WarehouseName + '?\n Это возобновит всевозможные поступления и перемещения на него.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Да, разморозить',
-                cancelButtonText: 'Отменить разморозку',
-                background: " url(/myIcon/Vesna.png)",
-                color: "#fff",
-
-            }).then((result) => {
-                if (result.isConfirmed) {
+                }).then((result) => {
+                    if (result.isConfirmed) {
 
 
-                    UnFreezing('/Warehouse/UnFreeze', 'Разморозка склада', Id);
+                        FreeZing('/Warehouse/FreezeWh', 'Заморозка склада  ', Id);
 
-                }
+                    }
+                });
             });
 
+            //Разморозка склада
+            $('.BtnUnFreeze').on('click', function () {
+                var WarehouseName = $(this).data('name');
+                var Id = $(this).data('id');
+                Swal.fire({
+                    title: 'Вы действительно хотите разморозить склад ' + WarehouseName + '?\n Это возобновит всевозможные поступления и перемещения на него.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Да, разморозить',
+                    cancelButtonText: 'Отменить разморозку',
+                    background: " url(/myIcon/Vesna.png)",
+                    color: "#fff",
 
-            //Система подсказок
-         
-        });
-        
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+
+                        UnFreezing('/Warehouse/UnFreeze', 'Разморозка склада', Id);
+
+                    }
+                });
+
+
+                //Система подсказок
+
+            });
+
             function ToolHelp(farcRun = false) {
-               
+
                 if (GetStap == 'false' && !farcRun) {
                     return;
                 }
@@ -683,7 +684,7 @@ else
                         nextButton: { className: 'btn-success', text: 'Дальше' },
                         skipButton: { className: 'btn-warning', text: 'Завершить' },
                         prevButton: { className: 'btn-primary', text: 'Назад' }
-                     
+
 
                     },
                     {
@@ -709,9 +710,9 @@ else
                         prevButton: { className: 'btn-primary', text: 'Назад' },
                         bottom: 150,
                         margin: 10,
-                        scrollAnimationSpeed:3000,
-                        scrollTo:'.card-service',
-                        
+                        scrollAnimationSpeed: 3000,
+                        scrollTo: '.card-service',
+
                     },
                     {
                         'click #DetimeId': 'Для того, чтобы посмотреть список списанных товаров,необходимо нажать на эту кнопку',
@@ -727,8 +728,9 @@ else
 
                 AddWh.set(AddStepWh);
                 AddWh.run();
-            
+
             }
+        
 
          ToolHelp();
 

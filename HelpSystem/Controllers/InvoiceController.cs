@@ -39,13 +39,13 @@ namespace HelpSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateInvoiceProducts(List<ProductViewModel> positions, string Number)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    var errors = ModelState.Values.SelectMany(v => v.Errors)
-            //        .Select(e => e.ErrorMessage);
-            //    var errorDescription = string.Join(",", errors);
-            //    return BadRequest(new { description = errorDescription });
-            //}
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                var errorDescription = string.Join(",", errors);
+                return BadRequest(new { description = errorDescription });
+            }
             var Response = await _invoiceService.CreateInvoice(Number, positions);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
