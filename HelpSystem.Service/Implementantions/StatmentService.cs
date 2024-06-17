@@ -29,7 +29,19 @@ namespace HelpSystem.Service.Implementantions
             {
 
 
-                var findUser = _accountService.GetAll().FirstOrDefault(x => x.Id == id);
+                var findUser = _accountService.GetAll().
+                    Include(p => p.Profile).
+                    FirstOrDefault(x => x.Id == id);
+                    
+                    
+                if(string.IsNullOrEmpty(findUser.Profile.Surname) || string.IsNullOrEmpty(findUser.Profile.LastName)) {
+
+                    return new BaseResponse<Statement>()
+                    {
+                        Description = "Заявка не создана, необходимо заполнить поля в профиле",
+                        StatusCode = StatusCode.UnCreated
+                    };
+                }
 
                 //Конвертирую дату в нужный формат)
                 //string dateString = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss");

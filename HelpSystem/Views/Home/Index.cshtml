@@ -1,10 +1,11 @@
 ﻿@using HelpSystem.Domain.Extension
 @using System.Security.Claims
 @using HelpSystem.Domain.Enum
+@model HelpSystem.Domain.ViewModel.Profile.ProfileViewModel
 
 @{
     ViewData["Title"] = "Главная";
-
+    Layout = "_Layout";
 }
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
@@ -14,6 +15,9 @@
 </head>
 
 <div class="container">
+    <script>
+        var userRole;
+    </script>
     @if (User.Identity.IsAuthenticated)
     {
         <h5 id="Help" class="Hq text-center">Help Desk, всегда придёт на помощь</h5>
@@ -27,7 +31,21 @@
                             <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
                         </svg>
                         <h5 class="card-text">Профиль</h5>
-                        <p class="card-text">@User.Identity.Name</p>
+                        <p class="card-text">
+                            @if(Model?.Name != null)
+                            {
+                                @Model.Name
+                            }
+                            else if( User?.Identity != null && User.Identity.IsAuthenticated)
+                            {
+                                @User.Identity.Name
+                            }
+                            else
+                            {
+                                <span>Не найдено</span>
+                            }
+
+                        </p>
                         <p class="card-text">Информация о профиле</p>
                         <p>Роль: @ViewData["UserRole"]</p>
                     </div>
@@ -63,8 +81,9 @@
                                 <a asp-controller="Statment" asp-action="CreateStatment" class="btn btn-step2 btn-outline-success">Создать</a>
                             </div>
                             <script>
-                                var userRole = 'user';
+                                userRole = 'user';
                             </script>
+                           
                         }
                         else
                         {
@@ -72,7 +91,7 @@
                                 <a asp-controller="Statment" asp-action="GetStatment" class="btn btn-step3 btn-outline-success">К заявкам</a>
                             </div>
                             <script>
-                                var userRole = 'admin';
+                                userRole = 'admin';
                             </script>
                         }
                     </div>
@@ -126,11 +145,12 @@
             var enjoySteps;
         var GotoStatments;
         var Invoice;
+       
            //При переходе из профиля
            //Goto Statments - идём в заявки
        
         
-        if (userRole === 'user') {
+            if (userRole != 'undefined' && userRole === 'user') {
             enjoySteps = [
                 {
                     'click .btn-step1': 'Для перехода в профиль нажмите сюда',

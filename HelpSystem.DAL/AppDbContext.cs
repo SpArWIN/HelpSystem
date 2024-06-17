@@ -103,8 +103,8 @@ namespace HelpSystem.DAL
 
 
             modelBuilder.Entity<Role>().HasData(
-                new Role {Id=1, RoleType = UserRoleType.User },
-                new Role {Id=2, RoleType = UserRoleType.Admin }
+                new Role { Id = 1, RoleType = UserRoleType.User },
+                new Role { Id = 2, RoleType = UserRoleType.Admin }
             );
 
             modelBuilder.Entity<Role>()

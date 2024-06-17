@@ -61,6 +61,7 @@ namespace HelpSystem.Service.Implementantions
                 await _tokenCacheService.SetTokenAsync(hashedToken, UsProfile.UserId.ToString(), expirationTime);
 
                 //Формируем ссылку с восстановлением
+
                 var recoveryLink = $"https://localhost:44381/Account/RecoveryPassword?token={hashedToken}&userId={UsProfile.UserId}";
                 var htmlBody = $@"<!DOCTYPE html>
 <html lang='en'>

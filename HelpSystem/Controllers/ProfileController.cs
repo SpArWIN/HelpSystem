@@ -59,7 +59,7 @@ namespace HelpSystem.Controllers
 
 
         }
-        [Authorize(Roles = "3")]
+        [Authorize(Roles = "2")]
         public async Task<IActionResult> GetUsers()
         {
             var Response = await _userService.GetAllUsers();

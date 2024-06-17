@@ -12,7 +12,7 @@ namespace HelpSystem.Service.Implementantions
     public class UserService : IUserService
     {
         private readonly IBaseRepository<User> _accountUseRepository;
-
+        private readonly IBaseRepository<Profile> _profileRepository;
         public UserService(IBaseRepository<User> repository, IBaseRepository<Role> roleRepository)
         {
             _accountUseRepository = repository;
@@ -29,9 +29,9 @@ namespace HelpSystem.Service.Implementantions
                 {
                     UserId = x.Id,
                     Login = x.Login,
-                    Name = x.Name,
-                    Surname = x.Profile.Surname,
-                    LastName = x.Profile.LastName,
+                    Name = x.Profile?.Name ?? x.Name,
+                    Surname = x.Profile?.Surname,
+                    LastName = x.Profile?.LastName,
                     Roles = x.Roles.RoleType.GetDisplayName(),
 
 

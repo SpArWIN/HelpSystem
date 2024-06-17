@@ -132,7 +132,7 @@
                         Swal.close();
                         Swal.fire({
                             title: 'Ошибка формирования заявки',
-                            text: response.description,
+                            text: response.responseJSON.description,
                             icon: 'error',
                             confirmButtonText: 'Окей'
                         });

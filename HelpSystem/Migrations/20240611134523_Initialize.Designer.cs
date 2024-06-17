@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HelpSystem.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240607170927_Initialize")]
+    [Migration("20240611134523_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -157,9 +157,9 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("b21e01d5-1139-463e-9f1d-dd7144b182db"),
+                            Id = new Guid("d42deb55-a24a-4bfc-8204-0ffe5a68b276"),
                             Email = "nikola10www@mail.ru",
-                            UserId = new Guid("d7b7fcc1-0761-4ee9-b8ba-c96dca7c95ee")
+                            UserId = new Guid("93d8326a-b584-42f6-9014-5d1170f2a85e")
                         });
                 });
 
@@ -277,7 +277,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d7b7fcc1-0761-4ee9-b8ba-c96dca7c95ee"),
+                            Id = new Guid("93d8326a-b584-42f6-9014-5d1170f2a85e"),
                             Login = "TotKtoVseZnaet",
                             Name = "Николай",
                             Password = "a60c1f75938be9607b94620c8925defe4d471cab0cab591fb418e89ff04b8ae7",
@@ -308,7 +308,7 @@ namespace HelpSystem.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d8923825-0fc1-401d-9289-cb1598ca84d2"),
+                            Id = new Guid("afdbd433-1266-4b3d-9a40-ce1b308a2da1"),
                             IsFreeZing = false,
                             IsService = true,
                             Name = "Склад утилизации"

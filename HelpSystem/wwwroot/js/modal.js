@@ -1270,7 +1270,6 @@ function DebitingWarehouse(ProductId, Name, Code,callback) {
     $('#PrID').val(Product);
     $('#DebitNameProduct').val(nameProduct);
     $('#CodInv').val(codeProduct);
-   
     $('#ModelDebiting').modal('show');
     
 

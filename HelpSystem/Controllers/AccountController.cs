@@ -40,6 +40,8 @@ namespace HelpSystem.Controllers
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
                     new ClaimsPrincipal(Response.Data));
 
+
+
                 return RedirectToAction("Index", "Home", new { Description = Response.Description });
             }
 
@@ -64,8 +66,13 @@ namespace HelpSystem.Controllers
             var Response = await _accountService.Login(model);
             if (Response.StatusCode == Domain.Enum.StatusCode.Ok)
             {
+                var authProp = new AuthenticationProperties
+                {
+                    IsPersistent = true
+                };
+
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(Response.Data));
+                    new ClaimsPrincipal(Response.Data), authProp);
 
 
                 return RedirectToAction("Index", "Home", new { Description = Response.Description });
